@@ -1,1 +1,0 @@
-smc_daemon_state.adb:59:07: warning: variable "Val" is assigned but never read [-gnatwm]

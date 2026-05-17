@@ -1,5 +1,0 @@
-smc_daemon.adb:169:04: warning: variable "LM_Task" is assigned but never read [-gnatwm]
-smc_daemon.adb:170:04: warning: variable "TS_Task" is assigned but never read [-gnatwm]
-smc_daemon.adb:341:04: warning: variable "Sig_ResINT" is assigned but never read [-gnatwm]
-smc_daemon.adb:342:04: warning: variable "Sig_ResTERM" is assigned but never read [-gnatwm]
-smc_daemon.adb:541:10: warning: useless assignment to "Res", value overwritten at line 542 [-gnatwm]
