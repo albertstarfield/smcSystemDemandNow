@@ -40,7 +40,7 @@ RV NO_IMPLEMENTATION_PRAGMAS
 RV MAX_TASKS=1+
 RV MAX_ENTRY_QUEUE_LENGTH=1+
 
-U smc_daemon%b		smc_daemon.adb		89422a21 NE OO SU
+U smc_daemon%b		smc_daemon.adb		36092789 NE OO SU
 W ada%s			ada.ads			ada.ali
 W ada.calendar%s	a-calend.adb		a-calend.ali
 Z ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
@@ -94,7 +94,7 @@ D interfac.ads		20250419085653 9111f9c1 interfaces%s
 D i-c.ads		20250419085653 e94c966a interfaces.c%s
 D i-cstrin.ads		20250419085653 5409c1a4 interfaces.c.strings%s
 D i-cstrea.ads		20250419085653 ffd01b9d interfaces.c_streams%s
-D smc_daemon.adb	20260517120954 c92510be smc_daemon%b
+D smc_daemon.adb	20260517121609 766e1d16 smc_daemon%b
 D smc_daemon_state.ads	20260517110858 8c7280bf smc_daemon_state%s
 D smc_files.ads		20260517110258 3a0ec24b smc_files%s
 D smc_io.ads		20260517110115 f7d63ab0 smc_io%s

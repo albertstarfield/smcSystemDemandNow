@@ -528,8 +528,8 @@ begin
          F1Tg_Hex : chars_ptr;
       begin
          if Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
-            F0Tg_Hex := New_String ("ffffffff");
-            F1Tg_Hex := New_String ("ffffffff");
+            F0Tg_Hex := New_String ("0080d449");
+            F1Tg_Hex := New_String ("0080d449");
          else
             declare
                Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));

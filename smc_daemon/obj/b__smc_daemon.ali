@@ -22,13 +22,13 @@ RV NO_IMPLICIT_LOOPS
 RV NO_ELABORATION_CODE
 RV NO_OBSOLESCENT_FEATURES
 
-U ada_main%b		b__smc_daemon.adb	3c03a887 OO PK IL
+U ada_main%b		b__smc_daemon.adb	a5155ae8 OO PK IL
 W ada%s			ada.ads			ada.ali
 W ada.exceptions%s	a-except.adb		a-except.ali
 W system%s		system.ads		system.ali
 W system.restrictions%s	s-restri.adb		s-restri.ali
 
-U ada_main%s		b__smc_daemon.ads	b44b4975 EE NE OO PK IL
+U ada_main%s		b__smc_daemon.ads	2d5dbb1a EE NE OO PK IL
 W system%s		system.ads		system.ali
 W system.parameters%s	s-parame.adb		s-parame.ali
 W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
@@ -36,8 +36,8 @@ W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
 D ada.ads		20250419085653 76789da1 ada%s
 D a-except.ads		20250419085653 e7970cd9 ada.exceptions%s
 D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
-D b__smc_daemon.ads	20260517121004 a62897c5 ada_main%s
-D b__smc_daemon.adb	20260517121004 8e331bde ada_main%b
+D b__smc_daemon.ads	20260517121615 3f3e65aa ada_main%s
+D b__smc_daemon.adb	20260517121615 8e331bde ada_main%b
 D system.ads		20250419085653 70765b54 system%s
 D s-parame.ads		20250419085653 3597fc11 system.parameters%s
 D s-restri.ads		20250419085653 f38f2845 system.restrictions%s

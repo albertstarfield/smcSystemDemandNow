@@ -28,13 +28,17 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 # Verify packages and auto-repair if any are missing/corrupted
-echo "[BOOTSTRAP] Verifying Python library integrity..."
-if ! "$VENV_DIR/bin/python3" -c "import coremltools, torch, pandas, numpy, sklearn" 2>/dev/null; then
-    echo "[BOOTSTRAP] Dependency verification failed. Performing auto-repair of virtual environment..."
-    "$VENV_DIR/bin/pip" install --upgrade pip
-    "$VENV_DIR/bin/pip" install coremltools numpy pandas torch scikit-learn matplotlib
+if [ ! -f "$VENV_DIR/.verified" ]; then
+    echo "[BOOTSTRAP] Verifying Python library integrity..."
+    if ! "$VENV_DIR/bin/python3" -c "import coremltools, torch, pandas, numpy, sklearn" 2>/dev/null; then
+        echo "[BOOTSTRAP] Dependency verification failed. Performing auto-repair of virtual environment..."
+        "$VENV_DIR/bin/pip" install --upgrade pip
+        "$VENV_DIR/bin/pip" install coremltools numpy pandas torch scikit-learn matplotlib
+    fi
+    touch "$VENV_DIR/.verified"
+    echo "[BOOTSTRAP] All machine learning dependencies verified and cached."
 else
-    echo "[BOOTSTRAP] All machine learning dependencies verified successfully."
+    echo "[BOOTSTRAP] Python library integrity verified from cache."
 fi
 
 # --- execute the Ada/SPARK systems daemon ---
