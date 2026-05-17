@@ -1,0 +1,462 @@
+V "GNAT Lib v15"
+M P W=b
+A -gnatA
+A -gnat2012
+A -gnato
+A -gnatwa
+A -gnata
+A -g
+A -gnatR2js
+A -gnatws
+A -gnatis
+A -mmacosx-version-min=14.0
+A -mcpu=apple-m1
+A -mlittle-endian
+A -mabi=lp64
+A -fPIC
+P SS ZX
+
+RN
+RV NO_ACCESS_SUBPROGRAMS
+RV NO_ALLOCATORS
+RV NO_CALENDAR
+RV NO_DELAY
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_EXCEPTION_HANDLERS
+RV NO_EXCEPTIONS
+RV NO_FIXED_POINT
+RV NO_FLOATING_POINT
+RV NO_IO
+RV NO_IMPLICIT_CONDITIONALS
+RV NO_LOCAL_ALLOCATORS
+RV NO_RELATIVE_DELAY
+RV NO_SECONDARY_STACK
+RV NO_STANDARD_ALLOCATORS_AFTER_ELABORATION
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_TASK_ALLOCATORS
+RV NO_TASK_HIERARCHY
+RV NO_TASKING
+RV NO_DEFAULT_INITIALIZATION
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV NO_IMPLEMENTATION_PRAGMAS
+RV MAX_TASKS=1+
+RV MAX_ENTRY_QUEUE_LENGTH=1+
+
+U smc_daemon%b		smc_daemon.adb		fba4523a NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.calendar%s	a-calend.adb		a-calend.ali
+Z ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
+W ada.real_time%s	a-reatim.adb		a-reatim.ali
+W ada.strings%s		a-string.ads		a-string.ali
+W ada.strings.fixed%s	a-strfix.adb		a-strfix.ali
+Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+W gnat%s		gnat.ads		gnat.ali
+W gnat.os_lib%s		g-os_lib.ads		g-os_lib.ali
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+W interfaces.c.strings%s  i-cstrin.adb		i-cstrin.ali
+W smc_daemon_state%s	smc_daemon_state.adb	smc_daemon_state.ali
+W smc_files%s		smc_files.adb		smc_files.ali
+W smc_io%s		smc_io.ads		smc_io.ali
+W smc_math%s		smc_math.adb		smc_math.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.concat_3%s	s-conca3.adb		s-conca3.ali
+Z system.concat_4%s	s-conca4.adb		s-conca4.ali
+Z system.concat_5%s	s-conca5.adb		s-conca5.ali
+Z system.img_flt%s	s-imgflt.ads		s-imgflt.ali
+Z system.img_int%s	s-imgint.ads		s-imgint.ali
+Z system.secondary_stack%s  s-secsta.adb	s-secsta.ali
+Z system.soft_links%s	s-soflin.adb		s-soflin.ali
+Z system.tasking%s	s-taskin.adb		s-taskin.ali
+Z system.tasking.stages%s  s-tassta.adb		s-tassta.ali
+
+D ada.ads		20250419085653 76789da1 ada%s
+D a-calend.ads		20250419085653 bf7f3cc9 ada.calendar%s
+D a-caldel.ads		20250419085653 9f20b83d ada.calendar.delays%s
+D a-charac.ads		20250419085653 2d3ec45b ada.characters%s
+D a-chlat1.ads		20250419085653 e0d72e76 ada.characters.latin_1%s
+D a-except.ads		20250419085653 e7970cd9 ada.exceptions%s
+D a-ioexce.ads		20250419085653 40018c65 ada.io_exceptions%s
+D a-reatim.ads		20250419085653 d11673fd ada.real_time%s
+D a-stream.ads		20250419085653 17477cbd ada.streams%s
+D a-string.ads		20250419085653 90ac6797 ada.strings%s
+D a-strfix.ads		20250419085653 8648dedb ada.strings.fixed%s
+D a-strmap.ads		20250419085653 1f91ebb6 ada.strings.maps%s
+D a-strsea.ads		20250419085653 18c3c634 ada.strings.search%s
+D a-sttebu.ads		20250419085653 f1ad67a2 ada.strings.text_buffers%s
+D a-stuten.ads		20250419085653 c6ced0ae ada.strings.utf_encoding%s
+D a-tags.ads		20250419085653 fbca0ad5 ada.tags%s
+D a-textio.ads		20250419085653 34ef47de ada.text_io%s
+D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
+D a-uncdea.ads		20250419085653 c3a8ac65 ada.unchecked_deallocation%s
+D gnat.ads		20250419085653 b5988c27 gnat%s
+D g-os_lib.ads		20250419085653 0db74523 gnat.os_lib%s
+D interfac.ads		20250419085653 9111f9c1 interfaces%s
+D i-c.ads		20250419085653 e94c966a interfaces.c%s
+D i-cstrin.ads		20250419085653 5409c1a4 interfaces.c.strings%s
+D i-cstrea.ads		20250419085653 ffd01b9d interfaces.c_streams%s
+D smc_daemon.adb	20260517111317 b5584fca smc_daemon%b
+D smc_daemon_state.ads	20260517110858 8c7280bf smc_daemon_state%s
+D smc_files.ads		20260517110258 3a0ec24b smc_files%s
+D smc_io.ads		20260517110115 f7d63ab0 smc_io%s
+D smc_math.ads		20260517110239 f27b58a9 smc_math%s
+D system.ads		20250419085653 70765b54 system%s
+D s-atacco.ads		20250419085653 5868e3ba system.address_to_access_conversions%s
+D s-conca2.ads		20250419085653 b5fb73f7 system.concat_2%s
+D s-conca3.ads		20250419085653 8a7a19a2 system.concat_3%s
+D s-conca4.ads		20250419085653 33f85f3e system.concat_4%s
+D s-conca5.ads		20250419085653 4099d1db system.concat_5%s
+D s-crtl.ads		20250419085653 beb39b9e system.crtl%s
+D s-exctab.ads		20250419085653 91bef6ef system.exception_table%s
+D s-ficobl.ads		20250419085653 dc5161d4 system.file_control_block%s
+D s-finpri.ads		20250419085653 5970d55a system.finalization_primitives%s
+D s-imagei.ads		20250419085653 5e131ce0 system.image_i%s
+D s-imager.ads		20250419085653 45c7157d system.image_r%s
+D s-imageu.ads		20250419085653 b0b50650 system.image_u%s
+D s-imgflt.ads		20250419085653 d12816b5 system.img_flt%s
+D s-imgint.ads		20250419085653 67e4edfb system.img_int%s
+D s-imguns.ads		20250419085653 c4e23690 system.img_uns%s
+D s-multip.ads		20250419085653 38ac9f73 system.multiprocessors%s
+D s-oscons.ads		20250515185611 16132a6a system.os_constants%s
+D s-osinte.ads		20250419085653 76797b0c system.os_interface%s
+D s-os_lib.ads		20250419085653 dd4133ed system.os_lib%s
+D s-oslock.ads		20250419085653 13fa6b78 system.os_locks%s
+D s-parame.ads		20250419085653 3597fc11 system.parameters%s
+D s-powflt.ads		20250419085653 a51ab9b8 system.powten_flt%s
+D s-putima.ads		20250419085653 17291fe4 system.put_images%s
+D s-secsta.ads		20250419085653 578279f5 system.secondary_stack%s
+D s-soflin.ads		20250419085653 5d88fdea system.soft_links%s
+D s-stache.ads		20250419085653 0b81c1fe system.stack_checking%s
+D s-stausa.ads		20250419085653 5be75682 system.stack_usage%s
+D s-stalib.ads		20250419085653 1c9580f6 system.standard_library%s
+D s-stoele.ads		20250419085653 ccded4e8 system.storage_elements%s
+D s-string.ads		20250419085653 582aac7d system.strings%s
+D s-tasinf.ads		20250419085653 801abd01 system.task_info%s
+D s-taspri.ads		20250419085653 1e109e82 system.task_primitives%s
+D s-taprop.ads		20250419085653 750673ca system.task_primitives.operations%s
+D s-taskin.ads		20250419085653 38289021 system.tasking%s
+D s-taprob.ads		20250419085653 acd6094d system.tasking.protected_objects%s
+D s-tassta.ads		20250419085653 cca55c94 system.tasking.stages%s
+D s-traent.ads		20250419085653 c81cbf8c system.traceback_entries%s
+D s-unstyp.ads		20250419085653 fa2a7f59 system.unsigned_types%s
+D s-valspe.ads		20250419085653 f810d31c system.val_spec%s
+D s-vaispe.ads		20250419085653 8280550e system.value_i_spec%s
+D s-vauspe.ads		20250419085653 89269ba5 system.value_u_spec%s
+D s-vs_int.ads		20250419085653 06b6b724 system.vs_int%s
+D s-vs_uns.ads		20250419085653 e7f47a27 system.vs_uns%s
+D s-wchcon.ads		20250419085653 d9032363 system.wch_con%s
+G a e
+G c Z b b [smc_daemon standard 15 11 none]
+G r s latency_monitor_t [smc_daemon standard 15 11 none] [latency_monitor_tVIP smc_daemon_state 21 4 none]
+G r s thermal_suspender_t [smc_daemon standard 15 11 none] [thermal_suspender_tVIP smc_daemon_state 22 4 none]
+G r c none [smc_daemon standard 15 11 none] [open_connection smc_io 7 13 none]
+G r c none [smc_daemon standard 15 11 none] [write_key_hex smc_io 16 13 none]
+G r c none [smc_daemon standard 15 11 none] [load_fan_calibration smc_files 48 14 none]
+G r c none [smc_daemon standard 15 11 none] [notify_user smc_files 40 14 none]
+G r p none [smc_daemon standard 15 11 none] [should_keep_running smc_daemon_state__daemon_state 6 16 none]
+G r c none [smc_daemon standard 15 11 none] [read_key smc_io 13 13 none]
+G r c none [smc_daemon standard 15 11 none] [get_battery_percent smc_files 20 13 none]
+G r c none [smc_daemon standard 15 11 none] [check_precool_mode smc_files 37 14 none]
+G r p none [smc_daemon standard 15 11 none] [get_spike_count smc_daemon_state__daemon_state 13 16 none]
+G r p none [smc_daemon standard 15 11 none] [is_turbo_active smc_daemon_state__daemon_state 9 16 none]
+G r c none [smc_daemon standard 15 11 none] [compute_target_rpm smc_math 28 13 none]
+G r c none [smc_daemon standard 15 11 none] [update_battery_pid smc_math 39 14 none]
+G r c none [smc_daemon standard 15 11 none] [read_sms_values smc_files 14 14 none]
+G r p none [smc_daemon standard 15 11 none] [set_turbo smc_daemon_state__daemon_state 8 17 none]
+G r p none [smc_daemon standard 15 11 none] [reset_spikes smc_daemon_state__daemon_state 12 17 none]
+G r c none [smc_daemon standard 15 11 none] [write_pressure_report smc_files 50 14 none]
+G r c none [smc_daemon standard 15 11 none] [save_fan_calibration smc_files 49 14 none]
+G r c none [smc_daemon standard 15 11 none] [write_earu_temp smc_files 43 14 none]
+G r c none [smc_daemon standard 15 11 none] [write_earu_fan smc_files 44 14 none]
+G r c none [smc_daemon standard 15 11 none] [write_earu_turbo smc_files 45 14 none]
+G r c none [smc_daemon standard 15 11 none] [log_telemetry_csv smc_files 23 14 none]
+G r c none [smc_daemon standard 15 11 none] [close_connection smc_io 10 13 none]
+X 1 ada.ads
+18K9*Ada 22e8 26|1r6 2r6 3r6 4r6 16r8 17r8 18r8 90r26 91r26 103r29 127r11
+. 128r22 139r32 140r31 141r31 145r11 146r22 153r32 154r33 155r31 272r26 354r14
+. 495r47
+X 2 a-calend.ads
+36K13*Calendar 440e17 26|2w10 17r12 90r30 103r33 128r26 146r26
+42I9*Time<226I9> 26|90r39 103r42 128r35 146r35
+48I12*Year_Number{integer} 26|129r14 147r14
+49I12*Month_Number{integer} 26|130r15 148r15
+50I12*Day_Number{integer} 26|131r13 149r13
+54O12*Day_Duration{duration} 26|132r17 150r17
+56V13*Clock{42I9} 26|90s47 128s43 146s43 417s36 428s13 443s49 474s10 475s33
+72U14*Split 26|135s7 152s7
+83V13*Time_Of{42I9} 26|443s57
+112V14*"-"{duration} 26|428s19 443s55 474s16
+226I9 Time_Rep<long_long_integer>
+X 8 a-reatim.ads
+46K13*Real_Time 193e18 26|3w10 18r12 91r30 272r30 495r51
+57O9*Time<duration> 26|91r40
+62O9*Time_Span<duration> 26|495r34 496r34
+69V13*Clock{57O9} 26|272s40 495s61
+79V14*"-"{62O9} 26|495s67
+93V14*"-"{62O9} 26|499s44
+109V14*"<"{boolean} 26|498r26
+118V13*To_Duration{duration} 26|499s19
+127V13*Milliseconds{62O9} 26|496s47
+X 10 a-string.ads
+16K13*Strings 35e16 26|4r10 127r15 139r36 140r35 141r35 145r15 153r36 154r37
+. 155r35 354r18
+33n37*Both{33E9} 26|139r44 140r43 141r43 153r44 154r45 155r43
+X 11 a-strfix.ads
+49K21*Fixed 1390e22 26|4w18 127r23 145r23 354r26
+1133V13*Trim{string} 26|139s14 140s14 141s14 153s14 154s14 155s14
+X 17 a-textio.ads
+58K13*Text_IO 785e16 26|1w10 16r12
+565U14*Put_Line 26|41s7 183s4 187s7 194s4 199s4 204s7 207s4 220s4 242s7 247s10
+. 251s10 257s4 262s7 264s7 445s19 450s19 505s4 520s10 546s4 562s4 566s4 583s4
+X 20 gnat.ads
+40K9*GNAT 63e9 26|8r6 22r13 108r22 110r22 119r40 122r7 188r7 205r7 212r17
+. 217r7 218r32 229r10 232r13 243r21 244r24 406r20 411r13 412r13 511r20 516r10
+. 517r10 518r10 519r10 527r17 531r7 532r7 533r7 538r17 543r7 544r32 550r14
+. 555r7 556r7 579r7
+X 21 g-os_lib.ads
+51K14*OS_Lib=51:36 26|8w11 22r18 108r27 110r27 119r45 122r12 188r12 205r12
+. 212r22 217r12 218r37 229r15 232r18 243r26 244r29 406r25 411r18 412r18 511r25
+. 516r15 517r15 518r15 519r15 527r22 531r12 532r12 533r12 538r22 543r12 544r37
+. 550r19 555r12 556r12 579r12
+X 22 interfac.ads
+47K9*Interfaces 247e15 26|5r6 6r6 7w6 19r8 20r8 25r29
+X 23 i-c.ads
+33K20*C 601e17 26|5w17 6r17 19r19 20r19 25r40
+62I9*int<integer> 26|25r42 29r53 32r29 36r35 39r35 41r53 47r11 162r19 204r79
+71M9*unsigned
+101F9*C_float<float> 26|68r23 69r23 161r19
+X 24 i-cstrin.ads
+48K22*Strings 171e25 26|6w19 20r21
+65P9*chars_ptr 26|50r15 51r15 52r15 53r15 54r15 55r15 57r15 58r15 160r19
+. 355r21 356r21
+86V13*New_String{65P9} 26|50s28 51s28 52s28 53s28 54s28 55s28 57s28 58s28
+. 160s32 369s22 370s22
+92U14*Free 26|165s7 373s10 374s10 569s4 570s4 571s4 572s4 573s4 574s4 575s4
+. 576s4
+X 26 smc_daemon.adb
+15U11*Smc_Daemon 15b11 585l5 585t15
+25V13*Get_EUID{23|62I9} 26b<c,geteuid>22 186s7
+29P9 Signal_Handler_T 29>47 30r26 32r44 32r69 179r18 180r18
+29i47 Sig{23|62I9}
+32V13*C_Signal{29P9} 32>23 32>34 33b<c,signal>22 192s18 193s19
+32i23 Sig{23|62I9}
+32p34 Handler{29P9}
+36U14 Handle_Signal 36>29 37r26 39b14 43l8 43t21 192r31 193r33
+36i29 Sig{23|62I9} 39b29 41r64
+46m4 Conn{29|5M12} 164r36 202m35 202r35 255r33 256r33 371r39 372r39 378r31
+. 379r31 560r33 561r33 565r36
+47i4 Res{23|62I9} 202m4 203r7 204r90 255m4 256m4 371m10 372m10 378m7 379m7
+. 560m4 561m4 565m4
+50p4 Key_F0Tg{24|65P9} 371r45 569m10 569r10
+51p4 Key_F1Tg{24|65P9} 372r45 570m10 570r10
+52p4 Key_F0Md{24|65P9} 255r39 560r39 571m10 571r10
+53p4 Key_F1Md{24|65P9} 256r39 561r39 572m10 572r10
+54p4 Key_F0Ac{24|65P9} 378r37 573m10 573r10
+55p4 Key_F1Ac{24|65P9} 379r37 574m10 574r10
+57p4 Hex_01{24|65P9} 255r49 256r49 575m10 575r10
+58p4 Hex_00{24|65P9} 560r49 561r49 576m10 576r10
+61f4 Current_Temp{float} 304m7 309r27 323r65 479r32 491r20
+62f4 Prev_Temp{float} 308r10 309r42 491m7
+63f4 Temp_Gradient{float} 309m10 311m10 329r37 485r32
+65f4 Power{float} 302m7 302r52 324r59 467r42 482r32
+66i4 Battery_Percent{integer} 305m7 325r38 326r38
+68f4 F0Ac_Val{23|101F9} 378m47 378r47 424r54 469r48 486r39
+69f4 F1Ac_Val{23|101F9} 379m47 379r47 470r48 486r58
+71f4 Target_RPM{30|3F12} 347m7 348r27 349m10 357r50 484r36
+72f4 CPU_GPU_Target{30|3F12} 322m10 347r21
+73f4 Battery_Target{30|3F12} 342m29 348r10 349r24
+75r4 PID_Loop_State{30|21R9} 339m29 339r29
+78f4 Last_TCMZ_Temp{float} 275m7 275r61 304r23 457r42
+79f4 Last_GPU_Temp{float} 276m7 276r61 458r42 480r32
+80f4 Last_TaLP_Temp{float} 277m7 277r61 459r42
+81f4 Last_TaRF_Temp{float} 278m7 278r61 460r42
+82f4 Last_TaLT_Temp{float} 279m7 279r61 461r42
+83f4 Last_TaLW_Temp{float} 280m7 280r61 462r42
+84f4 Last_TaRT_Temp{float} 281m7 281r61 463r42
+85f4 Last_TaRW_Temp{float} 282m7 282r61 464r42
+86f4 Last_Ts0P_Temp{float} 285m7 285r61 286r10 287m10 287r64 289r10 290m10
+. 290r64 465r42 481r41
+87f4 Last_Ts1P_Temp{float} 293m7 293r61 294r10 295m10 295r64 297r10 298m10
+. 298r64 466r42
+90i4 Last_Telemetry_Time{2|42I9} 474r18 475m10
+91o4 Loop_Start_Time{8|57O9} 272m7 495r69
+94i4 Prev_X{integer} 384r31 394m7
+94i12 Prev_Y{integer} 385r31 395m7
+94i20 Prev_Z{integer} 386r31 396m7
+95i4 CX{integer} 382m34 384r26 394r17
+95i8 CY{integer} 382m38 385r26 395r17
+95i12 CZ{integer} 382m42 386r26 396r17
+96b4 Prev_SMS_Valid{boolean} 383r31 397m7
+97b4 SMS_Success{boolean} 382m46 383r10 397r25
+98i4 Delta_X{integer} 384m10 388r52
+98i13 Delta_Y{integer} 385m10 388r62
+98i22 Delta_Z{integer} 386m10 388r72
+101f4 Calibrated_Pres_RPM{float} 260m36 261r7 262r93 435r19 436r37 437r40
+. 439r35 448m19
+102b4 Calibration_Active{boolean} 416m10 423r10 429m13
+103i4 Calibration_Start_Time{2|42I9} 417m10 428r21
+104f4 Calibration_Sum{float} 418m10 424m10 424r29 431r44
+105i4 Calibration_Count{natural} 419m10 425m10 425r31 431r69
+108i4 Python_Pid{50|759I9} 243m7 244r10
+109b4 Python_Spawned{boolean} 245m10 508r7 578r7
+110a4 Python_Args{50|749A12} 240m7 243r75 579m25 579r25
+113P9 Latency_Monitor_Access(27|21T14) 116r14
+114P9 Thermal_Suspender_Access(27|22T14) 117r14
+116p4 LM_Task{113P9} 197m4
+117p4 TS_Task{114P9} 198m4
+119U14 Run_Power_Command 119b14 119>33 123l8 123t25 410s13 554s7
+119a33 Args{50|749A12} 122r45
+120b7 Success{boolean} 122m51
+126V13 Get_Time_Str{string} 126b13 142l8 142t20 478s32
+128i7 Now{2|42I9} 135r14
+129i7 Year{2|48I12} 135m19
+130i7 Month{2|49I12} 135m25
+131i7 Day{2|50I12} 135m32
+132o7 Seconds{2|54O12} 135m37 136r24 137r24 138r23
+133i7 Hour{natural} 136m7 139r20
+133i13 Min{natural} 137m7 140r20
+133i18 Sec{natural} 138m7 141r20
+144V13 Get_Day_Str{string} 144b13 156l8 156t19 477s32
+146i7 Now{2|42I9} 152r14
+147i7 Year{2|48I12} 152m19 153r20
+148i7 Month{2|49I12} 152m25 154r20
+149i7 Day{2|50I12} 152m32 155r20
+150o7 Seconds{2|54O12} 152m37
+159V13 Read_And_Validate_SMC_Temp{float} 159b13 159>41 159>55 176l8 176t34
+. 275s25 276s25 277s25 278s25 279s25 280s25 281s25 282s25 285s25 287s28 290s28
+. 293s25 295s28 298s28 302s16 337s22
+159a41 Key{string} 160r44
+159f55 Last_Val{float} 175r14
+160p7 Key_Char{24|65P9} 164r42 165m13 165r13
+161f7 Val_Float{23|101F9} 164m52 164r52 168r44
+162i7 Read_Res{23|62I9} 164m7 166r10
+168f13 Val{float} 170r16 170r36 171r23
+179p4 Sig_ResINT{29P9} 192m4
+180p4 Sig_ResTERM{29P9} 193m4
+211b7 Success{boolean} 217m50
+212a7 Args{50|749A12} 214m7 215m7 216m7 217r44 218r16 218m50 218r50
+218i11 I{integer} 218r56
+224a7 Python_Path{string} 229r39 230r26 230r49 231r17
+225a7 Fall_Path{string} 232r42 233r26 233r47 234r17
+226a7 Exec_Path{string} 230m10 233m10 236m10 242r71 243r53
+227i7 Len{natural} 231m10 234m10 237m10 242r87 243r69
+316b10 Precool_Active{boolean} 319m40 328r69
+317i10 Time_Left{long_integer} 319m56
+335f10 TB0T_Val{float} 337m10 337r58 340r57
+355p10 F0Tg_Hex{24|65P9} 369m10 371r55 373m16 373r16
+356p10 F1Tg_Hex{24|65P9} 370m10 372r55 374m16 374r16
+357i10 RPM_Int{integer} 361r41
+361i10 Temp_Val{natural} 363r46 364r46 365r46 366r46
+362a10 Hex_Map{string} 363r37 364r37 365r37 366r37
+363e10 H1{character} 367r45
+364e10 H2{character} 367r50
+365e10 H3{character} 367r55
+366e10 H4{character} 367r60
+367a10 Hex_Str=367:58{string} 369r34 370r34
+406a13 Args{50|749A12} 408m13 409m13 410r32 411m31 411r31 412m31 412r31
+431f16 Avg_RPM{float} 436r27 437r62 440r35 448r42 449r51 450r107
+432f16 Diff{float} 436m19 441r35
+433f16 Est_HPa{float} 437m19 442r35 445r115
+495o10 Elapsed_Span{8|62O9} 498r13 499r46
+496o10 Target_Span{8|62O9} 498r28 499r32
+510b10 Success{boolean} 516m53
+511a10 Args{50|749A12} 513m10 514m10 515m10 516r47 517m28 517r28 518m28 518r28
+. 519m28 519r28
+526b7 Success{boolean} 531m50
+527a7 Args{50|749A12} 529m7 530m7 531r44 532m25 532r25 533m25 533r25
+537b7 Success{boolean} 543m50
+538a7 Args{50|749A12} 540m7 541m7 542m7 543r44 544r16 544m50 544r50
+544i11 I{integer} 544r56
+550a7 Args{50|749A12} 552m7 553m7 554r26 555m25 555r25 556m25 556r25
+X 27 smc_daemon_state.ads
+1K9*SMC_Daemon_State 26|13w6 21r8 27|24e21
+4w14*Daemon_State 26|42r7 271r10 327r38 328r37 388r13 389r13 390r13 400r10
+. 400r52 401r10 471r38
+5U17 Request_Shutdown 26|42s20
+6V16 Should_Keep_Running{boolean} 26|271s23
+8U17 Set_Turbo 26|389s26 401s23
+9V16 Is_Turbo_Active{boolean} 26|328s50 388s26 400s65 471s51
+12U17 Reset_Spikes 26|390s26
+13V16 Get_Spike_Count{natural} 26|327s51 400s23
+21T14*Latency_Monitor_T 26|113r42 197r19
+22T14*Thermal_Suspender_T 26|114r44 198r19
+X 28 smc_files.ads
+1K9*SMC_Files 26|12w6 260r4 268r4 305r26 319r10 382r7 391r13 402r10 438r19
+. 449r19 457r7 458r7 459r7 460r7 461r7 462r7 463r7 464r7 465r7 466r7 467r7
+. 469r7 470r7 471r7 476r10 582r4 28|55e14
+14U14*Read_SMS_Values 26|382s17
+20V13*Get_Battery_Percent{integer} 26|305s36
+23U14*Log_Telemetry_CSV 26|476s20
+24a7 Day_Str{string} 26|477r13
+25a7 Time_Only{string} 26|478r13
+26f7 TCMZ_Temp{float} 26|479r13
+27f7 GPU_Temp{float} 26|480r13
+28i7 Battery_Temp{integer} 26|481r13
+29f7 Power{float} 26|482r13
+30i7 Manual_Takeover{integer} 26|483r13
+31i7 Overdrive{integer} 26|484r13
+32f7 Temp_Gradient{float} 26|485r13
+33f7 RPM_Gradient{float} 26|486r13
+37U14*Check_Precool_Mode 26|319s20
+40U14*Notify_User 26|268s14 391s23 402s20 582s14
+43U14*Write_EARU_Temp 26|457s17 458s17 459s17 460s17 461s17 462s17 463s17
+. 464s17 465s17 466s17 467s17
+44U14*Write_EARU_Fan 26|469s17 470s17
+45U14*Write_EARU_Turbo 26|471s17
+48U14*Load_Fan_Calibration 26|260s14
+49U14*Save_Fan_Calibration 26|449s29
+50U14*Write_Pressure_Report 26|438s29
+50f37 Ref_RPM{float} 26|439r22
+50f46 Cur_RPM{float} 26|440r22
+50f55 Diff{float} 26|441r22
+50f61 Est_HPa{float} 26|442r22
+50i78 Timestamp{long_integer} 26|443r22
+X 29 smc_io.ads
+4K9*SMC_IO 26|10w6 46r11 164r19 202r11 255r11 256r11 371r17 372r17 378r14
+. 379r14 560r11 561r11 565r11 29|18e11
+5M12*IO_Connect_T{23|71M9} 26|46r18
+7V13*Open_Connection{23|62I9} 26|202s18
+10V13*Close_Connection{23|62I9} 26|565s18
+13V13*Read_Key{23|62I9} 26|164s26 378s21 379s21
+16V13*Write_Key_Hex{23|62I9} 26|255s18 256s18 371s24 372s24 560s18 561s18
+X 30 smc_math.ads
+1K9*SMC_Math 26|11w6 71r23 72r23 73r23 75r23 322r28 323r37 324r37 338r10
+. 340r29 30|49e13
+3F12*RPM_Value{float} 26|71r32 72r32 73r32
+4F12*Temperature_Value{float} 26|323r46 340r38
+5F12*Power_Value{float} 26|324r46
+6F12*DT_Value{float}
+21R9*PID_State 26|75r32 30|25e14
+28V13*Compute_Target_RPM{3F12} 26|322s37
+29f7 Current_Temp{4F12} 26|323r13
+30f7 Power{5F12} 26|324r13
+31b7 Battery_Low_Survival{boolean} 26|325r13
+32b7 Endurance_Active{boolean} 26|326r13
+33b7 Emergency_Load{boolean} 26|327r13
+34b7 Turbo_Active{boolean} 26|328r13
+35f7 Derivative{float} 26|329r13
+39U14*Update_Battery_PID 26|338s19
+40r7 State{21R9} 26|339r13
+41f7 Current_Temp{4F12} 26|340r13
+42f7 DT{6F12} 26|341r13
+43f7 Output{3F12} 26|342r13
+X 50 s-os_lib.ads
+69U14*Free=69:62 26|218s44 411s25 412s25 517s22 518s22 519s22 532s19 533s19
+. 544s44 555s19 556s19 579s19
+71A12*String_List{61|52A9}<integer>
+457V13*Is_Regular_File{boolean} 26|229s22 232s25
+749A12*Argument_List{71A12}<integer> 26|110r34 119r52 212r29 406r32 511r32
+. 527r29 538r29 550r26
+759I9*Process_Id<integer> 26|22r25 108r34
+764i4*Invalid_Pid{759I9} 26|244r36
+805V13*Non_Blocking_Spawn{759I9} 26|243s33
+876U14*Spawn 26|122s19 217s19 516s22 531s19 543s19
+1070U14*OS_Exit 26|188s19 205s19
+X 58 s-stausa.ads
+207U14*Initialize 208i<c,__gnat_stack_usage_initialize>22
+272U14*Output_Results 276i<c,__gnat_stack_usage_output_results>22
+X 61 s-string.ads
+43P9*String_Access(string)
+52A9*String_List(43P9)<integer>
+

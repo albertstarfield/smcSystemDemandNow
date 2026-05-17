@@ -1,0 +1,86 @@
+V "GNAT Lib v15"
+A -gnatA
+A -gnat2012
+A -gnato
+A -gnatwa
+A -gnata
+A -g
+A -mmacosx-version-min=14.0
+A -mcpu=apple-m1
+A -mlittle-endian
+A -mabi=lp64
+A -fPIC
+P ZX
+
+RN
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_FLOATING_POINT
+RV NO_IMPLEMENTATION_ASPECT_SPECIFICATIONS
+RV NO_IMPLEMENTATION_PRAGMAS
+
+U smc_math%b		smc_math.adb		257ed9b7 NE OO PK
+Z system.assertions%s	s-assert.adb		s-assert.ali
+
+U smc_math%s		smc_math.ads		f27b58a9 EE NE OO PK
+
+D ada.ads		20250419085653 76789da1 ada%s
+D a-assert.ads		20250419085653 ba465f5c ada.assertions%s
+D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
+D smc_math.ads		20260517110239 f27b58a9 smc_math%s
+D smc_math.adb		20260517110243 d705811e smc_math%b
+D system.ads		20250419085653 70765b54 system%s
+D s-assert.ads		20250419085653 9c4520c7 system.assertions%s
+D s-exctab.ads		20250419085653 91bef6ef system.exception_table%s
+D s-stalib.ads		20250419085653 1c9580f6 system.standard_library%s
+G a e
+G c Z s b [compute_target_rpm smc_math 28 13 none]
+G c Z s b [update_battery_pid smc_math 39 14 none]
+G c Z s s [pid_stateIP smc_math 21 9 none]
+X 4 smc_math.ads
+1K9*SMC_Math 49l5 49e13 5|1b14 127l5 127t13
+3F12*RPM_Value{float} 36r13 43r26 5|15r13 78r26
+4F12*Temperature_Value{float} 29r30 41r22 5|8r30 76r22
+5F12*Power_Value{float} 30r30 5|9r30
+6F12*DT_Value{float} 42r22 5|77r22
+9f4*TEMP_ACTIVATE_FAN_CONTROL{float} 5|37r29 38r29 41r34 53r67
+10f4*TEMP_OVERDRIVE{float} 5|28r29 35r26
+11f4*POWER_ACTIVATE{float} 5|37r67
+12f4*MIN_MANUAL_FAN_RPM{float} 47r24 5|47r27 47r75 49r27 58r26 59r27 89r31
+. 115r24 116r20
+13f4*MAX_NORMAL_FAN_RPM{float} 47r46 5|31r20 47r54 54r27 60r29 61r27 117r27
+. 118r20
+14f4*DERIVATIVE_THRESHOLD{float} 5|53r26
+16f4*PID_TARGET_BATTERY_TEMP{float} 5|93r31
+17f4*PID_KP{float} 5|96r12
+18f4*PID_KI{float} 5|106r12
+19f4*PID_KD{float} 5|110r12
+21R9*PID_State 25e14 40r29 5|75r29
+22f7*Integral{float} 45r19 5|87m16 99m13 99r31 100r16 101m16 102r19 103m16
+. 106r27
+23f7*Prev_Error{float} 46r19 5|86m16 109r39 124m13
+24b7*Initialized{boolean} 5|85r20 88m16
+28V13*Compute_Target_RPM{3F12} 29>7 30>7 31>7 32>7 33>7 34>7 35>7 5|7b13
+. 68l8 68t26
+29f7 Current_Temp{4F12} 5|8b7 28r13 35r10 37r13 38r13 41r19 53r51
+30f7 Power{5F12} 5|9b7 37r58
+31b7 Battery_Low_Survival{boolean} 5|10b7 19r10
+32b7 Endurance_Active{boolean} 5|11b7 23r10
+33b7 Emergency_Load{boolean} 5|12b7 23r30
+34b7 Turbo_Active{boolean} 5|13b7 27r10
+35f7 Derivative{float} 5|14b7 53r13
+39U14*Update_Battery_PID 40=7 41>7 42>7 43<7 5|74b14
+40r7 State{21R9} 45r13 46r13 5|75b7 85r14 86m10 87m10 88m10 99m7 99r25 100r10
+. 101m10 102r13 103m10 106r21 109r33 124m7
+41f7 Current_Temp{4F12} 5|76b7 93r16
+42f7 DT{6F12} 5|77b7 99r51 109r53
+43f7 Output{3F12} 47r14 5|78b7 89m10 116m10 118m10 120m10
+X 5 smc_math.adb
+16f7 Target_RPM{float} 47m13 49m13 54m13 58r13 59m13 60r16 61m13 64r17
+17f7 T{float} 41m13 42r16 43m16 44r19 45m16 47r49
+80f7 Error{float} 93m7 96r21 99r43 109r25 124r27
+81f7 P{float} 96m7 112r22
+81f10 I{float} 106m7 112r26
+81f13 D{float} 110m7 112r30
+82f7 Derived_Error{float} 109m7 110r21
+83f7 Temp_Output{float} 112m7 115r10 117r13 120r20
+

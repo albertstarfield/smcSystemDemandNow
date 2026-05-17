@@ -1,0 +1,13 @@
+20260517111403
+-c
+-x
+ada
+-gnatA
+-gnat2012
+-gnato
+-gnatwa
+-gnata
+-g
+-mmacosx-version-min=14.0
+-gnatc
+-gnates=/usr/local/smcSystemDemandNow/smc_daemon/obj/gnatprove/3282eb74.tmp

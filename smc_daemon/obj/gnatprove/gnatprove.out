@@ -1,0 +1,62 @@
+=========================
+Summary of SPARK analysis
+=========================
+
+----------------------------------------------------------------------------------------------------
+SPARK Analysis results        Total        Flow                       Provers   Justified   Unproved
+----------------------------------------------------------------------------------------------------
+Data Dependencies                 .           .                             .           .          .
+Flow Dependencies                 .           .                             .           .          .
+Initialization                    9           9                             .           .          .
+Non-Aliasing                      .           .                             .           .          .
+Run-time Checks                  22           .    22 (CVC5 68%, Trivial 32%)           .          .
+Assertions                        .           .                             .           .          .
+Functional Contracts              1           .                      1 (CVC5)           .          .
+LSP Verification                  .           .                             .           .          .
+Termination                       1           1                             .           .          .
+Concurrency                       .           .                             .           .          .
+----------------------------------------------------------------------------------------------------
+Total                            33    10 (30%)                      23 (70%)           .          .
+
+
+max steps used for successful proof: 11911
+
+============================
+Most difficult proved checks
+============================
+
+No check found with max time greater than 1 second
+
+========================
+Detailed analysis report
+========================
+
+Analyzed 5 units
+in unit smc_daemon, 0 subprograms and packages out of 1 analyzed
+  Smc_Daemon at smc_daemon.adb:15 skipped; SPARK_Mode => Off
+in unit smc_daemon_state, 0 subprograms and packages out of 0 analyzed
+in unit smc_files, 0 subprograms and packages out of 17 analyzed
+  SMC_Files.Check_Load_Avg_Status at smc_files.ads:17 skipped; SPARK_Mode => Off
+  SMC_Files.Check_Precool_Mode at smc_files.ads:37 skipped; SPARK_Mode => Off
+  SMC_Files.Delete_File at smc_files.ads:53 skipped; SPARK_Mode => Off
+  SMC_Files.Get_Battery_Percent at smc_files.ads:20 skipped; SPARK_Mode => Off
+  SMC_Files.Get_Unix_Time at smc_files.adb:116 skipped; SPARK_Mode => Off
+  SMC_Files.Load_Fan_Calibration at smc_files.ads:48 skipped; SPARK_Mode => Off
+  SMC_Files.Log_Telemetry_CSV at smc_files.ads:23 skipped; SPARK_Mode => Off
+  SMC_Files.Notify_User at smc_files.ads:40 skipped; SPARK_Mode => Off
+  SMC_Files.Parse_Float_After at smc_files.adb:61 skipped; SPARK_Mode => Off
+  SMC_Files.Parse_Int_After at smc_files.adb:89 skipped; SPARK_Mode => Off
+  SMC_Files.Read_File_Content at smc_files.adb:12 skipped; SPARK_Mode => Off
+  SMC_Files.Read_SMS_Values at smc_files.ads:14 skipped; SPARK_Mode => Off
+  SMC_Files.Save_Fan_Calibration at smc_files.ads:49 skipped; SPARK_Mode => Off
+  SMC_Files.Write_EARU_Fan at smc_files.ads:44 skipped; SPARK_Mode => Off
+  SMC_Files.Write_EARU_Temp at smc_files.ads:43 skipped; SPARK_Mode => Off
+  SMC_Files.Write_EARU_Turbo at smc_files.ads:45 skipped; SPARK_Mode => Off
+  SMC_Files.Write_Pressure_Report at smc_files.ads:50 skipped; SPARK_Mode => Off
+in unit smc_io, 0 subprograms and packages out of 2 analyzed
+  SMC_IO.Close_Connection at smc_io.ads:10 skipped; SPARK_Mode => Off
+  SMC_IO.Write_Key_Hex at smc_io.ads:16 skipped; SPARK_Mode => Off
+in unit smc_math, 3 subprograms and packages out of 3 analyzed
+  SMC_Math at smc_math.ads:1 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  SMC_Math.Compute_Target_RPM at smc_math.ads:28 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (7 checks)
+  SMC_Math.Update_Battery_PID at smc_math.ads:39 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (16 checks)

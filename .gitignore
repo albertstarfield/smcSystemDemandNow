@@ -3,4 +3,6 @@
 **test_data**
 **ThermalForecaster.mlpackage**
 **.pkl**
-
+**telemetry**
+**.pinnedrpm**
+**helm-diag**

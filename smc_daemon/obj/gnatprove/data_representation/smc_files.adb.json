@@ -1,0 +1,379 @@
+[
+{
+  "name": "Smc_Files.Read_File_Content.File",
+  "location": "smc_files.adb:14:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Read_File_Content.B_2.B_4.Line",
+  "location": "smc_files.adb:32:16",
+  "Size": "??",
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Parse_Float_After.Idx",
+  "location": "smc_files.adb:62:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Parse_Float_After.End_Idx",
+  "location": "smc_files.adb:63:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Parse_Int_After.Idx",
+  "location": "smc_files.adb:90:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Parse_Int_After.End_Idx",
+  "location": "smc_files.adb:91:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Get_Unix_Time.Epoch",
+  "location": "smc_files.adb:118:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Content",
+  "location": "smc_files.adb:128:7",
+  "Size": 524288,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Length",
+  "location": "smc_files.adb:129:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.File_Success",
+  "location": "smc_files.adb:130:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Idx",
+  "location": "smc_files.adb:132:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Temp_Idx",
+  "location": "smc_files.adb:132:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Fx",
+  "location": "smc_files.adb:133:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Fy",
+  "location": "smc_files.adb:133:11",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Read_Sms_Values.Fz",
+  "location": "smc_files.adb:133:15",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.Content",
+  "location": "smc_files.adb:170:7",
+  "Size": 524288,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.Length",
+  "location": "smc_files.adb:171:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.File_Success",
+  "location": "smc_files.adb:172:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.Idx",
+  "location": "smc_files.adb:174:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.Comma_Idx",
+  "location": "smc_files.adb:174:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.L1",
+  "location": "smc_files.adb:175:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.L2",
+  "location": "smc_files.adb:175:11",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Load_Avg_Status.L3",
+  "location": "smc_files.adb:175:15",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Get_Battery_Percent.Content",
+  "location": "smc_files.adb:216:7",
+  "Size": 524288,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Get_Battery_Percent.Length",
+  "location": "smc_files.adb:217:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Get_Battery_Percent.File_Success",
+  "location": "smc_files.adb:218:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Get_Battery_Percent.Idx",
+  "location": "smc_files.adb:220:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Log_Telemetry_Csv.File",
+  "location": "smc_files.adb:254:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Log_Telemetry_Csv.Exists_Flag",
+  "location": "smc_files.adb:255:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Check_Precool_Mode.Content",
+  "location": "smc_files.adb:301:7",
+  "Size": 8192,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Check_Precool_Mode.Length",
+  "location": "smc_files.adb:302:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Precool_Mode.File_Success",
+  "location": "smc_files.adb:303:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Check_Precool_Mode.Idx",
+  "location": "smc_files.adb:305:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Check_Precool_Mode.Expiry",
+  "location": "smc_files.adb:306:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Notify_User.File",
+  "location": "smc_files.adb:348:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Line_Count",
+  "location": "smc_files.adb:349:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Now",
+  "location": "smc_files.adb:352:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Year",
+  "location": "smc_files.adb:353:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Month",
+  "location": "smc_files.adb:354:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Day",
+  "location": "smc_files.adb:355:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Seconds",
+  "location": "smc_files.adb:356:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Hour",
+  "location": "smc_files.adb:357:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Min",
+  "location": "smc_files.adb:357:13",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.Sec",
+  "location": "smc_files.adb:357:18",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Files.Notify_User.B_11.B_13.Line",
+  "location": "smc_files.adb:364:19",
+  "Size": "??",
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Temp.File",
+  "location": "smc_files.adb:411:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Temp.Path",
+  "location": "smc_files.adb:412:7",
+  "Size": "??",
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Fan.File",
+  "location": "smc_files.adb:431:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Fan.Path",
+  "location": "smc_files.adb:432:7",
+  "Size": "??",
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Turbo.File",
+  "location": "smc_files.adb:451:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Write_Earu_Turbo.Path",
+  "location": "smc_files.adb:452:7",
+  "Size": 624,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Files.Load_Fan_Calibration.File",
+  "location": "smc_files.adb:470:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Save_Fan_Calibration.File",
+  "location": "smc_files.adb:494:7",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Files.Write_Pressure_Report.File",
+  "location": "smc_files.adb:513:7",
+  "Size": 64,
+  "Alignment": 8
+}
+]

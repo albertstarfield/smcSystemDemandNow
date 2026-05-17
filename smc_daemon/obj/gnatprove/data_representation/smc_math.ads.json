@@ -1,0 +1,127 @@
+[
+{
+  "name": "Smc_Math.Rpm_Value",
+  "location": "smc_math.ads:3:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Temperature_Value",
+  "location": "smc_math.ads:4:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Power_Value",
+  "location": "smc_math.ads:5:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Dt_Value",
+  "location": "smc_math.ads:6:12",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Temp_Activate_Fan_Control",
+  "location": "smc_math.ads:9:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Temp_Overdrive",
+  "location": "smc_math.ads:10:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Power_Activate",
+  "location": "smc_math.ads:11:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Min_Manual_Fan_Rpm",
+  "location": "smc_math.ads:12:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Max_Normal_Fan_Rpm",
+  "location": "smc_math.ads:13:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Derivative_Threshold",
+  "location": "smc_math.ads:14:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Pid_Target_Battery_Temp",
+  "location": "smc_math.ads:16:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Pid_Kp",
+  "location": "smc_math.ads:17:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Pid_Ki",
+  "location": "smc_math.ads:18:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Pid_Kd",
+  "location": "smc_math.ads:19:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Pid_State",
+  "location": "smc_math.ads:21:9",
+  "Object_Size": 96,
+  "Value_Size": 72,
+  "Alignment": 4,
+  "record": [
+    {
+      "name": "Integral",
+      "Position": 0,
+      "First_Bit": 0,
+      "Size": 32
+    },
+    {
+      "name": "Prev_Error",
+      "Position": 4,
+      "First_Bit": 0,
+      "Size": 32
+    },
+    {
+      "name": "Initialized",
+      "Position": 8,
+      "First_Bit": 0,
+      "Size": 8
+    }
+  ]
+}
+]

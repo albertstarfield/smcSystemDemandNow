@@ -1,0 +1,69 @@
+V "GNAT Lib v15"
+A -gnatA
+A -gnat2012
+A -gnato
+A -gnatwa
+A -gnata
+A -g
+A -gnatR2js
+A -gnatws
+A -gnatis
+A -mmacosx-version-min=14.0
+A -mcpu=apple-m1
+A -mlittle-endian
+A -mabi=lp64
+A -fPIC
+P ZX
+
+RN
+RV NO_FLOATING_POINT
+RV NO_IMPLEMENTATION_PRAGMAS
+
+U smc_io%s		smc_io.ads		4a936d7e NE OO PK IU
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+W interfaces.c.strings%s  i-cstrin.adb		i-cstrin.ali
+
+D ada.ads		20250419085653 76789da1 ada%s
+D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20250419085653 9111f9c1 interfaces%s
+D i-c.ads		20250419085653 e94c966a interfaces.c%s
+D i-cstrin.ads		20250419085653 5409c1a4 interfaces.c.strings%s
+D smc_io.ads		20260517110115 f7d63ab0 smc_io%s
+D system.ads		20250419085653 70765b54 system%s
+D s-exctab.ads		20250419085653 91bef6ef system.exception_table%s
+D s-parame.ads		20250419085653 3597fc11 system.parameters%s
+D s-stalib.ads		20250419085653 1c9580f6 system.standard_library%s
+G a e
+G c Z s s [open_connection smc_io 7 13 none]
+G c Z s s [close_connection smc_io 10 13 none]
+G c Z s s [read_key smc_io 13 13 none]
+G c Z s s [write_key_hex smc_io 16 13 none]
+X 3 interfac.ads
+47K9*Interfaces 247e15 6|1r6 2r6 5r28 7r62 10r59 13r50 13r92 13r121 16r55
+. 16r97 16r136
+X 4 i-c.ads
+33K20*C 601e17 6|1w17 2r17 5r39 7r73 10r70 13r61 13r103 13r132 16r66 16r108
+. 16r147
+62I9*int<integer> 6|7r75 10r72 13r134 16r149
+71M9*unsigned 6|5r41
+101F9*C_float<float> 6|13r105
+X 5 i-cstrin.ads
+48K22*Strings 171e25 6|2w19 13r63 16r68 16r110
+65P9*chars_ptr 6|13r71 16r76 16r118
+X 6 smc_io.ads
+4K9*SMC_IO 18l5 18e11
+5M12*IO_Connect_T{4|71M9} 7r41 10r38 13r30 16r35
+7V13*Open_Connection{4|62I9} 7<30 8b<c,smc_helper_open>22
+7m30 Conn{5M12}
+10V13*Close_Connection{4|62I9} 10>31 11b<c,smc_helper_close>22
+10m31 Conn{5M12}
+13V13*Read_Key{4|62I9} 13>23 13>44 13<82 14b<c,smc_helper_read_key>22
+13m23 Conn{5M12}
+13p44 Key{5|65P9}
+13f82 Val{4|101F9}
+16V13*Write_Key_Hex{4|62I9} 16>28 16>49 16>87 17b<c,smc_helper_write_key_hex>22
+16m28 Conn{5M12}
+16p49 Key{5|65P9}
+16p87 Hex_Str{5|65P9}
+

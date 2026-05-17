@@ -1,0 +1,55 @@
+package SMC_Files is
+
+   -- Paths matching C daemon
+   TELEMETRY_CSV  : constant String := "/usr/local/smcSystemDemandNow/telemetry.csv";
+   PRECOOL_FLAG   : constant String := "/usr/local/smcSystemDemandNow/PrecoolMode";
+   EARU_DATA_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_data.dat";
+   SILENT_MODE_FLAG : constant String := "/usr/local/smcSystemDemandNow/SilentMode";
+   CALIBRATION_FILE : constant String := "calibrated1006presRPM.pinnedrpm";
+   
+   PRESSURE_REPORT_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/smcFanPressurehPaDetection";
+   NOTIFICATIONS_LOG    : constant String := "/usr/local/smcSystemDemandNow/smc_notifications.log";
+
+   -- Read accelerometer values from EARU_data.dat
+   procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean);
+
+   -- Check load average status: returns 2 for Emergency (>= 100), 1 for Turbo (>= 50), 0 otherwise
+   procedure Check_Load_Avg_Status (Max_Load : out Float; Status : out Integer);
+
+   -- Read battery percentage from EARU_data.dat
+   function Get_Battery_Percent return Integer;
+
+   -- Telemetry CSV logging and rotation (exceeding 17MB)
+   procedure Log_Telemetry_CSV (
+      Day_Str         : String;
+      Time_Only       : String;
+      TCMZ_Temp       : Float;
+      GPU_Temp        : Float;
+      Battery_Temp    : Integer;
+      Power           : Float;
+      Manual_Takeover : Integer;
+      Overdrive       : Integer;
+      Temp_Gradient   : Float;
+      RPM_Gradient    : Float
+   );
+
+   -- ML Precool flag monitoring
+   procedure Check_Precool_Mode (Active : out Boolean; Time_Left : out Long_Integer);
+
+   -- rolling log implementation for notifications (max 1000 lines)
+   procedure Notify_User (Title, Message : String);
+
+   -- EARU temperature/fan/turbo state exports
+   procedure Write_EARU_Temp (Name : String; Val : Float);
+   procedure Write_EARU_Fan (Name : String; Val : Float);
+   procedure Write_EARU_Turbo (Active : Integer);
+
+   -- Calibration files reading and writing
+   procedure Load_Fan_Calibration (Calibrated_RPM : out Float);
+   procedure Save_Fan_Calibration (Calibrated_RPM : Float);
+   procedure Write_Pressure_Report (Ref_RPM, Cur_RPM, Diff, Est_HPa : Float; Timestamp : Long_Integer);
+
+   -- Delete a file safely
+   procedure Delete_File (Path : String);
+
+end SMC_Files;

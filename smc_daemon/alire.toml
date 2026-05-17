@@ -1,0 +1,7 @@
+name = "smc_daemon"
+description = "SMC Amaryllis Demand Catcher Engine Daemon in Ada/SPARK"
+version = "0.1.0-dev"
+authors = ["Albert Starfield"]
+maintainers = ["Albert Starfield <albertstarfield@example.com>"]
+maintainers-logins = ["albertstarfield"]
+licenses = "GPL-3.0-or-later"

@@ -1,0 +1,15 @@
+[
+{
+  "name": "Smc_Math.Compute_Target_Rpm.Target_Rpm",
+  "location": "smc_math.adb:16:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Math.Compute_Target_Rpm.T",
+  "location": "smc_math.adb:17:7",
+  "Size": 32,
+  "Alignment": 4
+}
+]
