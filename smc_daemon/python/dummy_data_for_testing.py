@@ -1,4 +1,10 @@
 import os
+import sys
+
+# --- Self-Bootstrapping to use ml_venv if run from outside the venv ---
+VENV_PYTHON = "/usr/local/smcSystemDemandNow/smc_daemon/ml_venv/bin/python3"
+if sys.executable != VENV_PYTHON and os.path.exists(VENV_PYTHON):
+    os.execv(VENV_PYTHON, [VENV_PYTHON] + sys.argv)
 
 import numpy as np
 import pandas as pd

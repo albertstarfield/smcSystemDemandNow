@@ -1,4 +1,11 @@
 import os
+import sys
+
+# --- Self-Bootstrapping to use ml_venv if run from outside the venv ---
+VENV_PYTHON = "/usr/local/smcSystemDemandNow/smc_daemon/ml_venv/bin/python3"
+if sys.executable != VENV_PYTHON and os.path.exists(VENV_PYTHON):
+    os.execv(VENV_PYTHON, [VENV_PYTHON] + sys.argv)
+
 import pickle
 
 import coremltools as ct
@@ -40,7 +47,18 @@ def run_3d_inference_test():
         "Friday": 5,
         "Saturday": 6,
     }
-    df["DayIdx"] = df["Day"].map(days)
+    
+    def parse_day(val):
+        val_str = str(val).strip()
+        if val_str in days:
+            return days[val_str]
+        try:
+            dt = pd.to_datetime(val_str)
+            return (dt.dayofweek + 1) % 7
+        except Exception:
+            return 0
+
+    df["DayIdx"] = df["Day"].apply(parse_day)
 
     feature_cols = [
         "DayIdx",
@@ -115,11 +133,15 @@ def run_3d_inference_test():
             plot_times[mask], plot_days[mask], plot_probs[mask], label=f"Day {d + 1}"
         )
 
-    # Highlight the 27% threshold
+    # Calculate dynamic median threshold
+    dynamic_threshold = np.median(plot_probs)
+    print(f"Dynamic Threshold (Median of Predictions): {dynamic_threshold:.4f}")
+
+    # Highlight the dynamic median threshold
     ax.plot_surface(
         np.array([[0, 24], [0, 24]]),
         np.array([[0, 0], [max(unique_days), max(unique_days)]]),
-        np.array([[0.27, 0.27], [0.27, 0.27]]),
+        np.array([[dynamic_threshold, dynamic_threshold], [dynamic_threshold, dynamic_threshold]]),
         color="red",
         alpha=0.2,
     )
@@ -128,7 +150,7 @@ def run_3d_inference_test():
     ax.set_ylabel("Sequential Day (Z-Axis)")
     ax.set_zlabel("Forecast Probability (Spike = 1.0)")
     ax.set_title(
-        "ANE Thermal Forecasting Inference Across 14 Days\n(Red Plane = 27% Pre-Cool Trigger)"
+        f"ANE Thermal Forecasting Inference Across 14 Days\n(Red Plane = Dynamic Median Trigger: {dynamic_threshold:.1%})"
     )
 
     ax.set_xlim(0, 24)

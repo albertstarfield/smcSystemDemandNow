@@ -160,7 +160,7 @@ float getFloatFromVal(SMCVal_t val)
         if (strcmp(val.dataType, DATATYPE_SP78) == 0 && val.dataSize == 2) {
              return ((SInt16)ntohs(*(UInt16*)val.bytes)) / 256.0;
         }
-        if (strcmp(val.dataType, DATATYPE_FLT) == 0 && val.dataSize == 4) {
+        if (strncmp(val.dataType, "flt", 3) == 0 && val.dataSize == 4) {
              float fval;
              memcpy(&fval, val.bytes, sizeof(float));
              return fval;
@@ -224,6 +224,12 @@ int smc_helper_read_key(io_connect_t conn, const char *key, float *val)
     kern_return_t result = SMCReadKey2(key, &rawVal, conn);
     if (result == kIOReturnSuccess) {
         *val = getFloatFromVal(rawVal);
+        if (strcmp(key, "F0Ac") == 0 || strcmp(key, "F1Ac") == 0) {
+            printf("[DAEMON_C_HELPER] Read key %s: dataType=%s, dataSize=%d, val=%f, bytes=%02x%02x%02x%02x\n", 
+                   key, rawVal.dataType, rawVal.dataSize, *val,
+                   rawVal.bytes[0], rawVal.bytes[1], rawVal.bytes[2], rawVal.bytes[3]);
+            fflush(stdout);
+        }
         return 0;
     }
     return (int)result;
@@ -248,5 +254,8 @@ int smc_helper_write_key_hex(io_connect_t conn, const char *key, const char *hex
         val.bytes[i] = (unsigned char)strtol(byte_str, NULL, 16);
     }
 
-    return (int)SMCWriteKey2(val, conn);
+    kern_return_t result = SMCWriteKey2(val, conn);
+    printf("[DAEMON_C_HELPER] Write key %s = %s, result=%d\n", key, hex_str, (int)result);
+    fflush(stdout);
+    return (int)result;
 }

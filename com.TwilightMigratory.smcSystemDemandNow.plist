@@ -14,8 +14,8 @@
 
     <!-- stdout and stderr logging -->
     <key>StandardOutPath</key>
-    <string>/dev/null</string>
+    <string>/var/log/smcSystemDemandNow.log</string>
     <key>StandardErrorPath</key>
-    <string>/dev/null</string>
+    <string>/var/log/smcSystemDemandNow.log</string>
 </dict>
 </plist>

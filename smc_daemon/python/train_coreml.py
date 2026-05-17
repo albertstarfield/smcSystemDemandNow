@@ -1,4 +1,11 @@
 import os
+import sys
+
+# --- Self-Bootstrapping to use ml_venv if run from outside the venv ---
+VENV_PYTHON = "/usr/local/smcSystemDemandNow/smc_daemon/ml_venv/bin/python3"
+if sys.executable != VENV_PYTHON and os.path.exists(VENV_PYTHON):
+    os.execv(VENV_PYTHON, [VENV_PYTHON] + sys.argv)
+
 import pickle
 import time
 
@@ -58,13 +65,39 @@ class TrainingMonitor:
 
 # 1. DATA PREPARATION
 def load_and_preprocess_data():
+    import sys
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    if script_path not in sys.path:
+        sys.path.append(script_path)
+
+    need_generation = False
+    existing_df = None
     if not os.path.exists(CSV_PATH):
-        raise FileNotFoundError(f"Telemetry file not found: {CSV_PATH}")
+        need_generation = True
+    else:
+        try:
+            existing_df = pd.read_csv(CSV_PATH)
+            if len(existing_df) < 120960:  # 14 days of 10-second intervals
+                need_generation = True
+        except Exception:
+            need_generation = True
+
+    if need_generation:
+        print("Telemetry dataset missing or too small to train. Generating 14-day baseline dummy data...")
+        from dummy_data_for_testing import generate_dummy_telemetry
+        generate_dummy_telemetry(days=14)
+        
+        if existing_df is not None and len(existing_df) > 0:
+            print("Padding dataset: Merging existing real telemetry with generated dummy data...")
+            try:
+                dummy_df = pd.read_csv(CSV_PATH)
+                combined_df = pd.concat([dummy_df, existing_df], ignore_index=True)
+                combined_df.to_csv(CSV_PATH, index=False)
+                print(f"Successfully preserved {len(existing_df)} existing real rows. Total padded dataset size: {len(combined_df)} rows.")
+            except Exception as merge_err:
+                print(f"Warning: Could not merge existing dataset: {merge_err}. Using generated dummy baseline.")
 
     df = pd.read_csv(CSV_PATH)
-
-    if len(df) < SEQ_LENGTH + FORECAST_HORIZON + 1:
-        raise ValueError("Not enough data to train. Let the engine run longer.")
 
     df["Minutes"] = pd.to_timedelta(df["Time"]).dt.total_seconds() / 60
     df["Time_Sin"] = np.sin(2 * np.pi * df["Minutes"] / 1440)
@@ -79,7 +112,18 @@ def load_and_preprocess_data():
         "Friday": 5,
         "Saturday": 6,
     }
-    df["DayIdx"] = df["Day"].map(days)
+    
+    def parse_day(val):
+        val_str = str(val).strip()
+        if val_str in days:
+            return days[val_str]
+        try:
+            dt = pd.to_datetime(val_str)
+            return (dt.dayofweek + 1) % 7
+        except Exception:
+            return 0
+
+    df["DayIdx"] = df["Day"].apply(parse_day)
 
     df["Target"] = (
         df["Manual_Takeover"]

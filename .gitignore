@@ -5,6 +5,8 @@
 **.pkl**
 **telemetry**
 **.pinnedrpm**
+**__pycache__**
 **helm-diag**
 telemetry.csv
 PrecoolMode
+**.csv**

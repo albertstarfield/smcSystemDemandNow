@@ -44,5 +44,11 @@ fi
 # --- execute the Ada/SPARK systems daemon ---
 echo "[BOOTSTRAP] Launching Apple Silicon Ada/SPARK SMC Daemon..."
 
+# Clean duplicate RPATH if present to prevent Sequoia dyld duplicate abort traps
+if [ -f "/usr/local/smcSystemDemandNow/smc_daemon/bin/smc_daemon" ]; then
+    install_name_tool -delete_rpath /Users/albertstarfield/.local/share/alire/toolchains/gnat_native_15.1.2_60748c54/lib /usr/local/smcSystemDemandNow/smc_daemon/bin/smc_daemon 2>/dev/null
+    codesign -f -s - /usr/local/smcSystemDemandNow/smc_daemon/bin/smc_daemon 2>/dev/null
+fi
+
 # 'exec' replaces the shell process directly, preserving PID and signal mapping for launchd
 exec "/usr/local/smcSystemDemandNow/smc_daemon/bin/smc_daemon"

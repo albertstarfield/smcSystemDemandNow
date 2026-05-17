@@ -1,4 +1,11 @@
 import os
+import sys
+
+# --- Self-Bootstrapping to use ml_venv if run from outside the venv ---
+VENV_PYTHON = "/usr/local/smcSystemDemandNow/smc_daemon/ml_venv/bin/python3"
+if sys.executable != VENV_PYTHON and os.path.exists(VENV_PYTHON):
+    os.execv(VENV_PYTHON, [VENV_PYTHON] + sys.argv)
+
 import pickle
 import time
 
@@ -61,6 +68,9 @@ def run_inference_daemon():
 
     print("ANE Inference Daemon Active. Monitoring telemetry...")
 
+    prob_history = []
+    default_threshold = 0.27
+
     while True:
         try:
             if not os.path.exists(CSV_PATH):
@@ -84,7 +94,18 @@ def run_inference_daemon():
                     "Friday": 5,
                     "Saturday": 6,
                 }
-                df["DayIdx"] = df["Day"].map(days)
+                
+                def parse_day(val):
+                    val_str = str(val).strip()
+                    if val_str in days:
+                        return days[val_str]
+                    try:
+                        dt = pd.to_datetime(val_str)
+                        return (dt.dayofweek + 1) % 7
+                    except Exception:
+                        return 0
+
+                df["DayIdx"] = df["Day"].apply(parse_day)
 
                 feature_cols = [
                     "DayIdx",
@@ -113,18 +134,29 @@ def run_inference_daemon():
                 # CoreML returns a dict, extract the raw float probability
                 spike_prob = list(prediction.values())[0][0][0]
 
-                # 5. Act on Prediction (Threshold: 27% confidence of a spike)
-                if spike_prob > 0.27:
+                # Track predicted probability in history
+                prob_history.append(spike_prob)
+                if len(prob_history) > 1000:
+                    prob_history.pop(0)
+
+                # Dynamically calculate threshold using the running median
+                if len(prob_history) >= 10:
+                    threshold = np.median(prob_history)
+                else:
+                    threshold = default_threshold
+
+                # 5. Act on Prediction (Using dynamic median threshold)
+                if spike_prob > threshold:
                     if not os.path.exists(FLAG_PATH):
                         print(
-                            f"[{time.strftime('%H:%M:%S')}] ANE Forecast: Thermal spike imminent ({spike_prob:.0%} probability). Dropping Precool flag."
+                            f"[{time.strftime('%H:%M:%S')}] ANE Forecast: Thermal spike imminent ({spike_prob:.0%} probability, threshold: {threshold:.0%}). Dropping Precool flag."
                         )
                         with open(FLAG_PATH, "w") as f:
                             f.write(f"PROB:{spike_prob:.2f}")
                 else:
                     if os.path.exists(FLAG_PATH):
                         print(
-                            f"[{time.strftime('%H:%M:%S')}] ANE Forecast: System stable ({spike_prob:.0%} probability). Removing Precool flag."
+                            f"[{time.strftime('%H:%M:%S')}] ANE Forecast: System stable ({spike_prob:.0%} probability, threshold: {threshold:.0%}). Removing Precool flag."
                         )
                         os.remove(FLAG_PATH)
 

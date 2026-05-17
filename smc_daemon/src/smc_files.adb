@@ -130,10 +130,10 @@ package body SMC_Files is
    -------------------
 
    function Get_Unix_Time return Long_Integer is
-      use Ada.Calendar;
-      Epoch : constant Time := Time_Of (1970, 1, 1, 0.0);
+      function C_Time (T : Long_Integer := 0) return Long_Integer;
+      pragma Import (C, C_Time, "time");
    begin
-      return Long_Integer (Clock - Epoch);
+      return C_Time (0);
    end Get_Unix_Time;
 
    ----------------------
@@ -355,6 +355,48 @@ package body SMC_Files is
       end if;
    end Check_Precool_Mode;
 
+   --------------------------
+   -- Check_Overdrive_Mode --
+   --------------------------
+
+   procedure Check_Overdrive_Mode (Active : out Boolean; Time_Left : out Long_Integer) is
+      Content : String (1 .. 1024);
+      Length : Natural;
+      File_Success : Boolean;
+      use Ada.Strings.Fixed;
+      Idx : Natural;
+      Expiry : Long_Integer := 0;
+   begin
+      Active := False; Time_Left := 0;
+      if not Ada.Directories.Exists (OVERDRIVE_FLAG) then
+         return;
+      end if;
+
+      Read_File_Content (OVERDRIVE_FLAG, Content, Length, File_Success);
+      if not File_Success then
+         -- File exists but is locked or empty, treat as active to be safe
+         Active := True;
+         Time_Left := 10;
+         return;
+      end if;
+
+      -- Check if it contains EXPIRY
+      Idx := Index (Content (1 .. Length), "EXPIRY=");
+      if Idx > 0 then
+         Expiry := Long_Integer (Parse_Int_After (Content (1 .. Length), Idx + 7, 0));
+         Time_Left := Expiry - Get_Unix_Time;
+         if Time_Left > 0 then
+            Active := True;
+         else
+            -- Expired, clean it up
+            Delete_File (OVERDRIVE_FLAG);
+         end if;
+      else
+         Active := True;
+         Time_Left := 10;
+      end if;
+   end Check_Overdrive_Mode;
+
    -----------------
    -- Notify_User --
    -----------------
@@ -572,5 +614,62 @@ package body SMC_Files is
       when others =>
          null;
    end Delete_File;
+
+   ---------------------------------
+   -- Check_And_Handle_TurboNow --
+   ---------------------------------
+
+   procedure Check_And_Handle_TurboNow is
+      use Ada.Directories;
+      use Ada.Text_IO;
+      use Ada.Strings.Fixed;
+      File : File_Type;
+      Expiry : Long_Integer;
+   begin
+      if Exists (TURBONOW_FLAG) then
+         -- Delete TURBONOW file immediately
+         Delete_File (TURBONOW_FLAG);
+         
+         -- Calculate Expiry: current unix time + 600 seconds
+         Expiry := Get_Unix_Time + 600;
+         
+         -- Create or overwrite OverdriveMode file with EXPIRY
+         begin
+            Create (File, Out_File, OVERDRIVE_FLAG);
+            Put_Line (File, "EXPIRY=" & Trim (Expiry'Image, Ada.Strings.Both));
+            Close (File);
+         exception
+            when others =>
+               if Is_Open (File) then Close (File); end if;
+         end;
+         
+         -- Notify user
+         Notify_User ("TURBONOW", "Flag file detected! Engaging 10-minute Overdrive Turbo mode.");
+      end if;
+   end Check_And_Handle_TurboNow;
+
+   -----------------------
+   -- Get_HID_Idle_Time --
+   -----------------------
+
+   function Get_HID_Idle_Time return Float is
+      Content : String (1 .. 65536);
+      Length : Natural;
+      File_Success : Boolean;
+      use Ada.Strings.Fixed;
+      Idx : Natural;
+   begin
+      Read_File_Content (EARU_DATA_FILE, Content, Length, File_Success);
+      if not File_Success then
+         return 0.0;
+      end if;
+
+      Idx := Index (Content (1 .. Length), """nonHumanInputHIDIdle"":");
+      if Idx > 0 then
+         return Parse_Float_After (Content (1 .. Length), Idx + 22, 0.0);
+      end if;
+
+      return 0.0;
+   end Get_HID_Idle_Time;
 
 end SMC_Files;

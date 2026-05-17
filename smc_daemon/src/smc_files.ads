@@ -3,6 +3,8 @@ package SMC_Files is
    -- Paths matching C daemon
    TELEMETRY_CSV  : constant String := "/usr/local/smcSystemDemandNow/telemetry.csv";
    PRECOOL_FLAG   : constant String := "/usr/local/smcSystemDemandNow/PrecoolMode";
+   OVERDRIVE_FLAG : constant String := "/usr/local/smcSystemDemandNow/OverdriveMode";
+   TURBONOW_FLAG  : constant String := "/usr/local/smcSystemDemandNow/TURBONOW";
    EARU_DATA_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_data.dat";
    SILENT_MODE_FLAG : constant String := "/usr/local/smcSystemDemandNow/SilentMode";
    CALIBRATION_FILE : constant String := "calibrated1006presRPM.pinnedrpm";
@@ -35,9 +37,13 @@ package SMC_Files is
 
    -- ML Precool flag monitoring
    procedure Check_Precool_Mode (Active : out Boolean; Time_Left : out Long_Integer);
+   procedure Check_Overdrive_Mode (Active : out Boolean; Time_Left : out Long_Integer);
 
    -- rolling log implementation for notifications (max 1000 lines)
    procedure Notify_User (Title, Message : String);
+
+   -- Check if TURBONOW file exists. If so, delete it and set OverdriveMode for 10 minutes
+   procedure Check_And_Handle_TurboNow;
 
    -- EARU temperature/fan/turbo state exports
    procedure Write_EARU_Temp (Name : String; Val : Float);
@@ -51,5 +57,8 @@ package SMC_Files is
 
    -- Delete a file safely
    procedure Delete_File (Path : String);
+
+   -- Read HID idle time in seconds from EARU_data.dat
+   function Get_HID_Idle_Time return Float;
 
 end SMC_Files;
