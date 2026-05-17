@@ -13,23 +13,7 @@
       ],
       "claim": {
         "arg": 1,
-        "predicate": "CLAIM_EFFECTS"
-      }
-    },
-    {
-      "assumptions": [
-      ],
-      "claim": {
-        "arg": 1,
         "predicate": "CLAIM_AORTE"
-      }
-    },
-    {
-      "assumptions": [
-      ],
-      "claim": {
-        "arg": 2,
-        "predicate": "CLAIM_EFFECTS"
       }
     },
     {
@@ -87,6 +71,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 81,
+      "msg_id": 0,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -98,6 +83,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 81,
+      "msg_id": 1,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -109,6 +95,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 81,
+      "msg_id": 2,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -120,6 +107,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 82,
+      "msg_id": 3,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -131,6 +119,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 83,
+      "msg_id": 4,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -142,6 +131,7 @@
       "file": "smc_math.ads",
       "how_proved": "flow",
       "line": 43,
+      "msg_id": 5,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -153,6 +143,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 80,
+      "msg_id": 6,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -164,6 +155,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 16,
+      "msg_id": 7,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -175,6 +167,7 @@
       "file": "smc_math.adb",
       "how_proved": "flow",
       "line": 17,
+      "msg_id": 8,
       "rule": "UNINITIALIZED",
       "severity": "info"
     },
@@ -186,6 +179,7 @@
       "file": "smc_math.ads",
       "how_proved": "flow",
       "line": 28,
+      "msg_id": 9,
       "rule": "SUBPROGRAM_TERMINATION",
       "severity": "info"
     }
@@ -205,6 +199,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 31,
+      "msg_id": 10,
       "rule": "VC_RANGE_CHECK",
       "severity": "info"
     },
@@ -219,6 +214,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 41,
+      "msg_id": 11,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info"
     },
@@ -233,6 +229,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 41,
+      "msg_id": 12,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info"
     },
@@ -247,6 +244,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 89,
+      "msg_id": 13,
       "rule": "VC_RANGE_CHECK",
       "severity": "info"
     },
@@ -261,6 +259,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 93,
+      "msg_id": 14,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info"
     },
@@ -275,6 +274,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 116,
+      "msg_id": 15,
       "rule": "VC_RANGE_CHECK",
       "severity": "info"
     },
@@ -289,6 +289,7 @@
       "file": "smc_math.adb",
       "how_proved": "trivial",
       "line": 118,
+      "msg_id": 16,
       "rule": "VC_RANGE_CHECK",
       "severity": "info"
     },
@@ -314,6 +315,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 41,
+      "msg_id": 17,
       "rule": "VC_DIVISION_CHECK",
       "severity": "info",
       "stats": {
@@ -346,6 +348,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 47,
+      "msg_id": 18,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -378,6 +381,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 47,
+      "msg_id": 19,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -410,6 +414,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 64,
+      "msg_id": 20,
       "rule": "VC_RANGE_CHECK",
       "severity": "info",
       "stats": {
@@ -442,6 +447,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 96,
+      "msg_id": 21,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -474,6 +480,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 99,
+      "msg_id": 22,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -506,6 +513,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 99,
+      "msg_id": 23,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -538,6 +546,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 106,
+      "msg_id": 24,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -578,6 +587,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 109,
+      "msg_id": 25,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -610,6 +620,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 109,
+      "msg_id": 26,
       "rule": "VC_DIVISION_CHECK",
       "severity": "info",
       "stats": {
@@ -642,6 +653,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 109,
+      "msg_id": 27,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -682,6 +694,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 110,
+      "msg_id": 28,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -714,6 +727,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 112,
+      "msg_id": 29,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -746,6 +760,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 112,
+      "msg_id": 30,
       "rule": "VC_FP_OVERFLOW_CHECK",
       "severity": "info",
       "stats": {
@@ -786,6 +801,7 @@
       "file": "smc_math.adb",
       "how_proved": "prover",
       "line": 120,
+      "msg_id": 31,
       "rule": "VC_RANGE_CHECK",
       "severity": "info",
       "stats": {
@@ -829,6 +845,7 @@
       "file": "smc_math.ads",
       "how_proved": "prover",
       "line": 47,
+      "msg_id": 32,
       "rule": "VC_POSTCONDITION",
       "severity": "info",
       "stats": {
@@ -852,32 +869,32 @@
   "stop_reason": "STOP_REASON_NONE",
   "timings": {
     " 1": {
-      "gnat2why.vc_generation": 3.33500001579523E-03,
-      "gnatwhy3.init": 2.67910003662109E-01,
-      "gnatwhy3.register_vcs": 1.88700004946440E-03,
-      "gnatwhy3.run_vcs": 6.00000021222513E-06,
-      "gnatwhy3.save_session": 6.73299888148904E-03,
-      "gnatwhy3.schedule_vcs": 3.00000010611257E-06,
-      "gnatwhy3.transformations.introduce_premises": 4.06200019642711E-03,
-      "gnatwhy3.transformations.split_goal_wp_conj": 2.07330007106066E-02
+      "gnat2why.vc_generation": 1.08350003138185E-02,
+      "gnatwhy3.init": 6.61996006965637E-01,
+      "gnatwhy3.register_vcs": 5.05100004374981E-03,
+      "gnatwhy3.run_vcs": 1.80000006366754E-05,
+      "gnatwhy3.save_session": 1.62150003015995E-02,
+      "gnatwhy3.schedule_vcs": 9.00000031833770E-06,
+      "gnatwhy3.transformations.introduce_premises": 1.17600001394749E-02,
+      "gnatwhy3.transformations.split_goal_wp_conj": 4.78059984743595E-02
     },
     " 2": {
-      "gnat2why.vc_generation": 1.74800003878772E-03,
-      "gnatwhy3.init": 2.34142005443573E-01,
-      "gnatwhy3.register_vcs": 1.11000001197681E-04,
-      "gnatwhy3.run_vcs": 3.00000010611257E-06,
-      "gnatwhy3.save_session": 1.71300000511110E-03,
-      "gnatwhy3.schedule_vcs": 1.99900000552589E-06,
-      "gnatwhy3.transformations.split_goal_wp_conj": 4.17400011792779E-03
+      "gnat2why.vc_generation": 4.96499985456467E-03,
+      "gnatwhy3.init": 5.75618982315063E-01,
+      "gnatwhy3.register_vcs": 2.61000008322299E-04,
+      "gnatwhy3.run_vcs": 4.99899988426478E-06,
+      "gnatwhy3.save_session": 4.23499895259738E-03,
+      "gnatwhy3.schedule_vcs": 3.99900000047637E-06,
+      "gnatwhy3.transformations.split_goal_wp_conj": 9.86499898135662E-03
     },
     "global": {
-      "flow analysis": 4.88999998196959E-03,
-      "globals (advanced)": 1.42999997478910E-04,
-      "globals (basic)": 1.53999993926845E-04,
-      "init_why_sections": 3.44000000040978E-04,
-      "marking": 2.43999995291233E-04,
-      "properties (advanced)": 1.40000001920271E-05,
-      "translation of standard": 1.17699999827892E-03
+      "flow analysis": 1.62749998271465E-02,
+      "globals (advanced)": 4.07999992603436E-04,
+      "globals (basic)": 4.65999997686595E-04,
+      "init_why_sections": 1.03100005071610E-03,
+      "marking": 1.27400003839284E-03,
+      "properties (advanced)": 3.89999986509793E-05,
+      "translation of standard": 3.04799992591143E-03
     }
   }
 }

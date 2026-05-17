@@ -32,6 +32,7 @@ RV NO_STANDARD_STORAGE_POOLS
 RV NO_TASK_ALLOCATORS
 RV NO_TASK_HIERARCHY
 RV NO_TASKING
+RV NO_UNCHECKED_CONVERSION
 RV NO_DEFAULT_INITIALIZATION
 RV NO_DYNAMIC_SIZED_OBJECTS
 RV NO_IMPLEMENTATION_PRAGMAS
@@ -39,7 +40,7 @@ RV NO_ELABORATION_CODE
 RV MAX_TASKS=1+
 RV MAX_ENTRY_QUEUE_LENGTH=1+
 
-U smc_daemon%b		smc_daemon.adb		fba4523a OO SU
+U smc_daemon%b		smc_daemon.adb		89422a21 OO SU
 W ada%s			ada.ads			ada.ali
 W ada.calendar%s	a-calend.adb		a-calend.ali
 W ada.real_time%s	a-reatim.adb		a-reatim.ali
@@ -47,6 +48,7 @@ W ada.strings%s		a-string.ads		a-string.ali
 W ada.strings.fixed%s	a-strfix.adb		a-strfix.ali
 Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
 W ada.text_io%s		a-textio.adb		a-textio.ali
+W ada.unchecked_conversion%s  a-unccon.ads	a-unccon.ali
 W gnat%s		gnat.ads		gnat.ali
 W gnat.os_lib%s		g-os_lib.ads		g-os_lib.ali
 W interfaces%s		interfac.ads		interfac.ali
@@ -81,7 +83,7 @@ D interfac.ads		20250419085653 9111f9c1 interfaces%s
 D i-c.ads		20250419085653 e94c966a interfaces.c%s
 D i-cstrin.ads		20250419085653 5409c1a4 interfaces.c.strings%s
 D i-cstrea.ads		20250419085653 ffd01b9d interfaces.c_streams%s
-D smc_daemon.adb	20260517111317 b5584fca smc_daemon%b
+D smc_daemon.adb	20260517120954 c92510be smc_daemon%b
 D smc_daemon_state.ads	20260517110858 8c7280bf smc_daemon_state%s
 D smc_files.ads		20260517110258 3a0ec24b smc_files%s
 D smc_io.ads		20260517110115 f7d63ab0 smc_io%s
@@ -112,264 +114,316 @@ D s-unstyp.ads		20250419085653 fa2a7f59 system.unsigned_types%s
 D s-wchcon.ads		20250419085653 d9032363 system.wch_con%s
 G a Z
 X 1 ada.ads
-18K9*Ada 22e8 24|1r6 2r6 3r6 4r6 16r8 17r8 18r8 90r26 91r26 103r29 127r11
-. 128r22 139r32 140r31 141r31 145r11 146r22 153r32 154r33 155r31 272r26 354r14
-. 495r47
+18K9*Ada 22e8 24|1r6 2r6 3r6 4r6 5r6 17r8 18r8 19r8 48r37 143r26 144r26 156r29
+. 289r11 290r22 301r32 302r31 303r31 307r11 308r22 315r32 316r33 317r31 445r26
+. 659r47
 X 2 a-calend.ads
-36K13*Calendar 440e17 24|2w10 17r12 90r30 103r33 128r26 146r26
-42I9*Time<226I9> 24|90r39 103r42 128r35 146r35
-48I12*Year_Number{integer} 24|129r14 147r14
-49I12*Month_Number{integer} 24|130r15 148r15
-50I12*Day_Number{integer} 24|131r13 149r13
-54O12*Day_Duration{duration} 24|132r17 150r17
-56V13*Clock{42I9} 24|90s47 128s43 146s43 417s36 428s13 443s49 474s10 475s33
-72U14*Split 24|135s7 152s7
-83V13*Time_Of{42I9} 24|443s57
-112V14*"-"{duration} 24|428s19 443s55 474s16
+36K13*Calendar 440e17 24|2w10 18r12 143r30 156r33 290r26 308r26
+42I9*Time<226I9> 24|143r39 156r42 290r35 308r35
+48I12*Year_Number{integer} 24|291r14 309r14
+49I12*Month_Number{integer} 24|292r15 310r15
+50I12*Day_Number{integer} 24|293r13 311r13
+54O12*Day_Duration{duration} 24|294r17 312r17
+56V13*Clock{42I9} 24|143s47 221s33 290s43 308s43 592s13 607s49 638s10 639s33
+72U14*Split 24|297s7 314s7
+83V13*Time_Of{42I9} 24|607s57
+112V14*"-"{duration} 24|592s19 607s55 638s16
 226I9 Time_Rep<long_long_integer>
 X 7 a-reatim.ads
-46K13*Real_Time 193e18 24|3w10 18r12 91r30 272r30 495r51
-57O9*Time<duration> 24|91r40
-62O9*Time_Span<duration> 24|495r34 496r34
-69V13*Clock{57O9} 24|272s40 495s61
-79V14*"-"{62O9} 24|495s67
-93V14*"-"{62O9} 24|499s44
-109V14*"<"{boolean} 24|498r26
-118V13*To_Duration{duration} 24|499s19
-127V13*Milliseconds{62O9} 24|496s47
+46K13*Real_Time 193e18 24|3w10 19r12 144r30 445r30 659r51
+57O9*Time<duration> 24|144r40
+62O9*Time_Span<duration> 24|659r34 660r34
+69V13*Clock{57O9} 24|445s40 659s61
+79V14*"-"{62O9} 24|659s67
+93V14*"-"{62O9} 24|663s44
+109V14*"<"{boolean} 24|662r26
+118V13*To_Duration{duration} 24|663s19
+127V13*Milliseconds{62O9} 24|660s47
 X 9 a-string.ads
-16K13*Strings 35e16 24|4r10 127r15 139r36 140r35 141r35 145r15 153r36 154r37
-. 155r35 354r18
-33n37*Both{33E9} 24|139r44 140r43 141r43 153r44 154r45 155r43
+16K13*Strings 35e16 24|4r10 289r15 301r36 302r35 303r35 307r15 315r36 316r37
+. 317r35
+33n37*Both{33E9} 24|301r44 302r43 303r43 315r44 316r45 317r43
 X 10 a-strfix.ads
-49K21*Fixed 1390e22 24|4w18 127r23 145r23 354r26
-1133V13*Trim{string} 24|139s14 140s14 141s14 153s14 154s14 155s14
+49K21*Fixed 1390e22 24|4w18 289r23 307r23
+1133V13*Trim{string} 24|301s14 302s14 303s14 315s14 316s14 317s14
 X 15 a-textio.ads
-58K13*Text_IO 785e16 24|1w10 16r12
-565U14*Put_Line 24|41s7 183s4 187s7 194s4 199s4 204s7 207s4 220s4 242s7 247s10
-. 251s10 257s4 262s7 264s7 445s19 450s19 505s4 520s10 546s4 562s4 566s4 583s4
+58K13*Text_IO 785e16 24|1w10 17r12
+565U14*Put_Line 24|42s7 185s7 236s7 345s4 349s7 356s4 361s4 366s7 369s4 382s4
+. 404s7 409s10 413s10 426s4 435s7 437s7 609s19 614s19 669s4 684s10 710s4
+. 726s4 730s4 760s4
+X 16 a-unccon.ads
+23v14*Unchecked_Conversion 24|5w10 48r41
 X 18 gnat.ads
-40K9*GNAT 63e9 24|8r6 22r13 108r22 110r22 119r40 122r7 188r7 205r7 212r17
-. 217r7 218r32 229r10 232r13 243r21 244r24 406r20 411r13 412r13 511r20 516r10
-. 517r10 518r10 519r10 527r17 531r7 532r7 533r7 538r17 543r7 544r32 550r14
-. 555r7 556r7 579r7
+40K9*GNAT 63e9 24|9r6 23r13 161r22 163r22 172r40 175r7 193r17 198r10 199r10
+. 204r10 205r10 210r17 215r10 216r10 244r17 249r10 250r10 255r17 261r13 262r13
+. 267r13 268r13 273r13 274r13 279r13 280r13 350r7 367r7 374r17 379r7 380r32
+. 391r10 394r13 405r21 406r24 675r20 680r10 681r10 682r10 683r10 691r17 695r7
+. 696r7 697r7 702r17 707r7 708r32 714r14 719r7 720r7 756r7
 X 19 g-os_lib.ads
-51K14*OS_Lib=51:36 24|8w11 22r18 108r27 110r27 119r45 122r12 188r12 205r12
-. 212r22 217r12 218r37 229r15 232r18 243r26 244r29 406r25 411r18 412r18 511r25
-. 516r15 517r15 518r15 519r15 527r22 531r12 532r12 533r12 538r22 543r12 544r37
-. 550r19 555r12 556r12 579r12
+51K14*OS_Lib=51:36 24|9w11 23r18 161r27 163r27 172r45 175r12 193r22 198r15
+. 199r15 204r15 205r15 210r22 215r15 216r15 244r22 249r15 250r15 255r22 261r18
+. 262r18 267r18 268r18 273r18 274r18 279r18 280r18 350r12 367r12 374r22 379r12
+. 380r37 391r15 394r18 405r26 406r29 675r25 680r15 681r15 682r15 683r15 691r22
+. 695r12 696r12 697r12 702r22 707r12 708r37 714r19 719r12 720r12 756r12
 X 20 interfac.ads
-47K9*Interfaces 247e15 24|5r6 6r6 7w6 19r8 20r8 25r29
+47K9*Interfaces 247e15 24|6r6 7r6 8w6 20r8 21r8 26r29 47r11
+81M9*Unsigned_8 24|50r24 54r33 60r13 61r13 62r13 63r13
+92M9*Unsigned_32 24|48r70 49r14
+109V13*Shift_Right{81M9} 24|65s34 67s34 69s34 71s34
+159V13*Shift_Right{92M9} 24|61s25 62s25 63s25
 X 21 i-c.ads
-33K20*C 601e17 24|5w17 6r17 19r19 20r19 25r40
-62I9*int<integer> 24|25r42 29r53 32r29 36r35 39r35 41r53 47r11 162r19 204r79
+33K20*C 601e17 24|6w17 7r17 20r19 21r19 26r40
+62I9*int<integer> 24|26r42 30r53 33r29 37r35 40r35 42r53 85r11 324r19 366r79
 71M9*unsigned
-101F9*C_float<float> 24|68r23 69r23 161r19
+101F9*C_float<float> 24|121r23 122r23 323r19
 X 22 i-cstrin.ads
-48K22*Strings 171e25 24|6w19 20r21
-65P9*chars_ptr 24|50r15 51r15 52r15 53r15 54r15 55r15 57r15 58r15 160r19
-. 355r21 356r21
-86V13*New_String{65P9} 24|50s28 51s28 52s28 53s28 54s28 55s28 57s28 58s28
-. 160s32 369s22 370s22
-92U14*Free 24|165s7 373s10 374s10 569s4 570s4 571s4 572s4 573s4 574s4 575s4
-. 576s4
+48K22*Strings 171e25 24|7w19 21r21
+65P9*chars_ptr 24|88r15 89r15 90r15 91r15 92r15 93r15 94r15 95r15 96r15 97r15
+. 98r15 99r15 101r15 102r15 104r15 105r15 106r15 107r15 108r15 110r19 111r19
+. 322r19 527r21 528r21
+86V13*New_String{65P9} 24|88s28 89s28 90s28 91s28 92s28 93s28 94s28 95s28
+. 96s28 97s28 98s28 99s28 101s28 102s28 104s28 105s28 106s28 107s28 108s28
+. 110s32 111s32 322s32 531s25 532s25 537s28 538s28
+92U14*Free 24|327s7 543s10 544s10 733s4 734s4 735s4 736s4 737s4 738s4 739s4
+. 740s4 741s4 742s4 743s4 744s4 745s4 746s4 747s4 748s4 749s4 750s4 751s4
+. 752s4 753s4
 X 24 smc_daemon.adb
-15U11*Smc_Daemon 15b11 585l5 585t15
-25V13*Get_EUID{21|62I9} 26b<c,geteuid>22 186s7
-29P9 Signal_Handler_T 29>47 30r26 32r44 32r69 179r18 180r18
-29i47 Sig{21|62I9}
-32V13*C_Signal{29P9} 32>23 32>34 33b<c,signal>22 192s18 193s19
-32i23 Sig{21|62I9}
-32p34 Handler{29P9}
-36U14 Handle_Signal 36>29 37r26 39b14 43l8 43t21 192r31 193r33
-36i29 Sig{21|62I9} 39b29 41r64
-46m4 Conn{27|5M12} 164r36 202m35 202r35 255r33 256r33 371r39 372r39 378r31
-. 379r31 560r33 561r33 565r36
-47i4 Res{21|62I9} 202m4 203r7 204r90 255m4 256m4 371m10 372m10 378m7 379m7
-. 560m4 561m4 565m4
-50p4 Key_F0Tg{22|65P9} 371r45 569m10 569r10
-51p4 Key_F1Tg{22|65P9} 372r45 570m10 570r10
-52p4 Key_F0Md{22|65P9} 255r39 560r39 571m10 571r10
-53p4 Key_F1Md{22|65P9} 256r39 561r39 572m10 572r10
-54p4 Key_F0Ac{22|65P9} 378r37 573m10 573r10
-55p4 Key_F1Ac{22|65P9} 379r37 574m10 574r10
-57p4 Hex_01{22|65P9} 255r49 256r49 575m10 575r10
-58p4 Hex_00{22|65P9} 560r49 561r49 576m10 576r10
-61f4 Current_Temp{float} 304m7 309r27 323r65 479r32 491r20
-62f4 Prev_Temp{float} 308r10 309r42 491m7
-63f4 Temp_Gradient{float} 309m10 311m10 329r37 485r32
-65f4 Power{float} 302m7 302r52 324r59 467r42 482r32
-66i4 Battery_Percent{integer} 305m7 325r38 326r38
-68f4 F0Ac_Val{21|101F9} 378m47 378r47 424r54 469r48 486r39
-69f4 F1Ac_Val{21|101F9} 379m47 379r47 470r48 486r58
-71f4 Target_RPM{28|3F12} 347m7 348r27 349m10 357r50 484r36
-72f4 CPU_GPU_Target{28|3F12} 322m10 347r21
-73f4 Battery_Target{28|3F12} 342m29 348r10 349r24
-75r4 PID_Loop_State{28|21R9} 339m29 339r29
-78f4 Last_TCMZ_Temp{float} 275m7 275r61 304r23 457r42
-79f4 Last_GPU_Temp{float} 276m7 276r61 458r42 480r32
-80f4 Last_TaLP_Temp{float} 277m7 277r61 459r42
-81f4 Last_TaRF_Temp{float} 278m7 278r61 460r42
-82f4 Last_TaLT_Temp{float} 279m7 279r61 461r42
-83f4 Last_TaLW_Temp{float} 280m7 280r61 462r42
-84f4 Last_TaRT_Temp{float} 281m7 281r61 463r42
-85f4 Last_TaRW_Temp{float} 282m7 282r61 464r42
-86f4 Last_Ts0P_Temp{float} 285m7 285r61 286r10 287m10 287r64 289r10 290m10
-. 290r64 465r42 481r41
-87f4 Last_Ts1P_Temp{float} 293m7 293r61 294r10 295m10 295r64 297r10 298m10
-. 298r64 466r42
-90i4 Last_Telemetry_Time{2|42I9} 474r18 475m10
-91o4 Loop_Start_Time{7|57O9} 272m7 495r69
-94i4 Prev_X{integer} 384r31 394m7
-94i12 Prev_Y{integer} 385r31 395m7
-94i20 Prev_Z{integer} 386r31 396m7
-95i4 CX{integer} 382m34 384r26 394r17
-95i8 CY{integer} 382m38 385r26 395r17
-95i12 CZ{integer} 382m42 386r26 396r17
-96b4 Prev_SMS_Valid{boolean} 383r31 397m7
-97b4 SMS_Success{boolean} 382m46 383r10 397r25
-98i4 Delta_X{integer} 384m10 388r52
-98i13 Delta_Y{integer} 385m10 388r62
-98i22 Delta_Z{integer} 386m10 388r72
-101f4 Calibrated_Pres_RPM{float} 260m36 261r7 262r93 435r19 436r37 437r40
-. 439r35 448m19
-102b4 Calibration_Active{boolean} 416m10 423r10 429m13
-103i4 Calibration_Start_Time{2|42I9} 417m10 428r21
-104f4 Calibration_Sum{float} 418m10 424m10 424r29 431r44
-105i4 Calibration_Count{natural} 419m10 425m10 425r31 431r69
-108i4 Python_Pid{36|759I9} 243m7 244r10
-109b4 Python_Spawned{boolean} 245m10 508r7 578r7
-110a4 Python_Args{36|749A12} 240m7 243r75 579m25 579r25
-113P9 Latency_Monitor_Access(25|21T14) 116r14
-114P9 Thermal_Suspender_Access(25|22T14) 117r14
-116p4 LM_Task{113P9} 197m4
-117p4 TS_Task{114P9} 198m4
-119U14 Run_Power_Command 123l8 123t25 410s13 554s7
-119a33 Args{36|749A12} 122r45
-120b7 Success{boolean} 122m51
-126V13 Get_Time_Str{string} 142l8 142t20 478s32
-128i7 Now{2|42I9} 135r14
-129i7 Year{2|48I12} 135m19
-130i7 Month{2|49I12} 135m25
-131i7 Day{2|50I12} 135m32
-132o7 Seconds{2|54O12} 135m37 136r24 137r24 138r23
-133i7 Hour{natural} 136m7 139r20
-133i13 Min{natural} 137m7 140r20
-133i18 Sec{natural} 138m7 141r20
-144V13 Get_Day_Str{string} 156l8 156t19 477s32
-146i7 Now{2|42I9} 152r14
-147i7 Year{2|48I12} 152m19 153r20
-148i7 Month{2|49I12} 152m25 154r20
-149i7 Day{2|50I12} 152m32 155r20
-150o7 Seconds{2|54O12} 152m37
-159V13 Read_And_Validate_SMC_Temp{float} 176l8 176t34 275s25 276s25 277s25
-. 278s25 279s25 280s25 281s25 282s25 285s25 287s28 290s28 293s25 295s28 298s28
-. 302s16 337s22
-159a41 Key{string} 160r44
-159f55 Last_Val{float} 175r14
-160p7 Key_Char{22|65P9} 164r42 165m13 165r13
-161f7 Val_Float{21|101F9} 164m52 164r52 168r44
-162i7 Read_Res{21|62I9} 164m7 166r10
-168f13 Val{float} 170r16 170r36 171r23
-179p4 Sig_ResINT{29P9} 192m4
-180p4 Sig_ResTERM{29P9} 193m4
-211b7 Success{boolean} 217m50
-212a7 Args{36|749A12} 214m7 215m7 216m7 217r44 218r16 218m50 218r50
-218i11 I{integer} 218r56
-224a7 Python_Path{string} 229r39 230r26 230r49 231r17
-225a7 Fall_Path{string} 232r42 233r26 233r47 234r17
-226a7 Exec_Path{string} 230m10 233m10 236m10 242r71 243r53
-227i7 Len{natural} 231m10 234m10 237m10 242r87 243r69
-316b10 Precool_Active{boolean} 319m40 328r69
-317i10 Time_Left{long_integer} 319m56
-335f10 TB0T_Val{float} 337m10 337r58 340r57
-355p10 F0Tg_Hex{22|65P9} 369m10 371r55 373m16 373r16
-356p10 F1Tg_Hex{22|65P9} 370m10 372r55 374m16 374r16
-357i10 RPM_Int{integer} 361r41
-361i10 Temp_Val{natural} 363r46 364r46 365r46 366r46
-362a10 Hex_Map{string} 363r37 364r37 365r37 366r37
-363e10 H1{character} 367r45
-364e10 H2{character} 367r50
-365e10 H3{character} 367r55
-366e10 H4{character} 367r60
-367a10 Hex_Str{string} 369r34 370r34
-406a13 Args{36|749A12} 408m13 409m13 410r32 411m31 411r31 412m31 412r31
-431f16 Avg_RPM{float} 436r27 437r62 440r35 448r42 449r51 450r107
-432f16 Diff{float} 436m19 441r35
-433f16 Est_HPa{float} 437m19 442r35 445r115
-495o10 Elapsed_Span{7|62O9} 498r13 499r46
-496o10 Target_Span{7|62O9} 498r28 499r32
-510b10 Success{boolean} 516m53
-511a10 Args{36|749A12} 513m10 514m10 515m10 516r47 517m28 517r28 518m28 518r28
-. 519m28 519r28
-526b7 Success{boolean} 531m50
-527a7 Args{36|749A12} 529m7 530m7 531r44 532m25 532r25 533m25 533r25
-537b7 Success{boolean} 543m50
-538a7 Args{36|749A12} 540m7 541m7 542m7 543r44 544r16 544m50 544r50
-544i11 I{integer} 544r56
-550a7 Args{36|749A12} 552m7 553m7 554r26 555m25 555r25 556m25 556r25
+16U11*Smc_Daemon 16b11 762l5 762t15
+26V13*Get_EUID{21|62I9} 27b<c,geteuid>22 348s7
+30P9 Signal_Handler_T 30>47 31r26 33r44 33r69 341r18 342r18
+30i47 Sig{21|62I9}
+33V13*C_Signal{30P9} 33>23 33>34 34b<c,signal>22 354s18 355s19
+33i23 Sig{21|62I9}
+33p34 Handler{30P9}
+37U14 Handle_Signal 37>29 38r26 40b14 44l8 44t21 354r31 355r33
+37i29 Sig{21|62I9} 40b29 42r64
+46V13 Float_To_Hex{string} 75l8 75t20 535s45
+46f27 Val{float} 59r30
+48V16 Float_To_Word[16|23]{20|92M9}
+48V16 Float_To_Word[16|23]{20|92M9} 59s15
+49m7 Word{20|92M9} 59m7 60r25 61r38 62r38 63r38
+50m7 B0{20|81M9} 60m7 65r47 66r34
+50m11 B1{20|81M9} 61m7 67r47 68r34
+50m15 B2{20|81M9} 62m7 69r47 70r34
+50m19 B3{20|81M9} 63m7 71r47 72r34
+51a7 Hex_Map{string} 56r17
+52a7 Result{string} 65m7 66m7 67m7 68m7 69m7 70m7 71m7 72m7 74r14
+54V16 To_Hex_Char{character} 57l11 57t22 65s21 66s21 67s21 68s21 69s21 70s21
+. 71s21 72s21
+54m29 V{20|81M9} 56r35
+84m4 Conn{27|5M12} 188r36 189r36 239r36 240r36 326r36 364m35 364r35 417r33
+. 418r33 419r33 420r33 422r33 423r33 424r33 425r33 429r33 430r33 541r39 542r39
+. 548r31 549r31 724r33 725r33 729r36
+85i4 Res{21|62I9} 188m7 189m7 239m7 240m7 364m4 365r7 366r90 417m4 418m4
+. 419m4 420m4 422m4 423m4 424m4 425m4 429m4 430m4 541m10 542m10 548m7 549m7
+. 724m4 725m4 729m4
+88p4 Key_F0Tg{22|65P9} 541r45 733m10 733r10
+89p4 Key_F1Tg{22|65P9} 542r45 734m10 734r10
+90p4 Key_F0Md{22|65P9} 417r39 724r39 735m10 735r10
+91p4 Key_F1Md{22|65P9} 422r39 725r39 736m10 736r10
+92p4 Key_F0Fb{22|65P9} 418r39 737m10 737r10
+93p4 Key_F1Fb{22|65P9} 423r39 738m10 738r10
+94p4 Key_F0Dc{22|65P9} 419r39 739m10 739r10
+95p4 Key_F1Dc{22|65P9} 424r39 740m10 740r10
+96p4 Key_F0St{22|65P9} 420r39 741m10 741r10
+97p4 Key_F1St{22|65P9} 425r39 742m10 742r10
+98p4 Key_F0Ac{22|65P9} 548r37 743m10 743r10
+99p4 Key_F1Ac{22|65P9} 549r37 744m10 744r10
+101p4 Key_aPMX{22|65P9} 188r42 239r42 429r39 745m10 745r10
+102p4 Key_mTPL{22|65P9} 189r42 240r42 430r39 746m10 746r10
+104p4 Hex_01{22|65P9} 188r52 417r49 422r49 747m10 747r10
+105p4 Hex_00{22|65P9} 239r52 429r49 724r49 725r49 748m10 748r10
+106p4 Hex_Fb{22|65P9} 418r49 423r49 749m10 749r10
+107p4 Hex_Dc{22|65P9} 419r49 424r49 750m10 750r10
+108p4 Hex_St{22|65P9} 420r49 425r49 751m10 751r10
+110p4 Hex_mTPL_On{22|65P9} 189r52 752m10 752r10
+111p4 Hex_mTPL_Off{22|65P9} 240r52 430r49 753m10 753r10
+114f4 Current_Temp{float} 477m7 482r27 496r65 643r32 655r20
+115f4 Prev_Temp{float} 481r10 482r42 655m7
+116f4 Temp_Gradient{float} 482m10 484m10 502r37 649r32
+118f4 Power{float} 475m7 475r52 497r59 571r74 579r16 580r63 631r42 646r32
+119i4 Battery_Percent{integer} 257r13 478m7 498r38 499r38
+121f4 F0Ac_Val{21|101F9} 548m47 548r47 588r54 633r48 650r39
+122f4 F1Ac_Val{21|101F9} 549m47 549r47 634r48 650r58
+124f4 Target_RPM{28|3F12} 520m7 521r27 522m10 530r13 535r66 648r36
+125f4 CPU_GPU_Target{28|3F12} 495m10 520r21
+126f4 Battery_Target{28|3F12} 515m29 521r10 522r24
+128r4 PID_Loop_State{28|21R9} 512m29 512r29
+131f4 Last_TCMZ_Temp{float} 448m7 448r61 477r23 571r13 575r13 576r62 621r42
+132f4 Last_GPU_Temp{float} 449m7 449r61 571r44 577r16 578r61 622r42 644r32
+133f4 Last_TaLP_Temp{float} 450m7 450r61 623r42
+134f4 Last_TaRF_Temp{float} 451m7 451r61 624r42
+135f4 Last_TaLT_Temp{float} 452m7 452r61 625r42
+136f4 Last_TaLW_Temp{float} 453m7 453r61 626r42
+137f4 Last_TaRT_Temp{float} 454m7 454r61 627r42
+138f4 Last_TaRW_Temp{float} 455m7 455r61 628r42
+139f4 Last_Ts0P_Temp{float} 458m7 458r61 459r10 460m10 460r64 462r10 463m10
+. 463r64 629r42 645r41
+140f4 Last_Ts1P_Temp{float} 466m7 466r61 467r10 468m10 468r64 470r10 471m10
+. 471r64 630r42
+143i4 Last_Telemetry_Time{2|42I9} 638r18 639m10
+144o4 Loop_Start_Time{7|57O9} 445m7 659r69
+147i4 Prev_X{integer} 554r31 564m7
+147i12 Prev_Y{integer} 555r31 565m7
+147i20 Prev_Z{integer} 556r31 566m7
+148i4 CX{integer} 552m34 554r26 564r17
+148i8 CY{integer} 552m38 555r26 565r17
+148i12 CZ{integer} 552m42 556r26 566r17
+149b4 Prev_SMS_Valid{boolean} 553r31 567m7
+150b4 SMS_Success{boolean} 552m46 553r10 567r25
+151i4 Delta_X{integer} 554m10 558r52
+151i13 Delta_Y{integer} 555m10 558r62
+151i22 Delta_Z{integer} 556m10 558r72
+154f4 Calibrated_Pres_RPM{float} 433m36 434r7 435r93 599r19 600r37 601r40
+. 603r35 612m19
+155b4 Calibration_Active{boolean} 220m7 587r10 593m13
+156i4 Calibration_Start_Time{2|42I9} 221m7 592r21
+157f4 Calibration_Sum{float} 222m7 588m10 588r29 595r44
+158i4 Calibration_Count{natural} 223m7 589m10 589r31 595r69
+161i4 Python_Pid{36|759I9} 405m7 406r10
+162b4 Python_Spawned{boolean} 407m10 672r7 755r7
+163a4 Python_Args{36|749A12} 402m7 405r75 756m25 756r25
+166P9 Latency_Monitor_Access(25|21T14) 169r14
+167P9 Thermal_Suspender_Access(25|22T14) 170r14
+169p4 LM_Task{166P9} 359m4
+170p4 TS_Task{167P9} 360m4
+172U14 Run_Power_Command 176l8 176t25 197s10 203s10 214s10 248s10 260s13
+. 266s13 272s13 278s13 718s7
+172a33 Args{36|749A12} 175r45
+173b7 Success{boolean} 175m51
+178U14 Activate_Turbo_Mode 226l8 226t27 576s13 578s13 580s13 582s13
+178a35 Reason{string} 185r92 225r65
+193a10 Args{36|749A12} 195m10 196m10 197r29 198m28 198r28 199m28 199r28 201m10
+. 202m10 203r29 204m28 204r28 205m28 205r28
+210a10 Args{36|749A12} 212m10 213m10 214r29 215m28 215r28 216m28 216r28
+228U14 Deactivate_Turbo_Mode 285l8 285t29 572s13
+228a37 Reason{string} 236r105
+244a10 Args{36|749A12} 246m10 247m10 248r29 249m28 249r28 250m28 250r28
+255a10 Args{36|749A12} 258m13 259m13 260r32 261m31 261r31 262m31 262r31 264m13
+. 265m13 266r32 267m31 267r31 268m31 268r31 270m13 271m13 272r32 273m31 273r31
+. 274m31 274r31 276m13 277m13 278r32 279m31 279r31 280m31 280r31
+288V13 Get_Time_Str{string} 304l8 304t20 642s32
+290i7 Now{2|42I9} 297r14
+291i7 Year{2|48I12} 297m19
+292i7 Month{2|49I12} 297m25
+293i7 Day{2|50I12} 297m32
+294o7 Seconds{2|54O12} 297m37 298r24 299r24 300r23
+295i7 Hour{natural} 298m7 301r20
+295i13 Min{natural} 299m7 302r20
+295i18 Sec{natural} 300m7 303r20
+306V13 Get_Day_Str{string} 318l8 318t19 641s32
+308i7 Now{2|42I9} 314r14
+309i7 Year{2|48I12} 314m19 315r20
+310i7 Month{2|49I12} 314m25 316r20
+311i7 Day{2|50I12} 314m32 317r20
+312o7 Seconds{2|54O12} 314m37
+321V13 Read_And_Validate_SMC_Temp{float} 338l8 338t34 448s25 449s25 450s25
+. 451s25 452s25 453s25 454s25 455s25 458s25 460s28 463s28 466s25 468s28 471s28
+. 475s16 510s22
+321a41 Key{string} 322r44
+321f55 Last_Val{float} 337r14
+322p7 Key_Char{22|65P9} 326r42 327m13 327r13
+323f7 Val_Float{21|101F9} 326m52 326r52 330r44
+324i7 Read_Res{21|62I9} 326m7 328r10
+330f13 Val{float} 332r16 332r36 333r23
+341p4 Sig_ResINT{30P9} 354m4
+342p4 Sig_ResTERM{30P9} 355m4
+373b7 Success{boolean} 379m50
+374a7 Args{36|749A12} 376m7 377m7 378m7 379r44 380r16 380m50 380r50
+380i11 I{integer} 380r56
+386a7 Python_Path{string} 391r39 392r26 392r49 393r17
+387a7 Fall_Path{string} 394r42 395r26 395r47 396r17
+388a7 Exec_Path{string} 392m10 395m10 398m10 404r71 405r53
+389i7 Len{natural} 393m10 396m10 399m10 404r87 405r69
+489b10 Precool_Active{boolean} 492m40 501r69
+490i10 Time_Left{long_integer} 492m56
+508f10 TB0T_Val{float} 510m10 510r58 513r57
+527p10 F0Tg_Hex{22|65P9} 531m13 537m16 541r55 543m16 543r16
+528p10 F1Tg_Hex{22|65P9} 532m13 538m16 542r55 544m16 544r16
+535a16 Hex_Str{string} 537r40 538r40
+595f16 Avg_RPM{float} 600r27 601r62 604r35 612r42 613r51 614r107
+596f16 Diff{float} 600m19 605r35
+597f16 Est_HPa{float} 601m19 606r35 609r115
+659o10 Elapsed_Span{7|62O9} 662r13 663r46
+660o10 Target_Span{7|62O9} 662r28 663r32
+674b10 Success{boolean} 680m53
+675a10 Args{36|749A12} 677m10 678m10 679m10 680r47 681m28 681r28 682m28 682r28
+. 683m28 683r28
+690b7 Success{boolean} 695m50
+691a7 Args{36|749A12} 693m7 694m7 695r44 696m25 696r25 697m25 697r25
+701b7 Success{boolean} 707m50
+702a7 Args{36|749A12} 704m7 705m7 706m7 707r44 708r16 708m50 708r50
+708i11 I{integer} 708r56
+714a7 Args{36|749A12} 716m7 717m7 718r26 719m25 719r25 720m25 720r25
+20F9 Source{float} 23r40[48]
+21M9 Target{20|92M9} 23r55[48]
 X 25 smc_daemon_state.ads
-1K9*SMC_Daemon_State 24|13w6 21r8 25|24e21
-4w14*Daemon_State 24|42r7 271r10 327r38 328r37 388r13 389r13 390r13 400r10
-. 400r52 401r10 471r38
-5U17 Request_Shutdown 24|42s20
-6V16 Should_Keep_Running{boolean} 24|271s23
-8U17 Set_Turbo 24|389s26 401s23
-9V16 Is_Turbo_Active{boolean} 24|328s50 388s26 400s65 471s51
-12U17 Reset_Spikes 24|390s26
-13V16 Get_Spike_Count{natural} 24|327s51 400s23
-21T14*Latency_Monitor_T 24|113r42 197r19
-22T14*Thermal_Suspender_T 24|114r44 198r19
+1K9*SMC_Daemon_State 24|14w6 22r8 25|24e21
+4w14*Daemon_State 24|43r7 180r10 184r7 230r14 234r7 235r7 444r10 500r38 501r37
+. 530r43 558r13 559r13 560r13 570r10 581r16 635r38
+5U17 Request_Shutdown 24|43s20
+6V16 Should_Keep_Running{boolean} 24|444s23
+8U17 Set_Turbo 24|184s20 234s20 559s26
+9V16 Is_Turbo_Active{boolean} 24|180s23 230s27 501s50 530s56 558s26 570s23
+. 635s51
+12U17 Reset_Spikes 24|235s20 560s26
+13V16 Get_Spike_Count{natural} 24|500s51 581s29
+21T14*Latency_Monitor_T 24|166r42 359r19
+22T14*Thermal_Suspender_T 24|167r44 360r19
 X 26 smc_files.ads
-1K9*SMC_Files 24|12w6 260r4 268r4 305r26 319r10 382r7 391r13 402r10 438r19
-. 449r19 457r7 458r7 459r7 460r7 461r7 462r7 463r7 464r7 465r7 466r7 467r7
-. 469r7 470r7 471r7 476r10 582r4 26|55e14
-14U14*Read_SMS_Values 24|382s17
-20V13*Get_Battery_Percent{integer} 24|305s36
-23U14*Log_Telemetry_CSV 24|476s20
-37U14*Check_Precool_Mode 24|319s20
-40U14*Notify_User 24|268s14 391s23 402s20 582s14
-43U14*Write_EARU_Temp 24|457s17 458s17 459s17 460s17 461s17 462s17 463s17
-. 464s17 465s17 466s17 467s17
-44U14*Write_EARU_Fan 24|469s17 470s17
-45U14*Write_EARU_Turbo 24|471s17
-48U14*Load_Fan_Calibration 24|260s14
-49U14*Save_Fan_Calibration 24|449s29
-50U14*Write_Pressure_Report 24|438s29
+1K9*SMC_Files 24|13w6 225r7 284r7 433r4 441r4 478r26 492r10 552r7 561r13
+. 602r19 613r19 621r7 622r7 623r7 624r7 625r7 626r7 627r7 628r7 629r7 630r7
+. 631r7 633r7 634r7 635r7 640r10 759r4 26|55e14
+14U14*Read_SMS_Values 24|552s17
+20V13*Get_Battery_Percent{integer} 24|478s36
+23U14*Log_Telemetry_CSV 24|640s20
+37U14*Check_Precool_Mode 24|492s20
+40U14*Notify_User 24|225s17 284s17 441s14 561s23 759s14
+43U14*Write_EARU_Temp 24|621s17 622s17 623s17 624s17 625s17 626s17 627s17
+. 628s17 629s17 630s17 631s17
+44U14*Write_EARU_Fan 24|633s17 634s17
+45U14*Write_EARU_Turbo 24|635s17
+48U14*Load_Fan_Calibration 24|433s14
+49U14*Save_Fan_Calibration 24|613s29
+50U14*Write_Pressure_Report 24|602s29
 X 27 smc_io.ads
-4K9*SMC_IO 24|10w6 46r11 164r19 202r11 255r11 256r11 371r17 372r17 378r14
-. 379r14 560r11 561r11 565r11 27|18e11
-5M12*IO_Connect_T{21|71M9} 24|46r18
-7V13*Open_Connection{21|62I9} 24|202s18
-10V13*Close_Connection{21|62I9} 24|565s18
-13V13*Read_Key{21|62I9} 24|164s26 378s21 379s21
-16V13*Write_Key_Hex{21|62I9} 24|255s18 256s18 371s24 372s24 560s18 561s18
+4K9*SMC_IO 24|11w6 84r11 188r14 189r14 239r14 240r14 326r19 364r11 417r11
+. 418r11 419r11 420r11 422r11 423r11 424r11 425r11 429r11 430r11 541r17 542r17
+. 548r14 549r14 724r11 725r11 729r11 27|18e11
+5M12*IO_Connect_T{21|71M9} 24|84r18
+7V13*Open_Connection{21|62I9} 24|364s18
+10V13*Close_Connection{21|62I9} 24|729s18
+13V13*Read_Key{21|62I9} 24|326s26 548s21 549s21
+16V13*Write_Key_Hex{21|62I9} 24|188s21 189s21 239s21 240s21 417s18 418s18
+. 419s18 420s18 422s18 423s18 424s18 425s18 429s18 430s18 541s24 542s24 724s18
+. 725s18
 X 28 smc_math.ads
-1K9*SMC_Math 24|11w6 71r23 72r23 73r23 75r23 322r28 323r37 324r37 338r10
-. 340r29 28|49e13
-3F12*RPM_Value{float} 24|71r32 72r32 73r32
-4F12*Temperature_Value{float} 24|323r46 340r38
-5F12*Power_Value{float} 24|324r46
-21R9*PID_State 24|75r32 28|25e14
-28V13*Compute_Target_RPM{3F12} 24|322s37
-39U14*Update_Battery_PID 24|338s19
+1K9*SMC_Math 24|12w6 124r23 125r23 126r23 128r23 495r28 496r37 497r37 511r10
+. 513r29 28|49e13
+3F12*RPM_Value{float} 24|124r32 125r32 126r32
+4F12*Temperature_Value{float} 24|496r46 513r38
+5F12*Power_Value{float} 24|497r46
+21R9*PID_State 24|128r32 28|25e14
+28V13*Compute_Target_RPM{3F12} 24|495s37
+39U14*Update_Battery_PID 24|511s19
 X 36 s-os_lib.ads
 71A12*String_List{45|52A9}<integer>
-457V13*Is_Regular_File{boolean} 24|229s22 232s25
-749A12*Argument_List{71A12}<integer> 24|110r34 119r52 212r29 406r32 511r32
-. 527r29 538r29 550r26
-759I9*Process_Id<integer> 24|22r25 108r34
-764i4*Invalid_Pid{759I9} 24|244r36
-805V13*Non_Blocking_Spawn{759I9} 24|243s33
-876U14*Spawn 24|122s19 217s19 516s22 531s19 543s19
-1070U14*OS_Exit 24|188s19 205s19
+457V13*Is_Regular_File{boolean} 24|391s22 394s25
+749A12*Argument_List{71A12}<integer> 24|163r34 172r52 193r29 210r29 244r29
+. 255r29 374r29 675r32 691r29 702r29 714r26
+759I9*Process_Id<integer> 24|23r25 161r34
+764i4*Invalid_Pid{759I9} 24|406r36
+805V13*Non_Blocking_Spawn{759I9} 24|405s33
+876U14*Spawn 24|175s19 379s19 680s22 695s19 707s19
+1070U14*OS_Exit 24|350s19 367s19
 X 42 s-stausa.ads
 207U14*Initialize 208i<c,__gnat_stack_usage_initialize>22
 272U14*Output_Results 276i<c,__gnat_stack_usage_output_results>22
 X 45 s-string.ads
 43P9*String_Access(string)
-47U14*Free[17|23] 24|218s44 411s25 412s25 517s22 518s22 519s22 532s19 533s19
-. 544s44 555s19 556s19 579s19
+47U14*Free[17|23] 24|198s22 199s22 204s22 205s22 215s22 216s22 249s22 250s22
+. 261s25 262s25 267s25 268s25 273s25 274s25 279s25 280s25 380s44 681s22 682s22
+. 683s22 696s19 697s19 708s44 719s19 720s19 756s19
 52A9*String_List(43P9)<integer>
 
 QQ SPARKVERSION FSF 15.0
@@ -382,9 +436,24 @@ GG EK_GLOBALS smc_daemon__c_signal local TRUE E_FUNCTION FALSE ORIGIN_FLOW 1 smc
 GG EK_DIRECT_CALLS smc_daemon__handle_signal 0
 GG EK_PROOF_DEPENDENCIES smc_daemon__handle_signal 0
 GG EK_GLOBALS smc_daemon__handle_signal local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 1 smc_daemon_state__daemon_state proper_output 0 refined_proof_in 0 refined_input 1 smc_daemon_state__daemon_state refined_output 0 calls_proof 0 calls 0 calls_conditional 2 ada___ada__text_io__put_line__2 smc_daemon_state__daemon_stateT__request_shutdown FALSE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_DIRECT_CALLS smc_daemon__float_to_hex__float_to_word 0
+GG EK_PROOF_DEPENDENCIES smc_daemon__float_to_hex__float_to_word 0
+GG EK_GLOBALS smc_daemon__float_to_hex__float_to_word local TRUE E_FUNCTION FALSE ORIGIN_FLOW 2 smc_daemon__float_to_hex smc_daemon proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 0 TRUE FALSE TRUE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_DIRECT_CALLS smc_daemon__float_to_hex__to_hex_char 0
+GG EK_PROOF_DEPENDENCIES smc_daemon__float_to_hex__to_hex_char 0
+GG EK_GLOBALS smc_daemon__float_to_hex__to_hex_char local TRUE E_FUNCTION FALSE ORIGIN_FLOW 2 smc_daemon__float_to_hex smc_daemon proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 0 TRUE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_DIRECT_CALLS smc_daemon__float_to_hex 0
+GG EK_PROOF_DEPENDENCIES smc_daemon__float_to_hex 0
+GG EK_GLOBALS smc_daemon__float_to_hex local TRUE E_FUNCTION FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 2 interfaces__shift_right interfaces__shift_right__3 TRUE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_daemon__run_power_command 0
 GG EK_PROOF_DEPENDENCIES smc_daemon__run_power_command 0
 GG EK_GLOBALS smc_daemon__run_power_command local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 1 ada___system__os_lib__spawn FALSE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_DIRECT_CALLS smc_daemon__activate_turbo_mode 0
+GG EK_PROOF_DEPENDENCIES smc_daemon__activate_turbo_mode 0
+GG EK_GLOBALS smc_daemon__activate_turbo_mode local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 11 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_01 smc_daemon__hex_mtpl_on smc_daemon__calibration_active smc_daemon__calibration_start_time smc_daemon__calibration_sum smc_daemon__calibration_count smc_daemon_state__daemon_state proper_output 5 smc_daemon__res smc_daemon__calibration_active smc_daemon__calibration_start_time smc_daemon__calibration_sum smc_daemon__calibration_count refined_proof_in 0 refined_input 11 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_01 smc_daemon__hex_mtpl_on smc_daemon__calibration_active smc_daemon__calibration_start_time smc_daemon__calibration_sum smc_daemon__calibration_count smc_daemon_state__daemon_state refined_output 5 smc_daemon__res smc_daemon__calibration_active smc_daemon__calibration_start_time smc_daemon__calibration_sum smc_daemon__calibration_count calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__put_line__2 ada___ada__calendar__clock ada___system__os_lib__spawn smc_io__write_key_hex smc_files__notify_user smc_daemon_state__daemon_stateT__set_turbo smc_daemon_state__daemon_stateT__is_turbo_active ada___system__strings__free FALSE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 10 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_01 smc_daemon__hex_mtpl_on smc_daemon__calibration_active smc_daemon__calibration_start_time smc_daemon__calibration_sum smc_daemon__calibration_count LOCKS 0
+GG EK_DIRECT_CALLS smc_daemon__deactivate_turbo_mode 0
+GG EK_PROOF_DEPENDENCIES smc_daemon__deactivate_turbo_mode 0
+GG EK_GLOBALS smc_daemon__deactivate_turbo_mode local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 8 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_00 smc_daemon__hex_mtpl_off smc_daemon__battery_percent smc_daemon_state__daemon_state proper_output 1 smc_daemon__res refined_proof_in 0 refined_input 8 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_00 smc_daemon__hex_mtpl_off smc_daemon__battery_percent smc_daemon_state__daemon_state refined_output 1 smc_daemon__res calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__put_line__2 ada___system__os_lib__spawn smc_io__write_key_hex smc_files__notify_user smc_daemon_state__daemon_stateT__set_turbo smc_daemon_state__daemon_stateT__is_turbo_active smc_daemon_state__daemon_stateT__reset_spikes ada___system__strings__free FALSE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 7 smc_daemon__conn smc_daemon__res smc_daemon__key_apmx smc_daemon__key_mtpl smc_daemon__hex_00 smc_daemon__hex_mtpl_off smc_daemon__battery_percent LOCKS 0
 GG EK_DIRECT_CALLS smc_daemon__get_time_str 0
 GG EK_PROOF_DEPENDENCIES smc_daemon__get_time_str 0
 GG EK_GLOBALS smc_daemon__get_time_str local TRUE E_FUNCTION FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 3 ada___ada__calendar__clock ada___ada__calendar__split ada___ada___ada__strings__fixed__trim TRUE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
@@ -396,7 +465,488 @@ GG EK_PROOF_DEPENDENCIES smc_daemon__read_and_validate_smc_temp 0
 GG EK_GLOBALS smc_daemon__read_and_validate_smc_temp local TRUE E_FUNCTION FALSE ORIGIN_FLOW 1 smc_daemon proper_proof_in 0 proper_input 1 smc_daemon__conn proper_output 0 refined_proof_in 0 refined_input 1 smc_daemon__conn refined_output 0 calls_proof 0 calls 0 calls_conditional 3 ada___ada___interfaces__c__strings__new_string ada___ada___interfaces__c__strings__free smc_io__read_key TRUE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 1 smc_daemon__conn LOCKS 0
 GG EK_DIRECT_CALLS smc_daemon 0
 GG EK_PROOF_DEPENDENCIES smc_daemon 0
-GG EK_GLOBALS smc_daemon local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 0 proper_proof_in 0 proper_input 1 smc_daemon_state__daemon_state proper_output 0 refined_proof_in 0 refined_input 1 smc_daemon_state__daemon_state refined_output 0 calls_proof 0 calls 0 calls_conditional 40 ada___ada__text_io__put_line__2 ada___ada__calendar__clock ada___ada__calendar__split ada___ada__calendar__time_of ada___ada__calendar__Osubtract__2 ada___ada__real_time__clock ada___ada__real_time__Osubtract__2 ada___ada__real_time__Osubtract__3 ada___ada__real_time__to_duration ada___ada__real_time__milliseconds ada___ada___ada__strings__fixed__trim ada___ada___interfaces__c__strings__new_string ada___ada___interfaces__c__strings__free ada___system__os_lib__is_regular_file ada___system__os_lib__non_blocking_spawn ada___system__os_lib__spawn ada___system__os_lib__os_exit smc_io__open_connection smc_io__close_connection smc_io__read_key smc_io__write_key_hex smc_math__compute_target_rpm smc_math__update_battery_pid smc_files__read_sms_values smc_files__get_battery_percent smc_files__log_telemetry_csv smc_files__check_precool_mode smc_files__notify_user smc_files__write_earu_temp smc_files__write_earu_fan smc_files__write_earu_turbo smc_files__load_fan_calibration smc_files__save_fan_calibration smc_files__write_pressure_report smc_daemon_state__daemon_stateT__should_keep_running smc_daemon_state__daemon_stateT__set_turbo smc_daemon_state__daemon_stateT__is_turbo_active smc_daemon_state__daemon_stateT__reset_spikes smc_daemon_state__daemon_stateT__get_spike_count ada___system__strings__free FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_daemon local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 0 proper_proof_in 0 proper_input 1 smc_daemon_state__daemon_state proper_output 0 refined_proof_in 0 refined_input 1 smc_daemon_state__daemon_state refined_output 0 calls_proof 0 calls 0 calls_conditional 42 ada___ada__text_io__put_line__2 interfaces__shift_right interfaces__shift_right__3 ada___ada__calendar__clock ada___ada__calendar__split ada___ada__calendar__time_of ada___ada__calendar__Osubtract__2 ada___ada__real_time__clock ada___ada__real_time__Osubtract__2 ada___ada__real_time__Osubtract__3 ada___ada__real_time__to_duration ada___ada__real_time__milliseconds ada___ada___ada__strings__fixed__trim ada___ada___interfaces__c__strings__new_string ada___ada___interfaces__c__strings__free ada___system__os_lib__is_regular_file ada___system__os_lib__non_blocking_spawn ada___system__os_lib__spawn ada___system__os_lib__os_exit smc_io__open_connection smc_io__close_connection smc_io__read_key smc_io__write_key_hex smc_math__compute_target_rpm smc_math__update_battery_pid smc_files__read_sms_values smc_files__get_battery_percent smc_files__log_telemetry_csv smc_files__check_precool_mode smc_files__notify_user smc_files__write_earu_temp smc_files__write_earu_fan smc_files__write_earu_turbo smc_files__load_fan_calibration smc_files__save_fan_calibration smc_files__write_pressure_report smc_daemon_state__daemon_stateT__should_keep_running smc_daemon_state__daemon_stateT__set_turbo smc_daemon_state__daemon_stateT__is_turbo_active smc_daemon_state__daemon_stateT__reset_spikes smc_daemon_state__daemon_stateT__get_spike_count ada___system__strings__free FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_set__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__file_length64 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__flush__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon_state__latency_monitor_t FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__fputs FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_tcb FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon_state__thermal_suspender_t FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__tasking__initialize FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__tasking__initialize_atcb FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__is_identity FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_tcb FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__free FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers TRUE FALSE FALSE FALSE FALSE ada___ada__strings
+GG EK_FLOW_SCOPE ada___system__os_lib__get_debuggable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_jmpbuf_address_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__get_executable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__set_jmpbuf_address_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__abort_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__get_object_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__overwrite__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__stream_element_arraySR FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__freopen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__get_target_debuggable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__11 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__clock FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__get_target_executable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__self FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__get_target_object_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_set__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_absolute_path FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_sec_stack_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oadd FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__set_sec_stack_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_directory FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__stream_element_arraySW FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__fseek FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_executable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_lock FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oadd__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_wide_put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_readable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_current_excep_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_regular_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__put_utf_8 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_unlock FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_sequence FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__tasking__number_of_entries FALSE FALSE FALSE FALSE TRUE ada___system__tasking PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__fseek64 FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_symbolic_link FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_stack_info_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_put_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_writable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_condattr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_read_accessible_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__new_line FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__null_set_address FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__ftell FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_write_accessible_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__delete FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Olt FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__current_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_condattr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_page_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions TRUE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__increase_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__ftell64 FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__find_token FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Ole FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__current_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__locate_exec_on_path FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__enter_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock__3 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__getenv FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__file_typePartial_DIC FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__complete_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__12 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Ogt FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__locate_regular_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__find_token FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__decrease_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__read_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__isatty FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oge FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__spark_proof_model FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__wide_exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__task_name_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__4 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__lseek FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_signal FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__value FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__wide_exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon_state__daemon_stateT FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oadd__3 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__lseek FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_page_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line__3 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__wide_wide_exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock__3 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__4 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_wait FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__3 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_left__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__normalize_pathname FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__save_library_occurrence FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__wide_wide_exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__malloc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__set_trim_leading_spaces FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line__4 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_ceiling FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_mapping FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__4 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__raise_exception FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_append FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_timedwait FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__put_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__is_nul_terminated__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__memcpy FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__yield FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Omultiply FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__trim_leading_spaces FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_read FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_message FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__create_tsd FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_priority FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__float_to_hex FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_read_write FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Omultiply__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__c_length_ghost__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_identity FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__float_to_hex__float_to_word FALSE FALSE FALSE TRUE ada___ada__unchecked_conversion TRUE smc_daemon__float_to_hex__float_to_wordGP1320 VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__memmove FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__read FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_information FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_setprotocol FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Odivide FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_left__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__get_priority FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__destroy_tsd FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__save_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__page_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__rename_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__save_occurrence__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_gnat_exception FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Odivide__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_setprioceiling FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__mktemp FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__put_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__monotonic_clock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__12 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_right__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_close_on_exec FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_jmpbuf_address_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__rt_resolution FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__float_to_hex__float_to_wordGP1320 TRUE FALSE FALSE FALSE TRUE smc_daemon__float_to_hex BODY_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__set_jmpbuf_address_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oabs FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__pclose FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__page_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__sleep FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__delete__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_left__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Olt__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__get_sec_stack_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__new_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__float_to_hex__to_hex_char FALSE FALSE FALSE FALSE TRUE smc_daemon__float_to_hex BODY_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_executable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__popen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__set_sec_stack_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__timed_sleep FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_file_last_modify_time_stamp FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Ole__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__eid_to_string FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__5 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_domain FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__string_to_eid FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_non_readable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_setschedparam FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Ogt__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_non_writable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__realloc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__timed_delay FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_readable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__Oge__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__find_token__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_writable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setscope FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__rewind FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name_simple FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__write FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__new_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_left__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__wakeup FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__to_duration FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__raise_exception_always FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__crtl__rmdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__find_token__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__to_time_span FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setinheritsched FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__copy_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_right__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__environment_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__nanoseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__chdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__skip_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__get_thread_id FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setschedpolicy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding TRUE FALSE FALSE FALSE FALSE ada___ada__strings
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_range FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__microseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__copy_time_stamps__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__mkdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__raise_from_controlled_operation FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__is_valid_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_init FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__register_foreign_thread FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__milliseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__create_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__sched_yield FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__5 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__lock_rts FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_allocate FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock_rts FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__setvbuf FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__create_new_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stack_guard FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__seconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_library_exception_if_any FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__skip_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_constants TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__os_lib__delete_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__current_state FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_free FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams TRUE FALSE FALSE FALSE FALSE interfaces
+GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence_always FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__minutes FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_false FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_mark FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__tmpnam FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__run_power_command FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_release FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_true FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_directory__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setdetachstate FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_get_max FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__suspend_until_true FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence_no_defer FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_executable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__split FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__tmpfile FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_readable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setstacksize FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__encoding FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_regular_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__triggered_by_abort FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__check_exit FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__ungetc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__real_time__time_of FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_symbolic_link__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_writable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__check_no_locks FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_create FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__unlink FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__locate_regular_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__suspend_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_append__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__new_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__open FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__6 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_read__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__resume_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__activate_turbo_mode FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_exit FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__afcb_allocate__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__open_read_write__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__from_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdin FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stop_all_tasks FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__afcb_close__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__close FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdout FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stop_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__stderr FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__rename_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_self FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__afcb_free__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__to_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__continue_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__read__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__read FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_setspecific FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_task_affinity FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__Oeq FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__raise_encoding_error FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__new_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__current_process_id FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__get_exception_machine_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__argument_string_to_list FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings TRUE FALSE FALSE FALSE FALSE ada___interfaces__c
+GG EK_FLOW_SCOPE ada___ada__text_io__write__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__write FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_getspecific FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__kill FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__feof FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__eo_to_string FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__kill_process_tree FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__skip_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__unchecked_conversion FALSE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__ferror FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__exceptions__string_to_eo FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__parameters TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__pthread_key_create FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__tasking TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__to_chars_ptr FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__skip_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__task_primitives TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__parameters__default_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__parameters__minimum_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__6 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__parameters__adjust_storage_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__new_char_array FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__tasking__self FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__fileno FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__4 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__standard_library TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__address_to_access_conversions TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE smc_daemon__deactivate_turbo_mode FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__eof_char FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__initialize_standard_files FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__normalize_arguments FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__new_string FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__pid_to_integer FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__spawn FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__io_exceptions TRUE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE ada___system__os_lib__spawn__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__free FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__spawn__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__secondary_stack__get_chunk_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_file FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams TRUE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE ada___system__secondary_stack__get_stack_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__spawn__4 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__fread FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__2 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__end_of_file__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__wait_process FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_col FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__fread__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__read FALSE FALSE FALSE FALSE TRUE ada___ada__streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_wait_process FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__3 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__write FALSE FALSE FALSE FALSE TRUE ada___ada__streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__errno FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__errno_message FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__read_sea FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr TRUE FALSE FALSE TRUE ada___system__address_to_access_conversions TRUE ada___system__stack_usage PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__4 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE ada___system__os_lib__getenv FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__streams__write_sea FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__7 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__os_abort FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements__Oadd FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__get_time_str FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements__Oadd__2 FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__strlen FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__os_exit FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__7 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__replace_slice FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__get_day_str FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements__Osubtract FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr__to_pointer FALSE FALSE FALSE FALSE TRUE ada___system__stack_usage__unsigned_32_addr VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__os_exit_default FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE system TRUE FALSE FALSE FALSE FALSE __standard
+GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__update FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_col__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements__Osubtract__2 FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr__to_address FALSE FALSE FALSE FALSE TRUE ada___system__stack_usage__unsigned_32_addr VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__read_and_validate_smc_temp FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method__2 FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__set_errno FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__is_nul_terminated__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__is_start_of_encoding FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__storage_elements__Omod FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_interface__errno FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__os_lib__setenv FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__fwrite FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__storage_elements__to_address FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c__c_length_ghost__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar TRUE FALSE FALSE FALSE FALSE ada
@@ -412,6 +962,7 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__Omultiply FALSE FALSE FALSE FA
 GG EK_FLOW_SCOPE ada___ada__calendar__clock FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io TRUE FALSE FALSE FALSE FALSE ada
 GG EK_PART_OF ada___ada__text_io__file_system 6 ada___ada__text_io__standard_in ada___ada__text_io__standard_out ada___ada__text_io__standard_err ada___ada__text_io__current_in ada___ada__text_io__current_out ada___ada__text_io__current_err
+GG EK_FLOW_SCOPE smc_daemon FALSE FALSE FALSE FALSE FALSE __standard
 GG EK_FLOW_SCOPE system__Olt FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__year FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__tasking__detect_blocking FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
@@ -423,6 +974,7 @@ GG EK_FLOW_SCOPE ada___ada__calendar__day FALSE FALSE FALSE FALSE TRUE ada___ada
 GG EK_FLOW_SCOPE system__Ogt FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__seconds FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE system__Oge FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
+GG EK_FLOW_SCOPE smc_daemon__get_euid FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__split FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__unlink FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__Omultiply__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
@@ -434,11 +986,13 @@ GG EK_FLOW_SCOPE ada___ada__calendar__time_of FALSE FALSE FALSE FALSE TRUE ada__
 GG EK_FLOW_SCOPE ada___system__strings TRUE FALSE FALSE FALSE FALSE system
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__set_binary_mode FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE gnat TRUE FALSE FALSE FALSE FALSE __standard
+GG EK_FLOW_SCOPE smc_daemon__c_signal FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__set_text_mode FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__tasking__to_task_id FALSE FALSE FALSE TRUE ada___ada__unchecked_conversion TRUE ada___system__tasking__to_task_idGP5635 VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__Oadd FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c TRUE FALSE FALSE FALSE FALSE interfaces
 GG EK_FLOW_SCOPE ada___system__stack_usage TRUE FALSE FALSE FALSE FALSE system
+GG EK_FLOW_SCOPE smc_daemon__handle_signal FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__Oadd__2 FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__col FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__strings__free__2 FALSE FALSE FALSE FALSE TRUE ada___system__strings VISIBLE_PART
@@ -657,15 +1211,15 @@ GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__2 FALSE FALSE FALSE 
 GG EK_FLOW_SCOPE smc_files__notify_user FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations TRUE FALSE FALSE FALSE FALSE ada___system__task_primitives
 GG EK_FLOW_SCOPE ada___ada__text_io__current_error FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__write_earu_temp FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__formatting_operations__time_of FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__formatting_operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__write_earu_temp FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__2 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__fflush FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_left FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__standard_input__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__write_earu_fan FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__write_earu_fan FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed TRUE FALSE FALSE FALSE FALSE ada___ada__strings
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__3 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_new_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
@@ -677,15 +1231,15 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__move FALSE FALSE FALSE FALSE T
 GG EK_FLOW_SCOPE ada___system__crtl__fgetc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c__to_c__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__3 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__is_in FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_interface__mprotect FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__is_in FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE smc_files__load_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_output_text_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_right FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__standard_error__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE smc_files__save_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__characters__latin_1 TRUE FALSE FALSE FALSE FALSE ada___ada__characters
 GG EK_FLOW_SCOPE ada___ada__text_io__put__3 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__characters__latin_1 TRUE FALSE FALSE FALSE FALSE ada___ada__characters
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__3 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__is_subset FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__current_input__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
@@ -695,8 +1249,8 @@ GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__3 FALSE FALSE FALSE 
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__match__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_interface__pthread_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__current_output__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__abort_defer_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__abort_defer_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_temp_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_interface__sigwait FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__soft_links__abort_undefer_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
@@ -706,21 +1260,21 @@ GG EK_FLOW_SCOPE smc_files__delete_file FALSE FALSE FALSE FALSE TRUE smc_files V
 GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__3 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__current_error__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__soft_links__check_abort_status_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__11 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_temp_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c__to_c__11 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__time_zones_operations TRUE FALSE FALSE FALSE TRUE ada___ada__calendar PRIVATE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__fopen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__task_lock_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__time_zones_operations__utc_time_offset FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__time_zones_operations VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__task_lock_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__soft_links__task_unlock_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__exit_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__flush FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__exit_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__4 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__task_termination_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__rotate_left FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_lib__create_temp_output_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__soft_links__task_termination_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE smc_daemon_state TRUE FALSE FALSE FALSE FALSE __standard
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_interface__pthread_kill FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__soft_links__adafinal_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__atcb_allocation TRUE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
@@ -735,8 +1289,8 @@ GG EK_FLOW_SCOPE ada___system__crtl__fputc FALSE FALSE FALSE FALSE TRUE ada___sy
 GG EK_FLOW_SCOPE ada___system__os_lib__file_length FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index_non_blank__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__4 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_right FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__put__4 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__rotate_right FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE smc_daemon_state__daemon_stateT__is_turbo_active FALSE FALSE FALSE FALSE TRUE smc_daemon_state__daemon_stateT VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__os_interface__pthread_sigmask FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__atcb_allocation__free_atcb FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations__atcb_allocation VISIBLE_PART
@@ -748,485 +1302,6 @@ GG EK_FLOW_SCOPE ada___ada__real_time TRUE FALSE FALSE FALSE FALSE ada
 GG EK_FLOW_SCOPE ada___system__crtl__fputwc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__4 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_set__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__file_length64 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__flush__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon_state__latency_monitor_t FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__fputs FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_tcb FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon_state__thermal_suspender_t FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__tasking__initialize FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__tasking__initialize_atcb FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__is_identity FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_tcb FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__free FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers TRUE FALSE FALSE FALSE FALSE ada___ada__strings
-GG EK_FLOW_SCOPE ada___system__os_lib__get_debuggable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_jmpbuf_address_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__get_executable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__set_jmpbuf_address_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__abort_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__get_object_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__overwrite__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__stream_element_arraySR FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__freopen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__get_target_debuggable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__11 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__clock FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__5 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__get_target_executable_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__self FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__get_target_object_suffix FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_set__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_absolute_path FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_sec_stack_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oadd FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__set_sec_stack_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_directory FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__stream_element_arraySW FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__fseek FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_executable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_lock FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oadd__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_wide_put FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_readable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_current_excep_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_regular_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__put_utf_8 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutex_unlock FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_sequence FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__tasking__number_of_entries FALSE FALSE FALSE FALSE TRUE ada___system__tasking PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__fseek64 FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_symbolic_link FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_stack_info_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__wide_put_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_writable_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_condattr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_read_accessible_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__new_line FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__null_set_address FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__ftell FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_write_accessible_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__delete FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Olt FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__current_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_condattr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_page_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions TRUE FALSE FALSE FALSE FALSE ada
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__increase_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__ftell64 FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__find_token FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__count__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Ole FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__current_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__locate_exec_on_path FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__enter_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__write_lock__3 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__getenv FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__file_typePartial_DIC FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__complete_master_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__12 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon FALSE FALSE FALSE FALSE FALSE __standard
-GG EK_FLOW_SCOPE ada___ada__real_time__Ogt FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__locate_regular_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__find_token FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__decrease_indent FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__read_lock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__isatty FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oge FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__spark_proof_model FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__wide_exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__task_name_nt FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__4 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__lseek FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_signal FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__value FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__wide_exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon_state__daemon_stateT FALSE FALSE FALSE FALSE TRUE smc_daemon_state VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oadd__3 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__lseek FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_page_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon__get_euid FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line__3 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__wide_wide_exception_name FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock__3 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__4 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_wait FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__3 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_left__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__normalize_pathname FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__save_library_occurrence FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__wide_wide_exception_name__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__malloc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__set_trim_leading_spaces FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line__4 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_ceiling FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_mapping FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Osubtract__4 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon__c_signal FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__raise_exception FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_append FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_cond_timedwait FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__put_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__is_nul_terminated__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__memcpy FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__yield FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Omultiply FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__trim_leading_spaces FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_read FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_message FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon__handle_signal FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__create_tsd FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_priority FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_read_write FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Omultiply__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__c_length_ghost__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_identity FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__memmove FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__read FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_information FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_setprotocol FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Odivide FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_left__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__get_priority FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__destroy_tsd FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__save_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__page_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__rename_file FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__save_occurrence__2 FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_gnat_exception FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Odivide__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_mutexattr_setprioceiling FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__mktemp FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__put_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__monotonic_clock FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__12 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_right__4 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_close_on_exec FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_jmpbuf_address_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__rt_resolution FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__set_jmpbuf_address_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oabs FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__pclose FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__page_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__sleep FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__delete__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_left__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Olt__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__get_sec_stack_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__new_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_executable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__popen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__soft_links__set_sec_stack_soft FALSE FALSE FALSE FALSE TRUE ada___system__soft_links VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__timed_sleep FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_file_last_modify_time_stamp FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Ole__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__eid_to_string FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE smc_daemon__run_power_command FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__5 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_domain FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__string_to_eid FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_non_readable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_setschedparam FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Ogt__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_non_writable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__realloc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__timed_delay FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_readable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__Oge__2 FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__find_token__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_writable FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setscope FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__rewind FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__exception_name_simple FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__write FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__new_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_left__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__wakeup FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__to_duration FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__raise_exception_always FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___system__crtl__rmdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__find_token__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__to_time_span FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setinheritsched FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__copy_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__rotate_right__5 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__environment_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__nanoseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__chdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__skip_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__get_thread_id FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon__get_time_str FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setschedpolicy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding TRUE FALSE FALSE FALSE FALSE ada___ada__strings
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_range FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__microseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__copy_time_stamps__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__mkdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__raise_from_controlled_operation FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__is_valid_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_init FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE smc_daemon__get_day_str FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__register_foreign_thread FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__milliseconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__create_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__sched_yield FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__5 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__lock_rts FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_allocate FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_init FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__unlock_rts FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__setvbuf FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__create_new_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stack_guard FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__seconds FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_library_exception_if_any FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__skip_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_constants TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE smc_daemon__read_and_validate_smc_temp FALSE FALSE FALSE FALSE TRUE smc_daemon BODY_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__delete_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__current_state FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_destroy FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_free FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams TRUE FALSE FALSE FALSE FALSE interfaces
-GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence_always FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__minutes FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_false FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__file_time_stamp__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_mark FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__tmpnam FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_release FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_true FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_directory__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setdetachstate FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__ss_get_max FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__suspend_until_true FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__reraise_occurrence_no_defer FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_executable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__initialize__2 FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__split FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__tmpfile FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_readable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__finalize FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_attr_setstacksize FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__encoding FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_regular_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__triggered_by_abort FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__check_exit FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__ungetc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__real_time__time_of FALSE FALSE FALSE FALSE TRUE ada___ada__real_time VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_symbolic_link__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__is_owner_writable_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__check_no_locks FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_create FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__unlink FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__locate_regular_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__suspend_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_append__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__new_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__open FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__6 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_read__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__resume_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_exit FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__afcb_allocate__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__open_read_write__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__from_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdin FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stop_all_tasks FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__afcb_close__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__close FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdout FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__stop_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__stderr FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__rename_file__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_self FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__afcb_free__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__to_utf_16 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__continue_task FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__read__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__read FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_setspecific FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___system__task_primitives__operations__set_task_affinity FALSE FALSE FALSE FALSE TRUE ada___ada___system__task_primitives__operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__Oeq FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__raise_encoding_error FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__new_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__current_process_id FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__get_exception_machine_occurrence FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__argument_string_to_list FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings TRUE FALSE FALSE FALSE FALSE ada___interfaces__c
-GG EK_FLOW_SCOPE ada___ada__text_io__write__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__write FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_getspecific FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__kill FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__feof FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__eo_to_string FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__kill_process_tree FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__skip_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__unchecked_conversion FALSE FALSE FALSE FALSE FALSE ada
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__ferror FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__exceptions__string_to_eo FALSE FALSE FALSE FALSE TRUE ada___ada__exceptions PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__parameters TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__pthread_key_create FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__tasking TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__to_chars_ptr FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__skip_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__task_primitives TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___system__parameters__default_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__parameters__minimum_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__6 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__parameters__adjust_storage_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__new_char_array FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__tasking__self FALSE FALSE FALSE FALSE TRUE ada___system__tasking VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__fileno FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_spawn__4 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__standard_library TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___system__address_to_access_conversions TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___ada__text_io__eof_char FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__initialize_standard_files FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__normalize_arguments FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__new_string FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__pid_to_integer FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__spawn FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__io_exceptions TRUE FALSE FALSE FALSE FALSE ada
-GG EK_FLOW_SCOPE ada___system__os_lib__spawn__2 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_page__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__free FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__spawn__3 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__secondary_stack__get_chunk_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_file FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams TRUE FALSE FALSE FALSE FALSE ada
-GG EK_FLOW_SCOPE ada___system__secondary_stack__get_stack_info FALSE FALSE FALSE FALSE TRUE ada___system__secondary_stack PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__spawn__4 FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__2 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__fread FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__end_of_file__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__wait_process FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_col FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__fread__2 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__read FALSE FALSE FALSE FALSE TRUE ada___ada__streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__non_blocking_wait_process FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__3 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__write FALSE FALSE FALSE FALSE TRUE ada___ada__streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__errno FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__errno_message FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__read_sea FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr TRUE FALSE FALSE TRUE ada___system__address_to_access_conversions TRUE ada___system__stack_usage PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__value__4 FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface TRUE FALSE FALSE FALSE FALSE system
-GG EK_FLOW_SCOPE ada___system__os_lib__getenv FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_c__7 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__streams__write_sea FALSE FALSE FALSE FALSE TRUE ada___ada__streams PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__os_abort FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements__Oadd FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements__Oadd__2 FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__strlen FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__os_exit FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__to_ada__7 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__replace_slice FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements__Osubtract FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr__to_pointer FALSE FALSE FALSE FALSE TRUE ada___system__stack_usage__unsigned_32_addr VISIBLE_PART
-GG EK_FLOW_SCOPE system TRUE FALSE FALSE FALSE FALSE __standard
-GG EK_FLOW_SCOPE ada___system__os_lib__os_exit_default FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___interfaces__c__strings__update FALSE FALSE FALSE FALSE TRUE ada___ada___interfaces__c__strings VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_col__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements__Osubtract__2 FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__stack_usage__unsigned_32_addr__to_address FALSE FALSE FALSE FALSE TRUE ada___system__stack_usage__unsigned_32_addr VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method__2 FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__set_errno FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c__is_nul_terminated__3 FALSE FALSE FALSE FALSE TRUE ada___interfaces__c VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__is_start_of_encoding FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__storage_elements__Omod FALSE FALSE FALSE FALSE TRUE ada___system__storage_elements VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_interface__errno FALSE FALSE FALSE FALSE TRUE ada___system__os_interface VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__os_lib__setenv FALSE FALSE FALSE FALSE TRUE ada___system__os_lib VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__fwrite FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_VOLATILES AR 1 smc_daemon_state__daemon_state AW 1 smc_daemon_state__daemon_state ER 0 EW 0
 GG EK_SYNCHRONIZED 1 smc_daemon_state__daemon_state
 GG EK_END_MARKER

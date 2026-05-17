@@ -33,20 +33,21 @@ Detailed analysis report
 
 Analyzed 5 units
 in unit smc_daemon, 0 subprograms and packages out of 1 analyzed
-  Smc_Daemon at smc_daemon.adb:15 skipped; SPARK_Mode => Off
+  Smc_Daemon at smc_daemon.adb:16 skipped; SPARK_Mode => Off
 in unit smc_daemon_state, 0 subprograms and packages out of 0 analyzed
-in unit smc_files, 0 subprograms and packages out of 17 analyzed
+in unit smc_files, 0 subprograms and packages out of 18 analyzed
   SMC_Files.Check_Load_Avg_Status at smc_files.ads:17 skipped; SPARK_Mode => Off
   SMC_Files.Check_Precool_Mode at smc_files.ads:37 skipped; SPARK_Mode => Off
   SMC_Files.Delete_File at smc_files.ads:53 skipped; SPARK_Mode => Off
+  SMC_Files.Ensure_Directory_Exists at smc_files.adb:9 skipped; SPARK_Mode => Off
   SMC_Files.Get_Battery_Percent at smc_files.ads:20 skipped; SPARK_Mode => Off
-  SMC_Files.Get_Unix_Time at smc_files.adb:116 skipped; SPARK_Mode => Off
+  SMC_Files.Get_Unix_Time at smc_files.adb:132 skipped; SPARK_Mode => Off
   SMC_Files.Load_Fan_Calibration at smc_files.ads:48 skipped; SPARK_Mode => Off
   SMC_Files.Log_Telemetry_CSV at smc_files.ads:23 skipped; SPARK_Mode => Off
   SMC_Files.Notify_User at smc_files.ads:40 skipped; SPARK_Mode => Off
-  SMC_Files.Parse_Float_After at smc_files.adb:61 skipped; SPARK_Mode => Off
-  SMC_Files.Parse_Int_After at smc_files.adb:89 skipped; SPARK_Mode => Off
-  SMC_Files.Read_File_Content at smc_files.adb:12 skipped; SPARK_Mode => Off
+  SMC_Files.Parse_Float_After at smc_files.adb:77 skipped; SPARK_Mode => Off
+  SMC_Files.Parse_Int_After at smc_files.adb:105 skipped; SPARK_Mode => Off
+  SMC_Files.Read_File_Content at smc_files.adb:28 skipped; SPARK_Mode => Off
   SMC_Files.Read_SMS_Values at smc_files.ads:14 skipped; SPARK_Mode => Off
   SMC_Files.Save_Fan_Calibration at smc_files.ads:49 skipped; SPARK_Mode => Off
   SMC_Files.Write_EARU_Fan at smc_files.ads:44 skipped; SPARK_Mode => Off

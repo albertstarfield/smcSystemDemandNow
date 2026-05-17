@@ -48,38 +48,47 @@
       ]
     },
     " 14": {
-      "name": "SMC_Files.Read_File_Content",
+      "name": "SMC_Files.Ensure_Directory_Exists",
       "sloc": [
         {
           "file": "smc_files.adb",
-          "line": 12
+          "line": 9
         }
       ]
     },
     " 15": {
-      "name": "SMC_Files.Parse_Float_After",
+      "name": "SMC_Files.Read_File_Content",
       "sloc": [
         {
           "file": "smc_files.adb",
-          "line": 61
+          "line": 28
         }
       ]
     },
     " 16": {
-      "name": "SMC_Files.Parse_Int_After",
+      "name": "SMC_Files.Parse_Float_After",
       "sloc": [
         {
           "file": "smc_files.adb",
-          "line": 89
+          "line": 77
         }
       ]
     },
     " 17": {
+      "name": "SMC_Files.Parse_Int_After",
+      "sloc": [
+        {
+          "file": "smc_files.adb",
+          "line": 105
+        }
+      ]
+    },
+    " 18": {
       "name": "SMC_Files.Get_Unix_Time",
       "sloc": [
         {
           "file": "smc_files.adb",
-          "line": 116
+          "line": 132
         }
       ]
     },
@@ -177,6 +186,7 @@
     " 15": "no",
     " 16": "no",
     " 17": "no",
+    " 18": "no",
     " 2": "no",
     " 3": "no",
     " 4": "no",
@@ -189,64 +199,67 @@
   "stop_reason": "STOP_REASON_NONE",
   "timings": {
     " 1": {
-      "gnat2why.vc_generation": 2.87399999797344E-03
+      "gnat2why.vc_generation": 1.04109998792410E-02
     },
     " 10": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 11": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 12": {
-      "gnat2why.vc_generation": 3.99999998990097E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 13": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 9.00000031833770E-06
     },
     " 14": {
-      "gnat2why.vc_generation": 3.00000010611257E-06
+      "gnat2why.vc_generation": 9.00000031833770E-06
     },
     " 15": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 16": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 4.99999987368938E-06
     },
     " 17": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 4.99999987368938E-06
+    },
+    " 18": {
+      "gnat2why.vc_generation": 9.00000031833770E-06
     },
     " 2": {
-      "gnat2why.vc_generation": 3.99999998990097E-06
+      "gnat2why.vc_generation": 1.20000004244503E-05
     },
     " 3": {
-      "gnat2why.vc_generation": 3.00000010611257E-06
+      "gnat2why.vc_generation": 1.20000004244503E-05
     },
     " 4": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 5": {
-      "gnat2why.vc_generation": 3.00000010611257E-06
+      "gnat2why.vc_generation": 9.00000031833770E-06
     },
     " 6": {
-      "gnat2why.vc_generation": 9.99999997475243E-07
+      "gnat2why.vc_generation": 4.99999987368938E-06
     },
     " 7": {
-      "gnat2why.vc_generation": 3.00000010611257E-06
+      "gnat2why.vc_generation": 7.99999997980194E-06
     },
     " 8": {
-      "gnat2why.vc_generation": 1.99999999495049E-06
+      "gnat2why.vc_generation": 1.20000004244503E-05
     },
     " 9": {
-      "gnat2why.vc_generation": 3.99999998990097E-06
+      "gnat2why.vc_generation": 7.00000009601354E-06
     },
     "global": {
-      "flow analysis": 6.50000001769513E-05,
-      "globals (advanced)": 8.56599956750870E-03,
-      "globals (basic)": 8.38899984955788E-03,
-      "init_why_sections": 2.20999994780868E-04,
-      "marking": 4.25000005634502E-04,
-      "properties (advanced)": 3.09999995806720E-05,
-      "translation of standard": 1.06399995274842E-03
+      "flow analysis": 5.87999995332211E-04,
+      "globals (advanced)": 2.72589996457100E-02,
+      "globals (basic)": 4.39170002937317E-02,
+      "init_why_sections": 1.21400004718453E-03,
+      "marking": 1.75299996044487E-03,
+      "properties (advanced)": 8.60000000102445E-05,
+      "translation of standard": 3.22799989953637E-03
     }
   }
 }

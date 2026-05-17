@@ -1,0 +1,33 @@
+[01m[Ksmc_math.adb:16:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "Target_RPM" proved
+[01m[Ksmc_math.adb:17:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "T" proved
+[01m[Ksmc_math.adb:31:20: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.adb:41:32: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:41:61: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:41:61: [m[K[01;36m[Kinfo: [m[Kdivision check proved
+[01m[Ksmc_math.adb:47:46: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:47:51: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:64:17: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.adb:80:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "Error" proved
+[01m[Ksmc_math.adb:81:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "P" proved
+[01m[Ksmc_math.adb:81:10: [m[K[01;36m[Kinfo: [m[Kinitialization of "I" proved
+[01m[Ksmc_math.adb:81:13: [m[K[01;36m[Kinfo: [m[Kinitialization of "D" proved
+[01m[Ksmc_math.adb:82:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "Derived_Error" proved
+[01m[Ksmc_math.adb:83:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "Temp_Output" proved
+[01m[Ksmc_math.adb:89:31: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.adb:93:29: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:96:19: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:99:40: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:99:49: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:106:19: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:109:31: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:109:51: [m[K[01;36m[Kinfo: [m[Kdivision check proved
+[01m[Ksmc_math.adb:109:51: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:110:19: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:112:24: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:112:28: [m[K[01;36m[Kinfo: [m[Kfloat overflow check proved
+[01m[Ksmc_math.adb:116:20: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.adb:118:20: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.adb:120:20: [m[K[01;36m[Kinfo: [m[Krange check proved
+[01m[Ksmc_math.ads:28:13: [m[K[01;36m[Kinfo: [m[Kimplicit aspect Always_Terminates on "Compute_Target_RPM" has been proved, subprogram will terminate
+[01m[Ksmc_math.ads:43:07: [m[K[01;36m[Kinfo: [m[Kinitialization of "Output" proved
+[01m[Ksmc_math.ads:47:14: [m[K[01;36m[Kinfo: [m[Kpostcondition proved

@@ -7,7 +7,7 @@
       "sloc": [
         {
           "file": "smc_daemon.adb",
-          "line": 15
+          "line": 16
         }
       ]
     }
@@ -29,16 +29,16 @@
   "stop_reason": "STOP_REASON_NONE",
   "timings": {
     " 1": {
-      "gnat2why.vc_generation": 9.54999995883554E-04
+      "gnat2why.vc_generation": 1.91300001461059E-03
     },
     "global": {
-      "flow analysis": 4.03000012738630E-04,
-      "globals (advanced)": 1.37639995664358E-02,
-      "globals (basic)": 3.19559983909130E-02,
-      "init_why_sections": 5.48999989405274E-04,
-      "marking": 1.58299994654953E-03,
-      "properties (advanced)": 3.30000002577435E-05,
-      "translation of standard": 2.28299992159009E-03
+      "flow analysis": 4.67000005301088E-04,
+      "globals (advanced)": 2.76640001684427E-02,
+      "globals (basic)": 4.83010001480579E-02,
+      "init_why_sections": 9.44999977946281E-04,
+      "marking": 2.60400003753603E-03,
+      "properties (advanced)": 5.99999984842725E-05,
+      "translation of standard": 3.72799998149276E-03
     }
   }
 }

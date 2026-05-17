@@ -1,378 +1,385 @@
 [
 {
+  "name": "Smc_Files.Ensure_Directory_Exists.B_1.Dir",
+  "location": "smc_files.adb:13:10",
+  "Size": "??",
+  "Alignment": 1
+}
+,
+{
   "name": "Smc_Files.Read_File_Content.File",
-  "location": "smc_files.adb:14:7",
+  "location": "smc_files.adb:30:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Files.Read_File_Content.B_2.B_4.Line",
-  "location": "smc_files.adb:32:16",
+  "name": "Smc_Files.Read_File_Content.B_3.B_5.Line",
+  "location": "smc_files.adb:48:16",
   "Size": "??",
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Parse_Float_After.Idx",
-  "location": "smc_files.adb:62:7",
+  "location": "smc_files.adb:78:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Parse_Float_After.End_Idx",
-  "location": "smc_files.adb:63:7",
+  "location": "smc_files.adb:79:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Parse_Int_After.Idx",
-  "location": "smc_files.adb:90:7",
+  "location": "smc_files.adb:106:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Parse_Int_After.End_Idx",
-  "location": "smc_files.adb:91:7",
+  "location": "smc_files.adb:107:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Get_Unix_Time.Epoch",
-  "location": "smc_files.adb:118:7",
+  "location": "smc_files.adb:134:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Content",
-  "location": "smc_files.adb:128:7",
+  "location": "smc_files.adb:144:7",
   "Size": 524288,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Length",
-  "location": "smc_files.adb:129:7",
+  "location": "smc_files.adb:145:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.File_Success",
-  "location": "smc_files.adb:130:7",
+  "location": "smc_files.adb:146:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Idx",
-  "location": "smc_files.adb:132:7",
+  "location": "smc_files.adb:148:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Temp_Idx",
-  "location": "smc_files.adb:132:12",
+  "location": "smc_files.adb:148:12",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Fx",
-  "location": "smc_files.adb:133:7",
+  "location": "smc_files.adb:149:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Fy",
-  "location": "smc_files.adb:133:11",
+  "location": "smc_files.adb:149:11",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Read_Sms_Values.Fz",
-  "location": "smc_files.adb:133:15",
+  "location": "smc_files.adb:149:15",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.Content",
-  "location": "smc_files.adb:170:7",
+  "location": "smc_files.adb:186:7",
   "Size": 524288,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.Length",
-  "location": "smc_files.adb:171:7",
+  "location": "smc_files.adb:187:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.File_Success",
-  "location": "smc_files.adb:172:7",
+  "location": "smc_files.adb:188:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.Idx",
-  "location": "smc_files.adb:174:7",
+  "location": "smc_files.adb:190:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.Comma_Idx",
-  "location": "smc_files.adb:174:12",
+  "location": "smc_files.adb:190:12",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.L1",
-  "location": "smc_files.adb:175:7",
+  "location": "smc_files.adb:191:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.L2",
-  "location": "smc_files.adb:175:11",
+  "location": "smc_files.adb:191:11",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Load_Avg_Status.L3",
-  "location": "smc_files.adb:175:15",
+  "location": "smc_files.adb:191:15",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Get_Battery_Percent.Content",
-  "location": "smc_files.adb:216:7",
+  "location": "smc_files.adb:232:7",
   "Size": 524288,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Get_Battery_Percent.Length",
-  "location": "smc_files.adb:217:7",
+  "location": "smc_files.adb:233:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Get_Battery_Percent.File_Success",
-  "location": "smc_files.adb:218:7",
+  "location": "smc_files.adb:234:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Get_Battery_Percent.Idx",
-  "location": "smc_files.adb:220:7",
+  "location": "smc_files.adb:236:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Log_Telemetry_Csv.File",
-  "location": "smc_files.adb:254:7",
+  "location": "smc_files.adb:270:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Log_Telemetry_Csv.Exists_Flag",
-  "location": "smc_files.adb:255:7",
+  "location": "smc_files.adb:271:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Check_Precool_Mode.Content",
-  "location": "smc_files.adb:301:7",
+  "location": "smc_files.adb:320:7",
   "Size": 8192,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Check_Precool_Mode.Length",
-  "location": "smc_files.adb:302:7",
+  "location": "smc_files.adb:321:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Precool_Mode.File_Success",
-  "location": "smc_files.adb:303:7",
+  "location": "smc_files.adb:322:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Check_Precool_Mode.Idx",
-  "location": "smc_files.adb:305:7",
+  "location": "smc_files.adb:324:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Check_Precool_Mode.Expiry",
-  "location": "smc_files.adb:306:7",
+  "location": "smc_files.adb:325:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Notify_User.File",
-  "location": "smc_files.adb:348:7",
+  "location": "smc_files.adb:367:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Line_Count",
-  "location": "smc_files.adb:349:7",
+  "location": "smc_files.adb:368:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Now",
-  "location": "smc_files.adb:352:7",
+  "location": "smc_files.adb:371:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Year",
-  "location": "smc_files.adb:353:7",
+  "location": "smc_files.adb:372:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Month",
-  "location": "smc_files.adb:354:7",
+  "location": "smc_files.adb:373:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Day",
-  "location": "smc_files.adb:355:7",
+  "location": "smc_files.adb:374:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Seconds",
-  "location": "smc_files.adb:356:7",
+  "location": "smc_files.adb:375:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Hour",
-  "location": "smc_files.adb:357:7",
+  "location": "smc_files.adb:376:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Min",
-  "location": "smc_files.adb:357:13",
+  "location": "smc_files.adb:376:13",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Files.Notify_User.Sec",
-  "location": "smc_files.adb:357:18",
+  "location": "smc_files.adb:376:18",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Files.Notify_User.B_11.B_13.Line",
-  "location": "smc_files.adb:364:19",
+  "name": "Smc_Files.Notify_User.B_12.B_14.Line",
+  "location": "smc_files.adb:386:19",
   "Size": "??",
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Temp.File",
-  "location": "smc_files.adb:411:7",
+  "location": "smc_files.adb:433:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Temp.Path",
-  "location": "smc_files.adb:412:7",
+  "location": "smc_files.adb:434:7",
   "Size": "??",
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Fan.File",
-  "location": "smc_files.adb:431:7",
+  "location": "smc_files.adb:456:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Fan.Path",
-  "location": "smc_files.adb:432:7",
+  "location": "smc_files.adb:457:7",
   "Size": "??",
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Turbo.File",
-  "location": "smc_files.adb:451:7",
+  "location": "smc_files.adb:478:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Write_Earu_Turbo.Path",
-  "location": "smc_files.adb:452:7",
+  "location": "smc_files.adb:479:7",
   "Size": 624,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Files.Load_Fan_Calibration.File",
-  "location": "smc_files.adb:470:7",
+  "location": "smc_files.adb:499:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Save_Fan_Calibration.File",
-  "location": "smc_files.adb:494:7",
+  "location": "smc_files.adb:523:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Files.Write_Pressure_Report.File",
-  "location": "smc_files.adb:513:7",
+  "location": "smc_files.adb:544:7",
   "Size": 64,
   "Alignment": 8
 }

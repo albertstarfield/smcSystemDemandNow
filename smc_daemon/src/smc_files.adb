@@ -5,6 +5,22 @@ with Ada.Strings.Fixed;
 
 package body SMC_Files is
 
+   -- Internal helper to dynamically reconstruct missing parent directories (self-healing)
+   procedure Ensure_Directory_Exists (Path : String) is
+      use Ada.Directories;
+   begin
+      declare
+         Dir : constant String := Containing_Directory (Path);
+      begin
+         if not Exists (Dir) then
+            Create_Path (Dir);
+         end if;
+      end;
+   exception
+      when others =>
+         null; -- Catch and yield gracefully if permissions block creation
+   end Ensure_Directory_Exists;
+
    -----------------------
    -- Read_File_Content --
    -----------------------
@@ -254,6 +270,9 @@ package body SMC_Files is
       File : File_Type;
       Exists_Flag : Boolean := False;
    begin
+      -- Self-heal telemetry directory if lost
+      Ensure_Directory_Exists (TELEMETRY_CSV);
+
       begin
          if Exists (TELEMETRY_CSV) then
             Exists_Flag := True;
@@ -325,7 +344,7 @@ package body SMC_Files is
          Time_Left := Expiry - Get_Unix_Time;
          if Time_Left > 0 then
             Active := True;
-         else
+          else
             -- Expired, clean it up
             Delete_File (PRECOOL_FLAG);
          end if;
@@ -356,6 +375,9 @@ package body SMC_Files is
       Seconds : Day_Duration;
       Hour, Min, Sec : Natural;
    begin
+      -- Self-heal notifications directory if lost
+      Ensure_Directory_Exists (NOTIFICATIONS_LOG);
+
       if Exists (NOTIFICATIONS_LOG) then
          begin
             Open (File, In_File, NOTIFICATIONS_LOG);
@@ -411,6 +433,9 @@ package body SMC_Files is
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_temp_" & Name & ".dat";
    begin
+      -- Self-heal EARU directory if lost (wait until it is restored or dynamically recreate it)
+      Ensure_Directory_Exists (Path);
+
       begin
          Create (File, Out_File, Path);
          Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
@@ -431,6 +456,8 @@ package body SMC_Files is
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_fan_" & Name & ".dat";
    begin
+      Ensure_Directory_Exists (Path);
+
       begin
          Create (File, Out_File, Path);
          Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
@@ -451,6 +478,8 @@ package body SMC_Files is
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_TURBO_MODE.dat";
    begin
+      Ensure_Directory_Exists (Path);
+
       begin
          Create (File, Out_File, Path);
          Put (File, Trim (Integer'Image (Active), Ada.Strings.Both));
@@ -493,6 +522,8 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       File : File_Type;
    begin
+      Ensure_Directory_Exists (CALIBRATION_FILE);
+
       begin
          Create (File, Out_File, CALIBRATION_FILE);
          Put (File, Trim (Float'Image (Calibrated_RPM), Ada.Strings.Both));
@@ -512,6 +543,8 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       File : File_Type;
    begin
+      Ensure_Directory_Exists (PRESSURE_REPORT_FILE);
+
       begin
          Create (File, Out_File, PRESSURE_REPORT_FILE);
          Put_Line (File, "REF_1006_RPM: " & Trim (Float'Image (Ref_RPM), Ada.Strings.Both));

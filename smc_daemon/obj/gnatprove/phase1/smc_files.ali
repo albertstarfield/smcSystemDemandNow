@@ -27,7 +27,7 @@ RV NO_IMPLEMENTATION_PRAGMAS
 RV NO_ELABORATION_CODE
 RV NO_OBSOLESCENT_FEATURES
 
-U smc_files%b		smc_files.adb		eda754b3 OO PK
+U smc_files%b		smc_files.adb		e487fee6 OO PK
 W ada%s			ada.ads			ada.ali
 W ada.calendar%s	a-calend.adb		a-calend.ali
 W ada.directories%s	a-direct.adb		a-direct.ali
@@ -58,7 +58,7 @@ D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
 D interfac.ads		20250419085653 9111f9c1 interfaces%s
 D i-cstrea.ads		20250419085653 ffd01b9d interfaces.c_streams%s
 D smc_files.ads		20260517110258 3a0ec24b smc_files%s
-D smc_files.adb		20260517110522 9c0fb495 smc_files%b
+D smc_files.adb		20260517115256 952f1ec0 smc_files%b
 D system.ads		20250419085653 70765b54 system%s
 D s-atocou.ads		20250419085653 dc18efc3 system.atomic_counters%s
 D s-crtl.ads		20250419085653 beb39b9e system.crtl%s
@@ -69,205 +69,212 @@ D s-unstyp.ads		20250419085653 fa2a7f59 system.unsigned_types%s
 D s-wchcon.ads		20250419085653 d9032363 system.wch_con%s
 G a Z
 X 1 ada.ads
-18K9*Ada 22e8 21|1r6 2r6 3r6 4r6 13r11 18r14 117r11 131r11 173r11 219r11
-. 251r11 252r11 253r11 279r51 280r50 281r56 282r47 283r59 284r53 285r55 286r54
-. 304r11 309r14 344r11 345r11 346r11 347r11 389r38 390r39 391r37 392r38 393r37
-. 394r37 409r11 410r11 416r46 429r11 430r11 436r46 449r11 450r11 456r51 469r11
-. 473r14 492r11 493r11 498r57 511r11 512r11 517r74 518r75 519r99 520r69 521r80
-. 535r10 536r10
+18K9*Ada 22e8 21|1r6 2r6 3r6 4r6 10r11 29r11 34r14 133r11 147r11 189r11 235r11
+. 267r11 268r11 269r11 298r51 299r50 300r56 301r47 302r59 303r53 304r55 305r54
+. 323r11 328r14 363r11 364r11 365r11 366r11 411r38 412r39 413r37 414r38 415r37
+. 416r37 431r11 432r11 441r46 454r11 455r11 463r46 476r11 477r11 485r51 498r11
+. 502r14 521r11 522r11 529r57 542r11 543r11 550r74 551r75 552r99 553r69 554r80
+. 568r10 569r10
 X 2 a-calend.ads
-36K13*Calendar 440e17 21|3w10 117r15 346r15
-42I9*Time<226I9> 21|118r24 352r22
-48I12*Year_Number{integer} 21|353r14
-49I12*Month_Number{integer} 21|354r15
-50I12*Day_Number{integer} 21|355r13
-54O12*Day_Duration{duration} 21|356r17
-56V13*Clock{42I9} 21|120s28 352s30
-72U14*Split 21|383s10
-83V13*Time_Of{42I9} 21|118s32
-112V14*"-"{duration} 21|120s34
+36K13*Calendar 440e17 21|3w10 133r15 365r15
+42I9*Time<226I9> 21|134r24 371r22
+48I12*Year_Number{integer} 21|372r14
+49I12*Month_Number{integer} 21|373r15
+50I12*Day_Number{integer} 21|374r13
+54O12*Day_Duration{duration} 21|375r17
+56V13*Clock{42I9} 21|136s28 371s30
+72U14*Split 21|405s10
+83V13*Time_Of{42I9} 21|134s32
+112V14*"-"{duration} 21|136s34
 226I9 Time_Rep<long_long_integer>
 X 5 a-direct.ads
-76K13*Directories 524e20 21|2w10 18r18 252r15 309r18 345r15 473r18 535r14
-. 536r14
-147U14*Delete_File 21|536s26
-154U14*Rename 21|261s16
+76K13*Directories 524e20 21|2w10 10r15 34r18 268r15 328r18 364r15 502r18
+. 568r14 569r14
+118U14*Create_Path 21|16s13
+147U14*Delete_File 21|569s26
+154U14*Rename 21|280s16
+251V13*Containing_Directory{string} 21|13s35
 307I9*File_Size<long_integer>
-310V13*Exists{boolean} 21|18s30 258s13 309s30 359s10 473s30 535s26
-321V13*Size{307I9} 21|260s16
+310V13*Exists{boolean} 21|15s17 34s30 277s13 328s30 381s10 502s30 568s26
+321V13*Size{307I9} 21|279s16
 X 9 a-string.ads
-16K13*Strings 35e16 21|4r10 131r15 173r15 219r15 253r15 279r55 280r54 281r60
-. 282r51 283r63 284r57 285r59 286r58 304r15 347r15 389r42 390r43 391r41 392r42
-. 393r41 394r41 410r15 416r50 430r15 436r50 450r15 456r55 493r15 498r61 512r15
-. 517r78 518r79 519r103 520r73 521r84
-33n37*Both{33E9} 21|279r63 280r62 281r68 282r59 283r71 284r65 285r67 286r66
-. 389r50 390r51 391r49 392r50 393r49 394r49 416r58 436r58 456r63 498r69 517r86
-. 518r87 519r111 520r81 521r92
+16K13*Strings 35e16 21|4r10 147r15 189r15 235r15 269r15 298r55 299r54 300r60
+. 301r51 302r63 303r57 304r59 305r58 323r15 366r15 411r42 412r43 413r41 414r42
+. 415r41 416r41 432r15 441r50 455r15 463r50 477r15 485r55 522r15 529r61 543r15
+. 550r78 551r79 552r103 553r73 554r84
+33n37*Both{33E9} 21|298r63 299r62 300r68 301r59 302r71 303r65 304r67 305r66
+. 411r50 412r51 413r49 414r50 415r49 416r49 441r58 463r58 485r63 529r69 550r86
+. 551r87 552r111 553r81 554r92
 X 10 a-strfix.ads
-49K21*Fixed 1390e22 21|4w18 131r23 173r23 219r23 253r23 304r23 347r23 410r23
-. 430r23 450r23 493r23 512r23
-252V13*Index{natural} 21|141s14 143s22 148s22 153s22 183s14 188s23 191s26
-. 227s14 322s14
-1133V13*Trim{string} 21|279s20 280s20 281s20 282s20 283s20 284s20 285s20
-. 286s20 389s20 390s20 391s20 392s20 393s20 394s20 416s21 436s21 456s21 498s21
-. 517s45 518s46 519s73 520s40 521s42
+49K21*Fixed 1390e22 21|4w18 147r23 189r23 235r23 269r23 323r23 366r23 432r23
+. 455r23 477r23 522r23 543r23
+252V13*Index{natural} 21|157s14 159s22 164s22 169s22 199s14 204s23 207s26
+. 243s14 341s14
+1133V13*Trim{string} 21|298s20 299s20 300s20 301s20 302s20 303s20 304s20
+. 305s20 411s20 412s20 413s20 414s20 415s20 416s20 441s21 463s21 485s21 529s21
+. 550s45 551s46 552s73 553s40 554s42
 X 16 a-textio.ads
-58K13*Text_IO 785e16 21|1w10 13r15 251r15 344r15 409r15 429r15 449r15 469r15
-. 492r15 511r15
-67P9*File_Type 21|14r14 254r14 348r14 411r14 431r14 451r14 470r14 494r14
-. 513r14
-69n23*In_File{69E9} 21|23r22 361r25 478r22
-69n32*Out_File{69E9} 21|274r27 378r27 415r24 435r24 455r24 497r24 516r24
-69n42*Append_File{69E9} 21|272r25 380r25
-99U14*Create 21|274s13 378s13 415s10 435s10 455s10 497s10 516s10
-115U14*Open 21|23s10 272s13 361s13 380s13 478s10
-131U14*Close 21|47s10 52s16 287s10 291s16 369s13 372s39 396s10 399s36 417s10
-. 420s36 437s10 440s36 457s10 460s36 480s10 483s36 499s10 502s36 522s10 525s36
-176V13*Is_Open{boolean} 21|51s16 290s16 372s19 399s16 420s16 440s16 460s16
-. 483s16 502s16 525s16
-341V13*End_Of_File{boolean} 21|30s20 362s23
-508U14*Put 21|416s10 436s10 456s10 498s10
-549V13*Get_Line{string} 21|32s42 364s45 479s41
-555U14*Put_Line 21|275s13 278s10 388s10 517s10 518s10 519s10 520s10 521s10
-565U14*Put_Line 21|401s7
+58K13*Text_IO 785e16 21|1w10 29r15 267r15 363r15 431r15 454r15 476r15 498r15
+. 521r15 542r15
+67P9*File_Type 21|30r14 270r14 367r14 433r14 456r14 478r14 499r14 523r14
+. 544r14
+69n23*In_File{69E9} 21|39r22 383r25 507r22
+69n32*Out_File{69E9} 21|293r27 400r27 440r24 462r24 484r24 528r24 549r24
+69n42*Append_File{69E9} 21|291r25 402r25
+99U14*Create 21|293s13 400s13 440s10 462s10 484s10 528s10 549s10
+115U14*Open 21|39s10 291s13 383s13 402s13 507s10
+131U14*Close 21|63s10 68s16 306s10 310s16 391s13 394s39 418s10 421s36 442s10
+. 445s36 464s10 467s36 486s10 489s36 509s10 512s36 530s10 533s36 555s10 558s36
+176V13*Is_Open{boolean} 21|67s16 309s16 394s19 421s16 445s16 467s16 489s16
+. 512s16 533s16 558s16
+341V13*End_Of_File{boolean} 21|46s20 384s23
+508U14*Put 21|441s10 463s10 485s10 529s10
+549V13*Get_Line{string} 21|48s42 386s45 508s41
+555U14*Put_Line 21|294s13 297s10 410s10 550s10 551s10 552s10 553s10 554s10
+565U14*Put_Line 21|423s7
 X 20 smc_files.ads
-1K9*SMC_Files 55l5 55e14 21|6b14 543l5 543t14
-4a4*TELEMETRY_CSV{string} 21|258r21 260r22 261r24 272r38 274r37
-5a4*PRECOOL_FLAG{string} 21|309r38 313r26 330r26
-6a4*EARU_DATA_FILE{string} 21|136r26 178r26 222r26
+1K9*SMC_Files 55l5 55e14 21|6b14 576l5 576t14
+4a4*TELEMETRY_CSV{string} 21|274r32 277r21 279r22 280r24 291r38 293r37
+5a4*PRECOOL_FLAG{string} 21|328r38 332r26 349r26
+6a4*EARU_DATA_FILE{string} 21|152r26 194r26 238r26
 7a4*SILENT_MODE_FLAG{string}
-8a4*CALIBRATION_FILE{string} 21|473r38 478r31 497r34
-10a4*PRESSURE_REPORT_FILE{string} 21|516r34
-11a4*NOTIFICATIONS_LOG{string} 21|359r18 361r34 378r37 380r38
-14U14*Read_SMS_Values 14<31 14<34 14<37 14<54 21|127b14 163l8 163t23
-14i31 X{integer} 21|127b31 135m7 158m10
-14i34 Y{integer} 21|127b34 135m15 159m10
-14i37 Z{integer} 21|127b37 135m23 160m10
-14b54 Success{boolean} 21|127b54 135m31 161m10
-17U14*Check_Load_Avg_Status 17<37 17<59 21|169b14 209l8 209t29
-17f37 Max_Load{float} 21|169b37 177m7 197m10 198r18 198m32 199r18 199m32
-. 201r13 203r16
-17i59 Status{integer} 21|169b59 177m24 202m13 204m13 206m13
-20V13*Get_Battery_Percent{integer} 21|215b13 233l8 233t27
+8a4*CALIBRATION_FILE{string} 21|502r38 507r31 525r32 528r34
+10a4*PRESSURE_REPORT_FILE{string} 21|546r32 549r34
+11a4*NOTIFICATIONS_LOG{string} 21|379r32 381r18 383r34 400r37 402r38
+14U14*Read_SMS_Values 14<31 14<34 14<37 14<54 21|143b14 179l8 179t23
+14i31 X{integer} 21|143b31 151m7 174m10
+14i34 Y{integer} 21|143b34 151m15 175m10
+14i37 Z{integer} 21|143b37 151m23 176m10
+14b54 Success{boolean} 21|143b54 151m31 177m10
+17U14*Check_Load_Avg_Status 17<37 17<59 21|185b14 225l8 225t29
+17f37 Max_Load{float} 21|185b37 193m7 213m10 214r18 214m32 215r18 215m32
+. 217r13 219r16
+17i59 Status{integer} 21|185b59 193m24 218m13 220m13 222m13
+20V13*Get_Battery_Percent{integer} 21|231b13 249l8 249t27
 23U14*Log_Telemetry_CSV 24>7 25>7 26>7 27>7 28>7 29>7 30>7 31>7 32>7 33>7
-. 21|239b14 294l8 294t25
-24a7 Day_Str{string} 21|240b7 278r26
-25a7 Time_Only{string} 21|241b7 278r42
-26f7 TCMZ_Temp{float} 21|242b7 279r39
-27f7 GPU_Temp{float} 21|243b7 280r39
-28i7 Battery_Temp{integer} 21|244b7 281r41
-29f7 Power{float} 21|245b7 282r39
-30i7 Manual_Takeover{integer} 21|246b7 283r41
-31i7 Overdrive{integer} 21|247b7 284r41
-32f7 Temp_Gradient{float} 21|248b7 285r39
-33f7 RPM_Gradient{float} 21|249b7 286r39
-37U14*Check_Precool_Mode 37<34 37<56 21|300b14 337l8 337t26
-37b34 Active{boolean} 21|300b34 308m7 316m10 327m13 334m10
-37i56 Time_Left{long_integer} 21|300b56 308m24 317m10 325m10 326r13 335m10
-40U14*Notify_User 40>27 40>34 21|343b14 402l8 402t19
-40a27 Title{string} 21|343b27 395r20 401r44
-40a34 Message{string} 21|343b34 395r35 401r59
-43U14*Write_EARU_Temp 43>31 43>46 21|408b14 422l8 422t23
-43a31 Name{string} 21|408b31 412r107
-43f46 Val{float} 21|408b46 416r40
-44U14*Write_EARU_Fan 44>30 44>45 21|428b14 442l8 442t22
-44a30 Name{string} 21|428b30 432r106
-44f45 Val{float} 21|428b45 436r40
-45U14*Write_EARU_Turbo 45>32 21|448b14 462l8 462t24
-45i32 Active{integer} 21|448b32 456r42
-48U14*Load_Fan_Calibration 48<36 21|468b14 485l8 485t28
-48f36 Calibrated_RPM{float} 21|468b36 472m7 479m10
-49U14*Save_Fan_Calibration 49>36 21|491b14 504l8 504t28
-49f36 Calibrated_RPM{float} 21|491b36 498r40
-50U14*Write_Pressure_Report 50>37 50>46 50>55 50>61 50>78 21|510b14 527l8
-. 527t29
-50f37 Ref_RPM{float} 21|510b37 517r64
-50f46 Cur_RPM{float} 21|510b46 518r65
-50f55 Diff{float} 21|510b55 519r41 519r92
-50f61 Est_HPa{float} 21|510b61 520r59
-50i78 Timestamp{long_integer} 21|510b78 521r68
-53U14*Delete_File 53>27 21|330s13 533b14 541l8 541t19
-53a27 Path{string} 21|533b27 535r34 536r39
+. 21|255b14 313l8 313t25
+24a7 Day_Str{string} 21|256b7 297r26
+25a7 Time_Only{string} 21|257b7 297r42
+26f7 TCMZ_Temp{float} 21|258b7 298r39
+27f7 GPU_Temp{float} 21|259b7 299r39
+28i7 Battery_Temp{integer} 21|260b7 300r41
+29f7 Power{float} 21|261b7 301r39
+30i7 Manual_Takeover{integer} 21|262b7 302r41
+31i7 Overdrive{integer} 21|263b7 303r41
+32f7 Temp_Gradient{float} 21|264b7 304r39
+33f7 RPM_Gradient{float} 21|265b7 305r39
+37U14*Check_Precool_Mode 37<34 37<56 21|319b14 356l8 356t26
+37b34 Active{boolean} 21|319b34 327m7 335m10 346m13 353m10
+37i56 Time_Left{long_integer} 21|319b56 327m24 336m10 344m10 345r13 354m10
+40U14*Notify_User 40>27 40>34 21|362b14 424l8 424t19
+40a27 Title{string} 21|362b27 417r20 423r44
+40a34 Message{string} 21|362b34 417r35 423r59
+43U14*Write_EARU_Temp 43>31 43>46 21|430b14 447l8 447t23
+43a31 Name{string} 21|430b31 434r107
+43f46 Val{float} 21|430b46 441r40
+44U14*Write_EARU_Fan 44>30 44>45 21|453b14 469l8 469t22
+44a30 Name{string} 21|453b30 457r106
+44f45 Val{float} 21|453b45 463r40
+45U14*Write_EARU_Turbo 45>32 21|475b14 491l8 491t24
+45i32 Active{integer} 21|475b32 485r42
+48U14*Load_Fan_Calibration 48<36 21|497b14 514l8 514t28
+48f36 Calibrated_RPM{float} 21|497b36 501m7 508m10
+49U14*Save_Fan_Calibration 49>36 21|520b14 535l8 535t28
+49f36 Calibrated_RPM{float} 21|520b36 529r40
+50U14*Write_Pressure_Report 50>37 50>46 50>55 50>61 50>78 21|541b14 560l8
+. 560t29
+50f37 Ref_RPM{float} 21|541b37 550r64
+50f46 Cur_RPM{float} 21|541b46 551r65
+50f55 Diff{float} 21|541b55 552r41 552r92
+50f61 Est_HPa{float} 21|541b61 553r59
+50i78 Timestamp{long_integer} 21|541b78 554r68
+53U14*Delete_File 53>27 21|349s13 566b14 574l8 574t19
+53a27 Path{string} 21|566b27 568r34 569r39
 X 21 smc_files.adb
-12U14 Read_File_Content 55l8 55t25 136s7 178s7 222s7 313s7
-12a33 Path{string} 18r38 23r31
-12a48 Content{string} 34r47 35m19 38m19
-12i70 Length{natural} 16m7 34r19 35r28 35r42 36m19 36r29 37m19 37r29 38r28
-12b92 Success{boolean} 17m7 48m10
-14p7 File{16|67P9} 23m16 23r16 30r33 32r52 47m17 47r17 51r25 52m23 52r23
-32a16 Line{string} 34r28 35r51 35r67 36r38
-61V13 Parse_Float_After{float} 83l8 83t25 145s19 150s19 155s19 186s16 190s19
-. 193s22
-61a32 Str{string} 66r20 66r39 66r63 66r87 66r111 66r135 71r24 71r43 71r71
-. 71r100 71r130 71r160 71r188 76r30
-61i46 Start_Pos{positive} 62r25
-61f68 Default{float} 78r17 82r17
-62i7 Idx{positive} 66r13 66r44 66r68 66r92 66r116 66r140 67m10 67r17 70r18
-. 75r20 76r35
-63i7 End_Idx{positive} 70m7 71r13 71r48 71r76 71r105 71r135 71r165 71r193
-. 72m10 72r21 75r10 76r42
-89V13 Parse_Int_After{integer} 110l8 110t23 229s17 324s34
-89a30 Str{string} 93r20 93r39 93r63 93r87 93r111 93r135 98r24 98r43 98r72
-. 98r102 103r32
-89i44 Start_Pos{positive} 90r25
-89i66 Default{integer} 105r17 109r17
-90i7 Idx{positive} 93r13 93r44 93r68 93r92 93r116 93r140 94m10 94r17 97r18
-. 102r20 103r37
-91i7 End_Idx{positive} 97m7 98r13 98r48 98r77 98r107 99m10 99r21 102r10 103r44
-116V13 Get_Unix_Time{long_integer} 121l8 121t21 325s32
-118i7 Epoch{2|42I9} 120r36
-128a7 Content{string} 136m42 141r21 143r29 145r38 148r29 150r38 153r29 155r38
-129i7 Length{natural} 136m51 141r35 143r45 145r52 148r45 150r52 153r45 155r52
-130b7 File_Success{boolean} 136m59 137r14
-132i7 Idx{natural} 141m7 142r10 143r38 145r61 148r38 150r61 153r38 155r61
-132i12 Temp_Idx{natural} 143m10 144r13 145r67 148m10 149r13 150r67 153m10
-. 154r13 155r67
-133f7 FX{float} 145m13 158r24
-133f11 FY{float} 150m13 159r24
-133f15 FZ{float} 155m13 160r24
-170a7 Content{string} 178m42 183r21 186r35 188r30 190r38 191r33 193r41
-171i7 Length{natural} 178m51 183r35 186r49 188r46 190r52 191r61 193r55
-172b7 File_Success{boolean} 178m59 179r14
-174i7 Idx{natural} 183m7 184r10 185m10 185r17 186r58 188r39 190r61 191r42
-. 193r64
-174i12 Comma_Idx{natural} 188m10 189r13 190r67 191m13 191r48 192r16 193r70
-175f7 L1{float} 186m10 197r22
-175f11 L2{float} 190m13 198r13 198r44
-175f15 L3{float} 193m16 199r13 199r44
-216a7 Content{string} 222m42 227r21 229r34
-217i7 Length{natural} 222m51 227r35 229r48
-218b7 File_Success{boolean} 222m59 223r14
-220i7 Idx{natural} 227m7 228r10 229r57
-254p7 File{16|67P9} 272m19 272r19 274m21 274r21 275r23 278r20 287m17 287r17
-. 290r25 291m23 291r23
-255b7 Exists_Flag{boolean} 259m13 262m16 271r13
-301a7 Content{string} 313m40 322r21 324r51
-302i7 Length{natural} 313m49 322r35 324r65
-303b7 File_Success{boolean} 313m57 314r14
-305i7 Idx{natural} 322m7 323r10 324r74
-306i7 Expiry{long_integer} 324m10 325r23
-348p7 File{16|67P9} 361m19 361r19 362r36 364r55 369m20 369r20 372r28 372m46
-. 372r46 378m21 378r21 380m19 380r19 388r20 396m17 396r17 399r25 399m43 399r43
-349i7 Line_Count{natural} 366m19 366r33 377r13
-352i7 Now{2|42I9} 383r17
-353i7 Year{2|48I12} 383m22 389r26
-354i7 Month{2|49I12} 383m28 390r26
-355i7 Day{2|50I12} 383m35 391r26
-356o7 Seconds{2|54O12} 383m40 384r27 385r27 386r26
-357i7 Hour{natural} 384m10 392r26
-357i13 Min{natural} 385m10 393r26
-357i18 Sec{natural} 386m10 394r26
-364a19 Line{string}
-411p7 File{16|67P9} 415m18 415r18 416r15 417m17 417r17 420r25 420m43 420r43
-412a7 Path{string} 415r34
-431p7 File{16|67P9} 435m18 435r18 436r15 437m17 437r17 440r25 440m43 440r43
-432a7 Path{string} 435r34
-451p7 File{16|67P9} 455m18 455r18 456r15 457m17 457r17 460r25 460m43 460r43
-452a7 Path{string} 455r34
-470p7 File{16|67P9} 478m16 478r16 479r51 480m17 480r17 483r25 483m43 483r43
-494p7 File{16|67P9} 497m18 497r18 498r15 499m17 499r17 502r25 502m43 502r43
-513p7 File{16|67P9} 516m18 516r18 517r20 518r20 519r20 520r20 521r20 522m17
-. 522r17 525r25 525m43 525r43
+9U14 Ensure_Directory_Exists 22l8 22t31 274s7 379s7 437s7 459s7 481s7 525s7
+. 546s7
+9a39 Path{string} 13r57
+13a10 Dir{string} 15r25 16r26
+28U14 Read_File_Content 71l8 71t25 152s7 194s7 238s7 332s7
+28a33 Path{string} 34r38 39r31
+28a48 Content{string} 50r47 51m19 54m19
+28i70 Length{natural} 32m7 50r19 51r28 51r42 52m19 52r29 53m19 53r29 54r28
+28b92 Success{boolean} 33m7 64m10
+30p7 File{16|67P9} 39m16 39r16 46r33 48r52 63m17 63r17 67r25 68m23 68r23
+48a16 Line{string} 50r28 51r51 51r67 52r38
+77V13 Parse_Float_After{float} 99l8 99t25 161s19 166s19 171s19 202s16 206s19
+. 209s22
+77a32 Str{string} 82r20 82r39 82r63 82r87 82r111 82r135 87r24 87r43 87r71
+. 87r100 87r130 87r160 87r188 92r30
+77i46 Start_Pos{positive} 78r25
+77f68 Default{float} 94r17 98r17
+78i7 Idx{positive} 82r13 82r44 82r68 82r92 82r116 82r140 83m10 83r17 86r18
+. 91r20 92r35
+79i7 End_Idx{positive} 86m7 87r13 87r48 87r76 87r105 87r135 87r165 87r193
+. 88m10 88r21 91r10 92r42
+105V13 Parse_Int_After{integer} 126l8 126t23 245s17 343s34
+105a30 Str{string} 109r20 109r39 109r63 109r87 109r111 109r135 114r24 114r43
+. 114r72 114r102 119r32
+105i44 Start_Pos{positive} 106r25
+105i66 Default{integer} 121r17 125r17
+106i7 Idx{positive} 109r13 109r44 109r68 109r92 109r116 109r140 110m10 110r17
+. 113r18 118r20 119r37
+107i7 End_Idx{positive} 113m7 114r13 114r48 114r77 114r107 115m10 115r21
+. 118r10 119r44
+132V13 Get_Unix_Time{long_integer} 137l8 137t21 344s32
+134i7 Epoch{2|42I9} 136r36
+144a7 Content{string} 152m42 157r21 159r29 161r38 164r29 166r38 169r29 171r38
+145i7 Length{natural} 152m51 157r35 159r45 161r52 164r45 166r52 169r45 171r52
+146b7 File_Success{boolean} 152m59 153r14
+148i7 Idx{natural} 157m7 158r10 159r38 161r61 164r38 166r61 169r38 171r61
+148i12 Temp_Idx{natural} 159m10 160r13 161r67 164m10 165r13 166r67 169m10
+. 170r13 171r67
+149f7 FX{float} 161m13 174r24
+149f11 FY{float} 166m13 175r24
+149f15 FZ{float} 171m13 176r24
+186a7 Content{string} 194m42 199r21 202r35 204r30 206r38 207r33 209r41
+187i7 Length{natural} 194m51 199r35 202r49 204r46 206r52 207r61 209r55
+188b7 File_Success{boolean} 194m59 195r14
+190i7 Idx{natural} 199m7 200r10 201m10 201r17 202r58 204r39 206r61 207r42
+. 209r64
+190i12 Comma_Idx{natural} 204m10 205r13 206r67 207m13 207r48 208r16 209r70
+191f7 L1{float} 202m10 213r22
+191f11 L2{float} 206m13 214r13 214r44
+191f15 L3{float} 209m16 215r13 215r44
+232a7 Content{string} 238m42 243r21 245r34
+233i7 Length{natural} 238m51 243r35 245r48
+234b7 File_Success{boolean} 238m59 239r14
+236i7 Idx{natural} 243m7 244r10 245r57
+270p7 File{16|67P9} 291m19 291r19 293m21 293r21 294r23 297r20 306m17 306r17
+. 309r25 310m23 310r23
+271b7 Exists_Flag{boolean} 278m13 281m16 290r13
+320a7 Content{string} 332m40 341r21 343r51
+321i7 Length{natural} 332m49 341r35 343r65
+322b7 File_Success{boolean} 332m57 333r14
+324i7 Idx{natural} 341m7 342r10 343r74
+325i7 Expiry{long_integer} 343m10 344r23
+367p7 File{16|67P9} 383m19 383r19 384r36 386r55 391m20 391r20 394r28 394m46
+. 394r46 400m21 400r21 402m19 402r19 410r20 418m17 418r17 421r25 421m43 421r43
+368i7 Line_Count{natural} 388m19 388r33 399r13
+371i7 Now{2|42I9} 405r17
+372i7 Year{2|48I12} 405m22 411r26
+373i7 Month{2|49I12} 405m28 412r26
+374i7 Day{2|50I12} 405m35 413r26
+375o7 Seconds{2|54O12} 405m40 406r27 407r27 408r26
+376i7 Hour{natural} 406m10 414r26
+376i13 Min{natural} 407m10 415r26
+376i18 Sec{natural} 408m10 416r26
+386a19 Line{string}
+433p7 File{16|67P9} 440m18 440r18 441r15 442m17 442r17 445r25 445m43 445r43
+434a7 Path{string} 437r32 440r34
+456p7 File{16|67P9} 462m18 462r18 463r15 464m17 464r17 467r25 467m43 467r43
+457a7 Path{string} 459r32 462r34
+478p7 File{16|67P9} 484m18 484r18 485r15 486m17 486r17 489r25 489m43 489r43
+479a7 Path{string} 481r32 484r34
+499p7 File{16|67P9} 507m16 507r16 508r51 509m17 509r17 512r25 512m43 512r43
+523p7 File{16|67P9} 528m18 528r18 529r15 530m17 530r17 533r25 533m43 533r43
+544p7 File{16|67P9} 549m18 549r18 550r20 551r20 552r20 553r20 554r20 555m17
+. 555r17 558r25 558m43 558r43
 
 QQ SPARKVERSION FSF 15.0
 GG EK_DIRECT_CALLS smc_files__read_sms_values 0
@@ -281,34 +288,37 @@ GG EK_PROOF_DEPENDENCIES smc_files__get_battery_percent 0
 GG EK_GLOBALS smc_files__get_battery_percent local FALSE E_FUNCTION FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 7 ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__end_of_file ada___ada__text_io__get_line__3 ada___ada__directories__exists ada___ada___ada__strings__fixed__index__3 TRUE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__log_telemetry_csv 0
 GG EK_PROOF_DEPENDENCIES smc_files__log_telemetry_csv 0
-GG EK_GLOBALS smc_files__log_telemetry_csv local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 9 ada___ada__text_io__create ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put_line ada___ada__directories__rename ada___ada__directories__exists ada___ada__directories__size ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__log_telemetry_csv local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 11 ada___ada__text_io__create ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put_line ada___ada__directories__create_path ada___ada__directories__rename ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada__directories__size ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__check_precool_mode 0
 GG EK_PROOF_DEPENDENCIES smc_files__check_precool_mode 0
 GG EK_GLOBALS smc_files__check_precool_mode local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 11 ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__end_of_file ada___ada__text_io__get_line__3 ada___ada__directories__delete_file ada___ada__directories__exists ada___ada__calendar__clock ada___ada__calendar__time_of ada___ada__calendar__Osubtract__2 ada___ada___ada__strings__fixed__index__3 FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__notify_user 0
 GG EK_PROOF_DEPENDENCIES smc_files__notify_user 0
-GG EK_GLOBALS smc_files__notify_user local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 12 ada___ada__text_io__create ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__end_of_file ada___ada__text_io__get_line__3 ada___ada__text_io__put_line ada___ada__text_io__put_line__2 ada___ada__directories__exists ada___ada__calendar__clock ada___ada__calendar__split ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__notify_user local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 14 ada___ada__text_io__create ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__end_of_file ada___ada__text_io__get_line__3 ada___ada__text_io__put_line ada___ada__text_io__put_line__2 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada__calendar__clock ada___ada__calendar__split ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__write_earu_temp 0
 GG EK_PROOF_DEPENDENCIES smc_files__write_earu_temp 0
-GG EK_GLOBALS smc_files__write_earu_temp local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__write_earu_temp local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__write_earu_fan 0
 GG EK_PROOF_DEPENDENCIES smc_files__write_earu_fan 0
-GG EK_GLOBALS smc_files__write_earu_fan local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__write_earu_fan local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__write_earu_turbo 0
 GG EK_PROOF_DEPENDENCIES smc_files__write_earu_turbo 0
-GG EK_GLOBALS smc_files__write_earu_turbo local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__write_earu_turbo local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__load_fan_calibration 0
 GG EK_PROOF_DEPENDENCIES smc_files__load_fan_calibration 0
 GG EK_GLOBALS smc_files__load_fan_calibration local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__get_line__3 ada___ada__directories__exists FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__save_fan_calibration 0
 GG EK_PROOF_DEPENDENCIES smc_files__save_fan_calibration 0
-GG EK_GLOBALS smc_files__save_fan_calibration local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__save_fan_calibration local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put__3 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__write_pressure_report 0
 GG EK_PROOF_DEPENDENCIES smc_files__write_pressure_report 0
-GG EK_GLOBALS smc_files__write_pressure_report local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 5 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put_line ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_GLOBALS smc_files__write_pressure_report local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 8 ada___ada__text_io__create ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__put_line ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists ada___ada___ada__strings__fixed__trim FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__delete_file 0
 GG EK_PROOF_DEPENDENCIES smc_files__delete_file 0
 GG EK_GLOBALS smc_files__delete_file local FALSE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 2 ada___ada__directories__delete_file ada___ada__directories__exists FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_DIRECT_CALLS smc_files__ensure_directory_exists 0
+GG EK_PROOF_DEPENDENCIES smc_files__ensure_directory_exists 0
+GG EK_GLOBALS smc_files__ensure_directory_exists local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 3 ada___ada__directories__create_path ada___ada__directories__containing_directory ada___ada__directories__exists FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
 GG EK_DIRECT_CALLS smc_files__read_file_content 0
 GG EK_PROOF_DEPENDENCIES smc_files__read_file_content 0
 GG EK_GLOBALS smc_files__read_file_content local TRUE E_PROCEDURE FALSE ORIGIN_FLOW 1 smc_files proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 calls_proof 0 calls 0 calls_conditional 6 ada___ada__text_io__open ada___ada__text_io__close ada___ada__text_io__is_open ada___ada__text_io__end_of_file ada___ada__text_io__get_line__3 ada___ada__directories__exists FALSE FALSE FALSE TRUE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
@@ -324,6 +334,46 @@ GG EK_GLOBALS smc_files__get_unix_time local TRUE E_FUNCTION FALSE ORIGIN_FLOW 1
 GG EK_DIRECT_CALLS smc_files 0
 GG EK_PROOF_DEPENDENCIES smc_files 0
 GG EK_GLOBALS smc_files local FALSE E_PACKAGE TRUE ORIGIN_FLOW 0 proper_proof_in 0 proper_input 0 proper_output 0 refined_proof_in 0 refined_input 0 refined_output 0 initializes 0 refined_initializes 0 calls_proof 0 calls 0 calls_conditional 0 local_packages 0 local_var 0 TRUE FALSE FALSE FALSE FALSE ENTRY_CALLS 0 SUSPENDS_ON 0 UNSYNCH_ACCESSES 0 LOCKS 0
+GG EK_FLOW_SCOPE ada___ada__text_io__flush__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__length FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__write_earu_turbo FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__fputwc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Oeq FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__load_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_col__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE system TRUE FALSE FALSE FALSE FALSE __standard
+GG EK_FLOW_SCOPE smc_files__save_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Olt FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__free FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__write_pressure_report FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__fputs FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__trim FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed TRUE FALSE FALSE FALSE FALSE ada___ada__strings
+GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__to_unbounded_string FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method__2 FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__move FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__delete_file FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Onot FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__calendar__epoch_offset FALSE FALSE FALSE FALSE TRUE ada___ada__calendar PRIVATE_PART
+GG EK_FLOW_SCOPE ada___system__wch_con__is_start_of_encoding FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__free FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__insert FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Olt__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__fwrite FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada TRUE FALSE FALSE FALSE FALSE __standard
+GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__freopen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__set_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__rotate_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__to_unbounded_string__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Oand FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
@@ -334,24 +384,24 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__4 FALSE FALSE FALSE
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__rotate_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__fseek FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories TRUE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__current_directory FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__arithmetic_operations TRUE FALSE FALSE FALSE TRUE ada___ada__calendar PRIVATE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters TRUE FALSE FALSE FALSE FALSE system
 GG EK_FLOW_SCOPE ada___ada__calendar__arithmetic_operations__add FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__arithmetic_operations VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__ensure_directory_exists FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada__directories__set_directory FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__translate FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io TRUE FALSE FALSE FALSE FALSE ada
 GG EK_PART_OF ada___ada__text_io__file_system 6 ada___ada__text_io__standard_in ada___ada__text_io__standard_out ada___ada__text_io__standard_err ada___ada__text_io__current_in ada___ada__text_io__current_out ada___ada__text_io__current_err
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__translate FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__read_file_content FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__increment FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__create_directory FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__arithmetic_operations__difference FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__arithmetic_operations VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__setvbuf FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Ole FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__setvbuf FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Oor FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
@@ -362,8 +412,8 @@ GG EK_FLOW_SCOPE ada___ada__directories__delete_directory FALSE FALSE FALSE FALS
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__trim__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__set_unbounded_string FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE system__Olt FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__directories__create_path FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Omultiply FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__directories__create_path FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__arithmetic_operations__subtract FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__arithmetic_operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__is_one FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__index__4 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
@@ -372,8 +422,8 @@ GG EK_FLOW_SCOPE system__Ole FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__shift_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__replace_slice FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__delete_tree FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__ftell FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__index_non_blank FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__ftell FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Ole__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__to_unsigned_8 FALSE FALSE FALSE TRUE ada___ada__unchecked_conversion TRUE ada___ada___ada__strings__utf_encoding__to_unsigned_8GP6060 VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__initialize FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
@@ -394,14 +444,15 @@ GG EK_FLOW_SCOPE system__Oeq FALSE FALSE FALSE FALSE TRUE system VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Omultiply__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__increment__2 FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__unlink FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__calendar__conversion_operations__to_ada_time__2 FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__conversion_operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__translate__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__calendar__conversion_operations__to_ada_time__2 FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__conversion_operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Ole__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__getenv FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__file_exists FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__rotate_left__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__decrement__2 FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__to_unsigned_8GP6060 TRUE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding PRIVATE_PART
+GG EK_FLOW_SCOPE smc_files__read_file_content FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada__directories__full_name FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__is_regular_file FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__insert__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
@@ -413,10 +464,10 @@ GG EK_FLOW_SCOPE ada___interfaces__c_streams__set_binary_mode FALSE FALSE FALSE 
 GG EK_FLOW_SCOPE ada___system__crtl__isatty FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__overwrite__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__set_page_length__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__calendar__conversion_operations__to_duration FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__conversion_operations VISIBLE_PART
 GG EK_FLOW_SCOPE interfaces__rotate_right__3 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__set_text_mode FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__containing_directory FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__calendar__conversion_operations__to_duration FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__conversion_operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Ogt FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__append__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__atomic_counters__Oadd FALSE FALSE FALSE FALSE TRUE ada___system__atomic_counters VISIBLE_PART
@@ -445,8 +496,8 @@ GG EK_FLOW_SCOPE ada___ada__text_io__line_length FALSE FALSE FALSE FALSE TRUE ad
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Ogt__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__malloc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__is_subset FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__put_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__name_case_equivalence FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index_non_blank FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
@@ -519,7 +570,6 @@ GG EK_FLOW_SCOPE ada___ada__calendar__formatting_operations__day_of_week FALSE F
 GG EK_FLOW_SCOPE ada___ada__directories__more_entries FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__formatting_operations__split FALSE FALSE FALSE FALSE TRUE ada___ada__calendar__formatting_operations VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__popen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__parse_float_after FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index_non_blank__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Oconcat__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__get_next_entry FALSE FALSE FALSE FALSE TRUE ada___ada__directories VISIBLE_PART
@@ -558,6 +608,7 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__unreference FALSE FALSE FA
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_sequence FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__unchecked_conversion FALSE FALSE FALSE FALSE FALSE ada
+GG EK_FLOW_SCOPE smc_files__parse_float_after FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__put__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__text_buffers__trim_leading_spaces FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__text_buffers VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__chdir FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
@@ -577,7 +628,6 @@ GG EK_FLOW_SCOPE ada___ada__calendar__time_zones_operations__utc_time_offset FAL
 GG EK_FLOW_SCOPE ada___system__crtl__setvbuf FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__overwrite__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams TRUE FALSE FALSE FALSE FALSE interfaces
-GG EK_FLOW_SCOPE smc_files__parse_int_after FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Oconcat__5 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__head FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
@@ -601,8 +651,8 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__index__6 FALSE FALSE FALSE FAL
 GG EK_FLOW_SCOPE ada___system__crtl__ungetc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__element FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__initialize__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded PRIVATE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_immediate FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__finalization__adjust FALSE FALSE FALSE FALSE TRUE ada___ada__finalization VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__get_immediate FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__end_of_line__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__adjust__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded PRIVATE_PART
 GG EK_FLOW_SCOPE ada___ada__finalization__finalize FALSE FALSE FALSE FALSE TRUE ada___ada__finalization VISIBLE_PART
@@ -610,34 +660,35 @@ GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__finalize__2 FALSE FALSE FA
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__find_token__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__new_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__unlink FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__directories__finalize__2 FALSE FALSE FALSE FALSE TRUE ada___ada__directories PRIVATE_PART
+GG EK_FLOW_SCOPE ada___ada__text_io__new_page FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__to_mapping FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__count__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__finalization__initialize__2 FALSE FALSE FALSE FALSE TRUE ada___ada__finalization VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__parse_int_after FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada__finalization__finalize__2 FALSE FALSE FALSE FALSE TRUE ada___ada__finalization VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__index__5 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__afcb_allocate__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__open FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__replace_element FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__open FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__file_control_block__afcb_allocate FALSE FALSE FALSE FALSE TRUE ada___system__file_control_block VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__find_token FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__calendar TRUE FALSE FALSE FALSE FALSE ada
 GG EK_FLOW_SCOPE ada___ada__text_io__get_immediate__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada__calendar TRUE FALSE FALSE FALSE FALSE ada
 GG EK_FLOW_SCOPE ada___ada__text_io__afcb_close__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
 GG EK_FLOW_SCOPE ada___system__file_control_block__afcb_close FALSE FALSE FALSE FALSE TRUE ada___system__file_control_block VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdin FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__search__count__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__search VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdout FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__unbounded_stringPartial_DIC FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
+GG EK_FLOW_SCOPE ada___interfaces__c_streams__stdout FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__afcb_free__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
 GG EK_FLOW_SCOPE ada___system__file_control_block__afcb_free FALSE FALSE FALSE FALSE TRUE ada___system__file_control_block VISIBLE_PART
 GG EK_FLOW_SCOPE ada___interfaces__c_streams__stderr FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__close FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__mode FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
+GG EK_FLOW_SCOPE ada___system__crtl__close FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__head__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__read__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
@@ -647,9 +698,8 @@ GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left FALSE FALSE FALSE FAL
 GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__trim__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__read FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding TRUE FALSE FALSE FALSE FALSE ada___ada__strings
-GG EK_FLOW_SCOPE ada___system__finalization_root TRUE FALSE FALSE FALSE FALSE system
 GG EK_FLOW_SCOPE ada___ada__text_io__name FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__get_unix_time FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
+GG EK_FLOW_SCOPE ada___system__finalization_root TRUE FALSE FALSE FALSE FALSE system
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__slice FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__get_immediate__3 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__write__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io PRIVATE_PART
@@ -697,10 +747,11 @@ GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_left__3 FALSE FALSE FALSE F
 GG EK_FLOW_SCOPE ada___ada__text_io__set_error FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__unbounded_slice FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__crtl__clearerr FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
+GG EK_FLOW_SCOPE smc_files__get_unix_time FALSE FALSE FALSE FALSE TRUE smc_files BODY_PART
 GG EK_FLOW_SCOPE ada___ada___ada__strings__utf_encoding__encoding FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__utf_encoding VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__parameters__default_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__calendar__time_of FALSE FALSE FALSE FALSE TRUE ada___ada__calendar VISIBLE_PART
+GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__3 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__parameters__minimum_stack_size FALSE FALSE FALSE FALSE TRUE ada___system__parameters VISIBLE_PART
 GG EK_FLOW_SCOPE ada___ada__text_io__standard_input FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
@@ -815,44 +866,4 @@ GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right__6 FALSE FALSE FALSE 
 GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Oeq__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
 GG EK_FLOW_SCOPE smc_files__write_earu_fan FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
 GG EK_FLOW_SCOPE ada___system__unsigned_types__shift_right_arithmetic__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__flush__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__length FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__write_earu_turbo FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_left__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__fputwc FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Oeq FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__get_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__load_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_left__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_col__2 FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE system TRUE FALSE FALSE FALSE FALSE __standard
-GG EK_FLOW_SCOPE smc_files__save_fan_calibration FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Olt FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__head__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__free FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__unsigned_types__rotate_right__6 FALSE FALSE FALSE FALSE TRUE ada___system__unsigned_types VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__write_pressure_report FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__fputs FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__trim FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed TRUE FALSE FALSE FALSE FALSE ada___ada__strings
-GG EK_FLOW_SCOPE ada___ada__text_io__set_line_length FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__to_unbounded_string FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__translate__3 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__get_wc_encoding_method__2 FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__move FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE smc_files__delete_file FALSE FALSE FALSE FALSE TRUE smc_files VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__maps__Onot FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__maps VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__calendar__epoch_offset FALSE FALSE FALSE FALSE TRUE ada___ada__calendar PRIVATE_PART
-GG EK_FLOW_SCOPE ada___system__wch_con__is_start_of_encoding FALSE FALSE FALSE FALSE TRUE ada___system__wch_con VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__free FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE interfaces__shift_right_arithmetic__2 FALSE FALSE FALSE FALSE TRUE interfaces VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__insert FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada___ada__strings__unbounded__Olt__2 FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__unbounded VISIBLE_PART
-GG EK_FLOW_SCOPE ada___interfaces__c_streams__fwrite FALSE FALSE FALSE FALSE TRUE ada___interfaces__c_streams VISIBLE_PART
-GG EK_FLOW_SCOPE ada TRUE FALSE FALSE FALSE FALSE __standard
-GG EK_FLOW_SCOPE ada___ada___ada__strings__fixed__tail FALSE FALSE FALSE FALSE TRUE ada___ada___ada__strings__fixed VISIBLE_PART
-GG EK_FLOW_SCOPE ada___system__crtl__freopen FALSE FALSE FALSE FALSE TRUE ada___system__crtl VISIBLE_PART
-GG EK_FLOW_SCOPE ada___ada__text_io__set_line FALSE FALSE FALSE FALSE TRUE ada___ada__text_io VISIBLE_PART
 GG EK_END_MARKER

@@ -1,763 +1,875 @@
 [
 {
   "name": "Smc_Daemon.Signal_Handler_T",
-  "location": "smc_daemon.adb:29:9",
+  "location": "smc_daemon.adb:30:9",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.Word",
+  "location": "smc_daemon.adb:49:7",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.B0",
+  "location": "smc_daemon.adb:50:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.B1",
+  "location": "smc_daemon.adb:50:11",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.B2",
+  "location": "smc_daemon.adb:50:15",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.B3",
+  "location": "smc_daemon.adb:50:19",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.Hex_Map",
+  "location": "smc_daemon.adb:51:7",
+  "Size": 128,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Float_To_Hex.Result",
+  "location": "smc_daemon.adb:52:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Conn",
-  "location": "smc_daemon.adb:46:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Res",
-  "location": "smc_daemon.adb:47:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Key_F0tg",
-  "location": "smc_daemon.adb:50:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Key_F1tg",
-  "location": "smc_daemon.adb:51:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Key_F0md",
-  "location": "smc_daemon.adb:52:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Key_F1md",
-  "location": "smc_daemon.adb:53:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Key_F0ac",
-  "location": "smc_daemon.adb:54:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Key_F1ac",
-  "location": "smc_daemon.adb:55:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Hex_01",
-  "location": "smc_daemon.adb:57:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Hex_00",
-  "location": "smc_daemon.adb:58:4",
-  "Size": 64,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Current_Temp",
-  "location": "smc_daemon.adb:61:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Prev_Temp",
-  "location": "smc_daemon.adb:62:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Temp_Gradient",
-  "location": "smc_daemon.adb:63:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Power",
-  "location": "smc_daemon.adb:65:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Battery_Percent",
-  "location": "smc_daemon.adb:66:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.F0ac_Val",
-  "location": "smc_daemon.adb:68:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.F1ac_Val",
-  "location": "smc_daemon.adb:69:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Target_Rpm",
-  "location": "smc_daemon.adb:71:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Cpu_Gpu_Target",
-  "location": "smc_daemon.adb:72:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Battery_Target",
-  "location": "smc_daemon.adb:73:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Pid_Loop_State",
-  "location": "smc_daemon.adb:75:4",
-  "Size": 96,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.Last_Tcmz_Temp",
-  "location": "smc_daemon.adb:78:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Gpu_Temp",
-  "location": "smc_daemon.adb:79:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Talp_Temp",
-  "location": "smc_daemon.adb:80:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Tarf_Temp",
-  "location": "smc_daemon.adb:81:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Talt_Temp",
-  "location": "smc_daemon.adb:82:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Talw_Temp",
-  "location": "smc_daemon.adb:83:4",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.Last_Tart_Temp",
   "location": "smc_daemon.adb:84:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.Last_Tarw_Temp",
+  "name": "Smc_Daemon.Res",
   "location": "smc_daemon.adb:85:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.Last_Ts0p_Temp",
-  "location": "smc_daemon.adb:86:4",
-  "Size": 32,
-  "Alignment": 4
+  "name": "Smc_Daemon.Key_F0tg",
+  "location": "smc_daemon.adb:88:4",
+  "Size": 64,
+  "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.Last_Ts1p_Temp",
-  "location": "smc_daemon.adb:87:4",
-  "Size": 32,
-  "Alignment": 4
+  "name": "Smc_Daemon.Key_F1tg",
+  "location": "smc_daemon.adb:89:4",
+  "Size": 64,
+  "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.Last_Telemetry_Time",
+  "name": "Smc_Daemon.Key_F0md",
   "location": "smc_daemon.adb:90:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.Loop_Start_Time",
+  "name": "Smc_Daemon.Key_F1md",
   "location": "smc_daemon.adb:91:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.Prev_X",
+  "name": "Smc_Daemon.Key_F0fb",
+  "location": "smc_daemon.adb:92:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F1fb",
+  "location": "smc_daemon.adb:93:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F0dc",
   "location": "smc_daemon.adb:94:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F1dc",
+  "location": "smc_daemon.adb:95:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F0st",
+  "location": "smc_daemon.adb:96:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F1st",
+  "location": "smc_daemon.adb:97:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F0ac",
+  "location": "smc_daemon.adb:98:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_F1ac",
+  "location": "smc_daemon.adb:99:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_Apmx",
+  "location": "smc_daemon.adb:101:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Key_Mtpl",
+  "location": "smc_daemon.adb:102:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_01",
+  "location": "smc_daemon.adb:104:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_00",
+  "location": "smc_daemon.adb:105:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_Fb",
+  "location": "smc_daemon.adb:106:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_Dc",
+  "location": "smc_daemon.adb:107:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_St",
+  "location": "smc_daemon.adb:108:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_Mtpl_On",
+  "location": "smc_daemon.adb:110:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Hex_Mtpl_Off",
+  "location": "smc_daemon.adb:111:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Current_Temp",
+  "location": "smc_daemon.adb:114:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Prev_Temp",
+  "location": "smc_daemon.adb:115:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Temp_Gradient",
+  "location": "smc_daemon.adb:116:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Power",
+  "location": "smc_daemon.adb:118:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Battery_Percent",
+  "location": "smc_daemon.adb:119:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.F0ac_Val",
+  "location": "smc_daemon.adb:121:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.F1ac_Val",
+  "location": "smc_daemon.adb:122:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Target_Rpm",
+  "location": "smc_daemon.adb:124:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Cpu_Gpu_Target",
+  "location": "smc_daemon.adb:125:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Battery_Target",
+  "location": "smc_daemon.adb:126:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Pid_Loop_State",
+  "location": "smc_daemon.adb:128:4",
+  "Size": 96,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Last_Tcmz_Temp",
+  "location": "smc_daemon.adb:131:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Gpu_Temp",
+  "location": "smc_daemon.adb:132:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Talp_Temp",
+  "location": "smc_daemon.adb:133:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Tarf_Temp",
+  "location": "smc_daemon.adb:134:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Talt_Temp",
+  "location": "smc_daemon.adb:135:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Talw_Temp",
+  "location": "smc_daemon.adb:136:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Tart_Temp",
+  "location": "smc_daemon.adb:137:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Tarw_Temp",
+  "location": "smc_daemon.adb:138:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Ts0p_Temp",
+  "location": "smc_daemon.adb:139:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Ts1p_Temp",
+  "location": "smc_daemon.adb:140:4",
+  "Size": 32,
+  "Alignment": 4
+}
+,
+{
+  "name": "Smc_Daemon.Last_Telemetry_Time",
+  "location": "smc_daemon.adb:143:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Loop_Start_Time",
+  "location": "smc_daemon.adb:144:4",
+  "Size": 64,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Prev_X",
+  "location": "smc_daemon.adb:147:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Prev_Y",
-  "location": "smc_daemon.adb:94:12",
+  "location": "smc_daemon.adb:147:12",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Prev_Z",
-  "location": "smc_daemon.adb:94:20",
+  "location": "smc_daemon.adb:147:20",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Cx",
-  "location": "smc_daemon.adb:95:4",
+  "location": "smc_daemon.adb:148:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Cy",
-  "location": "smc_daemon.adb:95:8",
+  "location": "smc_daemon.adb:148:8",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Cz",
-  "location": "smc_daemon.adb:95:12",
+  "location": "smc_daemon.adb:148:12",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Prev_Sms_Valid",
-  "location": "smc_daemon.adb:96:4",
+  "location": "smc_daemon.adb:149:4",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Daemon.Sms_Success",
-  "location": "smc_daemon.adb:97:4",
+  "location": "smc_daemon.adb:150:4",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Daemon.Delta_X",
-  "location": "smc_daemon.adb:98:4",
+  "location": "smc_daemon.adb:151:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Delta_Y",
-  "location": "smc_daemon.adb:98:13",
+  "location": "smc_daemon.adb:151:13",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Delta_Z",
-  "location": "smc_daemon.adb:98:22",
+  "location": "smc_daemon.adb:151:22",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Calibrated_Pres_Rpm",
-  "location": "smc_daemon.adb:101:4",
+  "location": "smc_daemon.adb:154:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Calibration_Active",
-  "location": "smc_daemon.adb:102:4",
+  "location": "smc_daemon.adb:155:4",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Daemon.Calibration_Start_Time",
-  "location": "smc_daemon.adb:103:4",
+  "location": "smc_daemon.adb:156:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Calibration_Sum",
-  "location": "smc_daemon.adb:104:4",
+  "location": "smc_daemon.adb:157:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Calibration_Count",
-  "location": "smc_daemon.adb:105:4",
+  "location": "smc_daemon.adb:158:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Python_Pid",
-  "location": "smc_daemon.adb:108:4",
+  "location": "smc_daemon.adb:161:4",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Python_Spawned",
-  "location": "smc_daemon.adb:109:4",
+  "location": "smc_daemon.adb:162:4",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
   "name": "Smc_Daemon.Python_Args",
-  "location": "smc_daemon.adb:110:4",
+  "location": "smc_daemon.adb:163:4",
   "Size": 128,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Latency_Monitor_Access",
-  "location": "smc_daemon.adb:113:9",
+  "location": "smc_daemon.adb:166:9",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Thermal_Suspender_Access",
-  "location": "smc_daemon.adb:114:9",
+  "location": "smc_daemon.adb:167:9",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Lm_Task",
-  "location": "smc_daemon.adb:116:4",
+  "location": "smc_daemon.adb:169:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Ts_Task",
-  "location": "smc_daemon.adb:117:4",
+  "location": "smc_daemon.adb:170:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Run_Power_Command.Success",
-  "location": "smc_daemon.adb:120:7",
+  "location": "smc_daemon.adb:173:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
+  "name": "Smc_Daemon.Activate_Turbo_Mode.B_1.Args",
+  "location": "smc_daemon.adb:193:10",
+  "Size": 256,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Activate_Turbo_Mode.B_2.Args",
+  "location": "smc_daemon.adb:210:10",
+  "Size": 256,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Deactivate_Turbo_Mode.B_3.Args",
+  "location": "smc_daemon.adb:244:10",
+  "Size": 256,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.Deactivate_Turbo_Mode.B_4.Args",
+  "location": "smc_daemon.adb:255:10",
+  "Size": 256,
+  "Alignment": 8
+}
+,
+{
   "name": "Smc_Daemon.Get_Time_Str.Now",
-  "location": "smc_daemon.adb:128:7",
+  "location": "smc_daemon.adb:290:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Year",
-  "location": "smc_daemon.adb:129:7",
+  "location": "smc_daemon.adb:291:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Month",
-  "location": "smc_daemon.adb:130:7",
+  "location": "smc_daemon.adb:292:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Day",
-  "location": "smc_daemon.adb:131:7",
+  "location": "smc_daemon.adb:293:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Seconds",
-  "location": "smc_daemon.adb:132:7",
+  "location": "smc_daemon.adb:294:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Hour",
-  "location": "smc_daemon.adb:133:7",
+  "location": "smc_daemon.adb:295:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Min",
-  "location": "smc_daemon.adb:133:13",
+  "location": "smc_daemon.adb:295:13",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Time_Str.Sec",
-  "location": "smc_daemon.adb:133:18",
+  "location": "smc_daemon.adb:295:18",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Day_Str.Now",
-  "location": "smc_daemon.adb:146:7",
+  "location": "smc_daemon.adb:308:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Get_Day_Str.Year",
-  "location": "smc_daemon.adb:147:7",
+  "location": "smc_daemon.adb:309:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Day_Str.Month",
-  "location": "smc_daemon.adb:148:7",
+  "location": "smc_daemon.adb:310:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Day_Str.Day",
-  "location": "smc_daemon.adb:149:7",
+  "location": "smc_daemon.adb:311:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Get_Day_Str.Seconds",
-  "location": "smc_daemon.adb:150:7",
+  "location": "smc_daemon.adb:312:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Read_And_Validate_Smc_Temp.Key_Char",
-  "location": "smc_daemon.adb:160:7",
+  "location": "smc_daemon.adb:322:7",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Read_And_Validate_Smc_Temp.Val_Float",
-  "location": "smc_daemon.adb:161:7",
+  "location": "smc_daemon.adb:323:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Read_And_Validate_Smc_Temp.Read_Res",
-  "location": "smc_daemon.adb:162:7",
+  "location": "smc_daemon.adb:324:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.Read_And_Validate_Smc_Temp.B_1.Val",
-  "location": "smc_daemon.adb:168:13",
+  "name": "Smc_Daemon.Read_And_Validate_Smc_Temp.B_5.Val",
+  "location": "smc_daemon.adb:330:13",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
   "name": "Smc_Daemon.Sig_Resint",
-  "location": "smc_daemon.adb:179:4",
+  "location": "smc_daemon.adb:341:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.Sig_Resterm",
-  "location": "smc_daemon.adb:180:4",
+  "location": "smc_daemon.adb:342:4",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_2.Success",
-  "location": "smc_daemon.adb:211:7",
+  "name": "Smc_Daemon.B_6.Success",
+  "location": "smc_daemon.adb:373:7",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_2.Args",
-  "location": "smc_daemon.adb:212:7",
+  "name": "Smc_Daemon.B_6.Args",
+  "location": "smc_daemon.adb:374:7",
   "Size": 384,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_4.Python_Path",
-  "location": "smc_daemon.adb:224:7",
+  "name": "Smc_Daemon.B_8.Python_Path",
+  "location": "smc_daemon.adb:386:7",
   "Size": 480,
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_4.Fall_Path",
-  "location": "smc_daemon.adb:225:7",
+  "name": "Smc_Daemon.B_8.Fall_Path",
+  "location": "smc_daemon.adb:387:7",
   "Size": 392,
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_4.Exec_Path",
-  "location": "smc_daemon.adb:226:7",
+  "name": "Smc_Daemon.B_8.Exec_Path",
+  "location": "smc_daemon.adb:388:7",
   "Size": 2048,
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_4.Len",
-  "location": "smc_daemon.adb:227:7",
+  "name": "Smc_Daemon.B_8.Len",
+  "location": "smc_daemon.adb:389:7",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.B_6.Precool_Active",
-  "location": "smc_daemon.adb:316:10",
+  "name": "Smc_Daemon.B_10.Precool_Active",
+  "location": "smc_daemon.adb:489:10",
   "Size": 8,
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_6.Time_Left",
-  "location": "smc_daemon.adb:317:10",
+  "name": "Smc_Daemon.B_10.Time_Left",
+  "location": "smc_daemon.adb:490:10",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_7.Tb0t_Val",
-  "location": "smc_daemon.adb:335:10",
+  "name": "Smc_Daemon.B_11.Tb0t_Val",
+  "location": "smc_daemon.adb:508:10",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.B_8.F0tg_Hex",
-  "location": "smc_daemon.adb:355:10",
+  "name": "Smc_Daemon.B_12.F0tg_Hex",
+  "location": "smc_daemon.adb:527:10",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_8.F1tg_Hex",
-  "location": "smc_daemon.adb:356:10",
+  "name": "Smc_Daemon.B_12.F1tg_Hex",
+  "location": "smc_daemon.adb:528:10",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_8.Rpm_Int",
-  "location": "smc_daemon.adb:357:10",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.B_8.Temp_Val",
-  "location": "smc_daemon.adb:361:10",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.B_8.Hex_Map",
-  "location": "smc_daemon.adb:362:10",
-  "Size": 128,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.B_8.H1",
-  "location": "smc_daemon.adb:363:10",
-  "Size": 8,
+  "name": "Smc_Daemon.B_12.B_13.Hex_Str",
+  "location": "smc_daemon.adb:535:16",
+  "Size": "??",
   "Alignment": 1
 }
 ,
 {
-  "name": "Smc_Daemon.B_8.H2",
-  "location": "smc_daemon.adb:364:10",
-  "Size": 8,
-  "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_8.H3",
-  "location": "smc_daemon.adb:365:10",
-  "Size": 8,
-  "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_8.H4",
-  "location": "smc_daemon.adb:366:10",
-  "Size": 8,
-  "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_8.Hex_Str",
-  "location": "smc_daemon.adb:367:10",
+  "name": "Smc_Daemon.B_14.Avg_Rpm",
+  "location": "smc_daemon.adb:595:16",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.B_9.Args",
-  "location": "smc_daemon.adb:406:13",
-  "Size": 256,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.B_10.Avg_Rpm",
-  "location": "smc_daemon.adb:431:16",
+  "name": "Smc_Daemon.B_14.Diff",
+  "location": "smc_daemon.adb:596:16",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.B_10.Diff",
-  "location": "smc_daemon.adb:432:16",
+  "name": "Smc_Daemon.B_14.Est_Hpa",
+  "location": "smc_daemon.adb:597:16",
   "Size": 32,
   "Alignment": 4
 }
 ,
 {
-  "name": "Smc_Daemon.B_10.Est_Hpa",
-  "location": "smc_daemon.adb:433:16",
-  "Size": 32,
-  "Alignment": 4
-}
-,
-{
-  "name": "Smc_Daemon.B_11.Elapsed_Span",
-  "location": "smc_daemon.adb:495:10",
+  "name": "Smc_Daemon.B_15.Elapsed_Span",
+  "location": "smc_daemon.adb:659:10",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_11.Target_Span",
-  "location": "smc_daemon.adb:496:10",
+  "name": "Smc_Daemon.B_15.Target_Span",
+  "location": "smc_daemon.adb:660:10",
   "Size": 64,
   "Alignment": 8
 }
 ,
 {
-  "name": "Smc_Daemon.B_12.Success",
-  "location": "smc_daemon.adb:510:10",
+  "name": "Smc_Daemon.B_16.Success",
+  "location": "smc_daemon.adb:674:10",
   "Size": 8,
   "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_12.Args",
-  "location": "smc_daemon.adb:511:10",
-  "Size": 384,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.B_13.Success",
-  "location": "smc_daemon.adb:526:7",
-  "Size": 8,
-  "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_13.Args",
-  "location": "smc_daemon.adb:527:7",
-  "Size": 256,
-  "Alignment": 8
-}
-,
-{
-  "name": "Smc_Daemon.B_14.Success",
-  "location": "smc_daemon.adb:537:7",
-  "Size": 8,
-  "Alignment": 1
-}
-,
-{
-  "name": "Smc_Daemon.B_14.Args",
-  "location": "smc_daemon.adb:538:7",
-  "Size": 384,
-  "Alignment": 8
 }
 ,
 {
   "name": "Smc_Daemon.B_16.Args",
-  "location": "smc_daemon.adb:550:7",
+  "location": "smc_daemon.adb:675:10",
+  "Size": 384,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.B_17.Success",
+  "location": "smc_daemon.adb:690:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.B_17.Args",
+  "location": "smc_daemon.adb:691:7",
+  "Size": 256,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.B_18.Success",
+  "location": "smc_daemon.adb:701:7",
+  "Size": 8,
+  "Alignment": 1
+}
+,
+{
+  "name": "Smc_Daemon.B_18.Args",
+  "location": "smc_daemon.adb:702:7",
+  "Size": 384,
+  "Alignment": 8
+}
+,
+{
+  "name": "Smc_Daemon.B_20.Args",
+  "location": "smc_daemon.adb:714:7",
   "Size": 256,
   "Alignment": 8
 }

@@ -2,6 +2,7 @@ with Ada.Text_IO;
 with Ada.Calendar;
 with Ada.Real_Time;
 with Ada.Strings.Fixed;
+with Ada.Unchecked_Conversion;
 with Interfaces.C;
 with Interfaces.C.Strings;
 with Interfaces;
@@ -42,6 +43,43 @@ procedure Smc_Daemon is
       Daemon_State.Request_Shutdown;
    end Handle_Signal;
 
+   function Float_To_Hex (Val : Float) return String is
+      use Interfaces;
+      function Float_To_Word is new Ada.Unchecked_Conversion (Float, Unsigned_32);
+      Word : Unsigned_32;
+      B0, B1, B2, B3 : Unsigned_8;
+      Hex_Map : constant String (1 .. 16) := "0123456789abcdef";
+      Result : String (1 .. 8);
+      
+      function To_Hex_Char (V : Unsigned_8) return Character is
+      begin
+         return Hex_Map (Natural (V) + 1);
+      end To_Hex_Char;
+   begin
+      Word := Float_To_Word (Val);
+      B0 := Unsigned_8 (Word and 16#FF#);
+      B1 := Unsigned_8 (Shift_Right (Word, 8) and 16#FF#);
+      B2 := Unsigned_8 (Shift_Right (Word, 16) and 16#FF#);
+      B3 := Unsigned_8 (Shift_Right (Word, 24) and 16#FF#);
+      
+      Result (1) := To_Hex_Char (Shift_Right (B0, 4) and 16#0F#);
+      Result (2) := To_Hex_Char (B0 and 16#0F#);
+      Result (3) := To_Hex_Char (Shift_Right (B1, 4) and 16#0F#);
+      Result (4) := To_Hex_Char (B1 and 16#0F#);
+      Result (5) := To_Hex_Char (Shift_Right (B2, 4) and 16#0F#);
+      Result (6) := To_Hex_Char (B2 and 16#0F#);
+      Result (7) := To_Hex_Char (Shift_Right (B3, 4) and 16#0F#);
+      Result (8) := To_Hex_Char (B3 and 16#0F#);
+      
+      return Result;
+   end Float_To_Hex;
+
+
+
+
+
+
+
    -- Local variables
    Conn : SMC_IO.IO_Connect_T := 0;
    Res  : int;
@@ -51,11 +89,26 @@ procedure Smc_Daemon is
    Key_F1Tg : chars_ptr := New_String ("F1Tg");
    Key_F0Md : chars_ptr := New_String ("F0Md");
    Key_F1Md : chars_ptr := New_String ("F1Md");
+   Key_F0Fb : chars_ptr := New_String ("F0Fb");
+   Key_F1Fb : chars_ptr := New_String ("F1Fb");
+   Key_F0Dc : chars_ptr := New_String ("F0Dc");
+   Key_F1Dc : chars_ptr := New_String ("F1Dc");
+   Key_F0St : chars_ptr := New_String ("F0St");
+   Key_F1St : chars_ptr := New_String ("F1St");
    Key_F0Ac : chars_ptr := New_String ("F0Ac");
    Key_F1Ac : chars_ptr := New_String ("F1Ac");
 
+   Key_aPMX : chars_ptr := New_String ("aPMX");
+   Key_mTPL : chars_ptr := New_String ("mTPL");
+
    Hex_01   : chars_ptr := New_String ("01");
    Hex_00   : chars_ptr := New_String ("00");
+   Hex_Fb   : chars_ptr := New_String ("01");
+   Hex_Dc   : chars_ptr := New_String ("4eab2c3f");
+   Hex_St   : chars_ptr := New_String ("05");
+
+   Hex_mTPL_On  : chars_ptr := New_String ("ffffffff");
+   Hex_mTPL_Off : chars_ptr := New_String ("00000000");
    
    -- State variables
    Current_Temp     : Float := 0.0;
@@ -121,6 +174,115 @@ procedure Smc_Daemon is
    begin
       GNAT.OS_Lib.Spawn ("/usr/sbin/pmset", Args, Success);
    end Run_Power_Command;
+
+   procedure Activate_Turbo_Mode (Reason : String) is
+   begin
+      if Daemon_State.Is_Turbo_Active then
+         return;
+      end if;
+      
+      Daemon_State.Set_Turbo (True);
+      Put_Line ("[DAEMON] Activating Turbo Fans and High Performance Mode... (Trigger: " & Reason & ")");
+      
+      -- Enable High Performance SMC Keys
+      Res := SMC_IO.Write_Key_Hex (Conn, Key_aPMX, Hex_01);
+      Res := SMC_IO.Write_Key_Hex (Conn, Key_mTPL, Hex_mTPL_On);
+      
+      -- Set System Power Modes for Turbo
+      declare
+         Args : GNAT.OS_Lib.Argument_List (1 .. 2);
+      begin
+         Args (1) := new String'("powermode");
+         Args (2) := new String'("0");
+         Run_Power_Command (Args);
+         GNAT.OS_Lib.Free (Args (1));
+         GNAT.OS_Lib.Free (Args (2));
+         
+         Args (1) := new String'("lowpowermode");
+         Args (2) := new String'("0");
+         Run_Power_Command (Args);
+         GNAT.OS_Lib.Free (Args (1));
+         GNAT.OS_Lib.Free (Args (2));
+      end;
+      
+      -- Engage high-performance pmset thermaldp
+      declare
+         Args : GNAT.OS_Lib.Argument_List (1 .. 2);
+      begin
+         Args (1) := new String'("thermaldp");
+         Args (2) := new String'("1");
+         Run_Power_Command (Args);
+         GNAT.OS_Lib.Free (Args (1));
+         GNAT.OS_Lib.Free (Args (2));
+      end;
+
+      -- Start dynamic Calibration run
+      Calibration_Active := True;
+      Calibration_Start_Time := Clock;
+      Calibration_Sum := 0.0;
+      Calibration_Count := 0;
+
+      SMC_Files.Notify_User ("TURBO", "High thermal demand (" & Reason & "). Engaging Turbo Performance profiles.");
+   end Activate_Turbo_Mode;
+
+   procedure Deactivate_Turbo_Mode (Reason : String) is
+   begin
+      if not Daemon_State.Is_Turbo_Active then
+         return;
+      end if;
+      
+      Daemon_State.Set_Turbo (False);
+      Daemon_State.Reset_Spikes;
+      Put_Line ("[DAEMON] Deactivating Turbo/Endurance Mode and Restoring Normal State... (Trigger: " & Reason & ")");
+      
+      -- Restore Performance SMC Keys
+      Res := SMC_IO.Write_Key_Hex (Conn, Key_aPMX, Hex_00);
+      Res := SMC_IO.Write_Key_Hex (Conn, Key_mTPL, Hex_mTPL_Off);
+      
+      -- Reset pmset thermaldp
+      declare
+         Args : GNAT.OS_Lib.Argument_List (1 .. 2);
+      begin
+         Args (1) := new String'("thermaldp");
+         Args (2) := new String'("0");
+         Run_Power_Command (Args);
+         GNAT.OS_Lib.Free (Args (1));
+         GNAT.OS_Lib.Free (Args (2));
+      end;
+
+      -- Restore default low power modes based on battery percent
+      declare
+         Args : GNAT.OS_Lib.Argument_List (1 .. 2);
+      begin
+         if Battery_Percent <= 20 then
+            Args (1) := new String'("powermode");
+            Args (2) := new String'("1");
+            Run_Power_Command (Args);
+            GNAT.OS_Lib.Free (Args (1));
+            GNAT.OS_Lib.Free (Args (2));
+            
+            Args (1) := new String'("lowpowermode");
+            Args (2) := new String'("1");
+            Run_Power_Command (Args);
+            GNAT.OS_Lib.Free (Args (1));
+            GNAT.OS_Lib.Free (Args (2));
+         else
+            Args (1) := new String'("powermode");
+            Args (2) := new String'("0");
+            Run_Power_Command (Args);
+            GNAT.OS_Lib.Free (Args (1));
+            GNAT.OS_Lib.Free (Args (2));
+            
+            Args (1) := new String'("lowpowermode");
+            Args (2) := new String'("0");
+            Run_Power_Command (Args);
+            GNAT.OS_Lib.Free (Args (1));
+            GNAT.OS_Lib.Free (Args (2));
+         end if;
+      end;
+
+      SMC_Files.Notify_User ("RESTORATION", "Temperature Normal. Restoring default power settings.");
+   end Deactivate_Turbo_Mode;
 
    -- Helper to print current timestamp string for logs
    function Get_Time_Str return String is
@@ -251,10 +413,21 @@ begin
          Put_Line ("[WARNING] ML Python sidecar bootstrap failed or venv not yet configured. Moving on...");
    end;
 
-   -- Take over fan control manual overrides (F0Md / F1Md -> 01)
+   -- Take over fan control manual overrides (F0Md / F1Md -> 01, plus Fb, Dc, St keys)
    Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Md, Hex_01);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Fb, Hex_Fb);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Dc, Hex_Dc);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F0St, Hex_St);
+
    Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Md, Hex_01);
-   Put_Line ("[DAEMON] Fan manual override taking effect (takeover keys set to 01).");
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Fb, Hex_Fb);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Dc, Hex_Dc);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_F1St, Hex_St);
+   Put_Line ("[DAEMON] Fan manual override taking effect (complete takeover keys set).");
+
+   -- Establish default normal state for high-performance keys
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_aPMX, Hex_00);
+   Res := SMC_IO.Write_Key_Hex (Conn, Key_mTPL, Hex_mTPL_Off);
 
    -- Load persistent Fan Pressure Calibration if available
    SMC_Files.Load_Fan_Calibration (Calibrated_Pres_RPM);
@@ -351,23 +524,20 @@ begin
 
       -- Set optimal Target fan speed (F0Tg / F1Tg)
       declare
-         use Ada.Strings.Fixed;
          F0Tg_Hex : chars_ptr;
          F1Tg_Hex : chars_ptr;
-         RPM_Int  : constant Integer := Integer (Target_RPM);
-         
-         -- RPM keys F0Tg/F1Tg require "fpe2" formatting which is 2-bytes fixed point.
-         -- The fpe2 type represents speed multiplied by 4!
-         Temp_Val : constant Natural := RPM_Int * 4;
-         Hex_Map  : constant String (1 .. 16) := "0123456789ABCDEF";
-         H1 : constant Character := Hex_Map (Temp_Val / 4096 mod 16 + 1);
-         H2 : constant Character := Hex_Map (Temp_Val / 256 mod 16 + 1);
-         H3 : constant Character := Hex_Map (Temp_Val / 16 mod 16 + 1);
-         H4 : constant Character := Hex_Map (Temp_Val mod 16 + 1);
-         Hex_Str  : constant String := "" & H1 & H2 & H3 & H4;
       begin
-         F0Tg_Hex := New_String (Hex_Str);
-         F1Tg_Hex := New_String (Hex_Str);
+         if Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
+            F0Tg_Hex := New_String ("ffffffff");
+            F1Tg_Hex := New_String ("ffffffff");
+         else
+            declare
+               Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));
+            begin
+               F0Tg_Hex := New_String (Hex_Str);
+               F1Tg_Hex := New_String (Hex_Str);
+            end;
+         end if;
          Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Tg, F0Tg_Hex);
          Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Tg, F1Tg_Hex);
          Free (F0Tg_Hex);
@@ -396,27 +566,21 @@ begin
       Prev_Z := CZ;
       Prev_SMS_Valid := SMS_Success;
 
-      -- Latency Monitor Trigger Checks
-      if Daemon_State.Get_Spike_Count >= 3 and not Daemon_State.Is_Turbo_Active then
-         Daemon_State.Set_Turbo (True);
-         SMC_Files.Notify_User ("TURBO", "Latency spikes detected by monitor. Engaging Turbo Performance profiles.");
-         
-         -- Engage high-performance pmset thermaldp
-         declare
-            Args : GNAT.OS_Lib.Argument_List (1 .. 2);
-         begin
-            Args (1) := new String'("thermaldp");
-            Args (2) := new String'("1");
-            Run_Power_Command (Args);
-            GNAT.OS_Lib.Free (Args (1));
-            GNAT.OS_Lib.Free (Args (2));
-         end;
-
-         -- Start dynamic Calibration run
-         Calibration_Active := True;
-         Calibration_Start_Time := Clock;
-         Calibration_Sum := 0.0;
-         Calibration_Count := 0;
+      -- Temperature and Spike Activation/Deactivation Loop Rules
+      if Daemon_State.Is_Turbo_Active then
+         if Last_TCMZ_Temp < 80.0 and then Last_GPU_Temp < 80.0 and then Power < 35.0 then
+            Deactivate_Turbo_Mode ("TCMz & GPU cooled below 80C");
+         end if;
+      else
+         if Last_TCMZ_Temp >= 93.0 then
+            Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
+         elsif Last_GPU_Temp >= 93.0 then
+            Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
+         elsif Power >= 45.0 then
+            Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
+         elsif Daemon_State.Get_Spike_Count >= 3 then
+            Activate_Turbo_Mode ("Latency spikes detected by monitor");
+         end if;
       end if;
 
       -- Handle dynamic Fan Pressure Calibration during Turbo
@@ -570,10 +734,23 @@ begin
    Free (Key_F1Tg);
    Free (Key_F0Md);
    Free (Key_F1Md);
+   Free (Key_F0Fb);
+   Free (Key_F1Fb);
+   Free (Key_F0Dc);
+   Free (Key_F1Dc);
+   Free (Key_F0St);
+   Free (Key_F1St);
    Free (Key_F0Ac);
    Free (Key_F1Ac);
+   Free (Key_aPMX);
+   Free (Key_mTPL);
    Free (Hex_01);
    Free (Hex_00);
+   Free (Hex_Fb);
+   Free (Hex_Dc);
+   Free (Hex_St);
+   Free (Hex_mTPL_On);
+   Free (Hex_mTPL_Off);
    
    if Python_Spawned then
       GNAT.OS_Lib.Free (Python_Args (1));

@@ -40,7 +40,7 @@ package ada_main is
    pragma Export (C, main, "main");
 
    type Version_32 is mod 2 ** 32;
-   u00001 : constant Version_32 := 16#fba4523a#;
+   u00001 : constant Version_32 := 16#89422a21#;
    pragma Export (C, u00001, "smc_daemonB");
    u00002 : constant Version_32 := 16#b2cfab41#;
    pragma Export (C, u00002, "system__standard_libraryB");
@@ -450,7 +450,7 @@ package ada_main is
    pragma Export (C, u00204, "system__tasking__utilitiesB");
    u00205 : constant Version_32 := 16#6483d4eb#;
    pragma Export (C, u00205, "system__tasking__utilitiesS");
-   u00206 : constant Version_32 := 16#eda754b3#;
+   u00206 : constant Version_32 := 16#e487fee6#;
    pragma Export (C, u00206, "smc_filesB");
    u00207 : constant Version_32 := 16#3a0ec24b#;
    pragma Export (C, u00207, "smc_filesS");
