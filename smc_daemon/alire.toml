@@ -5,3 +5,16 @@ authors = ["Albert Starfield"]
 maintainers = ["Albert Starfield <albertstarfield@example.com>"]
 maintainers-logins = ["albertstarfield"]
 licenses = "GPL-3.0-or-later"
+
+[[depends-on]]
+gnatprove = "^15.1.0"
+
+[[depends-on]]
+aunit = "^26.0.0"
+
+[[depends-on]]
+strategy = "~0.1.0"
+
+[[depends-on]]
+gnatcov = "^26.2.1"
+

@@ -7,12 +7,14 @@ with Interfaces.C;
 with Interfaces.C.Strings;
 with Interfaces;
 with GNAT.OS_Lib;
+with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 
 with SMC_IO;
 with SMC_Math;
 with SMC_Files;
 with SMC_Daemon_State;
+with SMC_Realtime;
 
 procedure Smc_Daemon is
    use Ada.Text_IO;
@@ -376,6 +378,9 @@ procedure Smc_Daemon is
 begin
    Put_Line ("[DAEMON] Apple Silicon SPARK Daemon starting up...");
 
+   -- Initialize Audio Workgroup
+   SMC_Realtime.Init_Audio_Workgroup;
+
    -- Validate Root Access (geteuid() == 0)
    if Get_EUID /= 0 then
       Put_Line ("[FATAL] This daemon must be run as root (sudo) to interact with kernel and SMC keys.");
@@ -473,307 +478,323 @@ begin
    SMC_Files.Notify_User ("BOOTSTRAP", "Ada/SPARK SMC Telemetry Engine and Controller loaded successfully.");
 
    -- Central Control Loop (Runs every 100ms)
-   while Daemon_State.Should_Keep_Running loop
-      Loop_Start_Time := Ada.Real_Time.Clock;
+   declare
+      Main_Token : aliased SMC_Realtime.Join_Token_T;
+   begin
+      SMC_Realtime.Join_Audio_Workgroup (Main_Token'Access);
+      SMC_Realtime.Configure_Realtime (100, 10, 10);
 
-      -- Read and validate all 10 system temperatures plus PSTR Power using safe SMC bounds readers
-      Last_TCMZ_Temp := Read_And_Validate_SMC_Temp ("TCMz", Last_TCMZ_Temp);
-      Last_GPU_Temp  := Read_And_Validate_SMC_Temp ("Tg0X", Last_GPU_Temp);
-      Last_TaLP_Temp := Read_And_Validate_SMC_Temp ("TaLP", Last_TaLP_Temp);
-      Last_TaRF_Temp := Read_And_Validate_SMC_Temp ("TaRF", Last_TaRF_Temp);
-      Last_TaLT_Temp := Read_And_Validate_SMC_Temp ("TaLT", Last_TaLT_Temp);
-      Last_TaLW_Temp := Read_And_Validate_SMC_Temp ("TaLW", Last_TaLW_Temp);
-      Last_TaRT_Temp := Read_And_Validate_SMC_Temp ("TaRT", Last_TaRT_Temp);
-      Last_TaRW_Temp := Read_And_Validate_SMC_Temp ("TaRW", Last_TaRW_Temp);
-      
-      -- ts0p and ts1p support hierarchy fallbacks
-      Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TS0P", Last_Ts0P_Temp);
-      if Last_Ts0P_Temp <= 0.0 then
-         Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("Ts0P", Last_Ts0P_Temp);
-      end if;
-      if Last_Ts0P_Temp <= 0.0 then
-         Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TW0P", Last_Ts0P_Temp);
-      end if;
+      while Daemon_State.Should_Keep_Running loop
+         Loop_Start_Time := Ada.Real_Time.Clock;
 
-      Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TS1P", Last_Ts1P_Temp);
-      if Last_Ts1P_Temp <= 0.0 then
-         Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("Ts1P", Last_Ts1P_Temp);
-      end if;
-      if Last_Ts1P_Temp <= 0.0 then
-         Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TW1P", Last_Ts1P_Temp);
-      end if;
-
-      -- Read power consumption
-      Power := Read_And_Validate_SMC_Temp ("PSTR", Power);
-
-      Current_Temp := Last_TCMZ_Temp;
-      Battery_Percent := SMC_Files.Get_Battery_Percent;
-
-      -- Calculate Gradients and Derivatives
-      if Prev_Temp > 0.0 then
-         Temp_Gradient := Current_Temp - Prev_Temp;
-      else
-         Temp_Gradient := 0.0;
-      end if;
-
-      -- Check for explicit TURBONOW request
-      SMC_Files.Check_And_Handle_TurboNow;
-
-      -- Read active Precool and Overdrive Mode flags
-      SMC_Files.Check_Precool_Mode (Precool_Active, Precool_Time_Left);
-      SMC_Files.Check_Overdrive_Mode (Overdrive_Active, Overdrive_Time_Left);
-      
-      if Overdrive_Active then
-         Put_Line ("[DAEMON] Overdrive Flag Active! Holding fans in manual Overdrive (ffffffff) for " & 
-                   Long_Integer'Image (Overdrive_Time_Left) & " seconds.");
-      end if;
-
-      -- Engage pre-cooling or standard mathematical target
-      CPU_GPU_Target := SMC_Math.Compute_Target_RPM (
-         Current_Temp         => SMC_Math.Temperature_Value (Current_Temp),
-         Power                => SMC_Math.Power_Value (Power),
-         Battery_Low_Survival => (Battery_Percent <= 3),
-         Endurance_Active     => (Battery_Percent <= 10) or Overdrive_Active,
-         Emergency_Load       => (Daemon_State.Get_Spike_Count >= 5),
-         Turbo_Active         => Daemon_State.Is_Turbo_Active or Precool_Active,
-         Derivative           => Temp_Gradient / 0.1
-      );
-
-      -- Battery Temperature PID Controller Loop (Using battery temperatures from TB0T, TB1T, TB2T)
-      declare
-         TB0T_Val : Float := 20.0;
-         TB1T_Val : Float := 20.0;
-         TB2T_Val : Float := 20.0;
-      begin
-         TB0T_Val := Read_And_Validate_SMC_Temp ("TB0T", TB0T_Val);
-         TB1T_Val := Read_And_Validate_SMC_Temp ("TB1T", TB1T_Val);
-         TB2T_Val := Read_And_Validate_SMC_Temp ("TB2T", TB2T_Val);
+         -- Read and validate all 10 system temperatures plus PSTR Power using safe SMC bounds readers
+         Last_TCMZ_Temp := Read_And_Validate_SMC_Temp ("TCMz", Last_TCMZ_Temp);
+         Last_GPU_Temp  := Read_And_Validate_SMC_Temp ("Tg0X", Last_GPU_Temp);
+         Last_TaLP_Temp := Read_And_Validate_SMC_Temp ("TaLP", Last_TaLP_Temp);
+         Last_TaRF_Temp := Read_And_Validate_SMC_Temp ("TaRF", Last_TaRF_Temp);
+         Last_TaLT_Temp := Read_And_Validate_SMC_Temp ("TaLT", Last_TaLT_Temp);
+         Last_TaLW_Temp := Read_And_Validate_SMC_Temp ("TaLW", Last_TaLW_Temp);
+         Last_TaRT_Temp := Read_And_Validate_SMC_Temp ("TaRT", Last_TaRT_Temp);
+         Last_TaRW_Temp := Read_And_Validate_SMC_Temp ("TaRW", Last_TaRW_Temp);
          
-         Max_Battery_Temp := TB0T_Val;
-         if TB1T_Val > Max_Battery_Temp then Max_Battery_Temp := TB1T_Val; end if;
-         if TB2T_Val > Max_Battery_Temp then Max_Battery_Temp := TB2T_Val; end if;
-         
-         SMC_Math.Update_Battery_PID (
-            State        => PID_Loop_State,
-            Current_Temp => SMC_Math.Temperature_Value (Max_Battery_Temp),
-            DT           => 0.1,
-            Output       => Battery_Target
-         );
-      end;
+         -- ts0p and ts1p support hierarchy fallbacks
+         Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TS0P", Last_Ts0P_Temp);
+         if Last_Ts0P_Temp <= 0.0 then
+            Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("Ts0P", Last_Ts0P_Temp);
+         end if;
+         if Last_Ts0P_Temp <= 0.0 then
+            Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TW0P", Last_Ts0P_Temp);
+         end if;
 
-      -- Target speed is maximum of CPU/GPU requirement and Battery PID requirement
-      Target_RPM := CPU_GPU_Target;
-      if Battery_Target > Target_RPM then
-         Target_RPM := Battery_Target;
-      end if;
+         Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TS1P", Last_Ts1P_Temp);
+         if Last_Ts1P_Temp <= 0.0 then
+            Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("Ts1P", Last_Ts1P_Temp);
+         end if;
+         if Last_Ts1P_Temp <= 0.0 then
+            Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TW1P", Last_Ts1P_Temp);
+         end if;
 
-      -- Set optimal Target fan speed (F0Tg / F1Tg)
-      declare
-         F0Tg_Hex : chars_ptr;
-         F1Tg_Hex : chars_ptr;
-      begin
-         if Overdrive_Active then
-            F0Tg_Hex := New_String ("0080d449");
-            F1Tg_Hex := New_String ("0080d449");
-         elsif Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
-            F0Tg_Hex := New_String ("0080d449");
-            F1Tg_Hex := New_String ("0080d449");
+         -- Read power consumption
+         Power := Read_And_Validate_SMC_Temp ("PSTR", Power);
+
+         Current_Temp := Last_TCMZ_Temp;
+         Battery_Percent := SMC_Files.Get_Battery_Percent;
+
+         -- Calculate Gradients and Derivatives
+         if Prev_Temp > 0.0 then
+            Temp_Gradient := Current_Temp - Prev_Temp;
          else
-            declare
-               Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));
-            begin
-               F0Tg_Hex := New_String (Hex_Str);
-               F1Tg_Hex := New_String (Hex_Str);
-            end;
+            Temp_Gradient := 0.0;
          end if;
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Tg, F0Tg_Hex);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Tg, F1Tg_Hex);
-         Free (F0Tg_Hex);
-         Free (F1Tg_Hex);
 
-         -- Re-enforce manual takeover keys in the loop to prevent macOS SMC firmware override
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Md, Hex_01);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Fb, Hex_Fb);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Dc, Hex_Dc);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F0St, Hex_St);
+         -- Check for explicit TURBONOW request
+         SMC_Files.Check_And_Handle_TurboNow;
 
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Md, Hex_01);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Fb, Hex_Fb);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Dc, Hex_Dc);
-         Res := SMC_IO.Write_Key_Hex (Conn, Key_F1St, Hex_St);
-      end;
-
-      -- Read actual Fan Speeds for telemetry
-      declare
-         Res0 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Ac, F0Ac_Val);
-         Res1 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Ac, F1Ac_Val);
-      begin
-         if Res0 /= 0 or Res1 /= 0 then
-            Put_Line ("[DAEMON] WARNING: Read_Key F0Ac/F1Ac failed with code: " & 
-                      Interfaces.C.int'Image (Res0) & " / " & Interfaces.C.int'Image (Res1));
-         end if;
-      end;
-
-      -- Read target Fan Speeds for telemetry
-      declare
-         Res0_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Tg, F0Tg_Val);
-         Res1_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Tg, F1Tg_Val);
-      begin
-         if Res0_Tg /= 0 or Res1_Tg /= 0 then
-            Put_Line ("[DAEMON] WARNING: Read_Key F0Tg/F1Tg failed with code: " & 
-                      Interfaces.C.int'Image (Res0_Tg) & " / " & Interfaces.C.int'Image (Res1_Tg));
-         end if;
-      end;
-
-      -- Accelerometer Delta Safety Check
-      SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
-      if SMS_Success and then Prev_SMS_Valid then
-         Delta_X := abs (CX - Prev_X);
-         Delta_Y := abs (CY - Prev_Y);
-         Delta_Z := abs (CZ - Prev_Z);
+         -- Read active Precool and Overdrive Mode flags
+         SMC_Files.Check_Precool_Mode (Precool_Active, Precool_Time_Left);
+         SMC_Files.Check_Overdrive_Mode (Overdrive_Active, Overdrive_Time_Left);
          
+         if Overdrive_Active then
+            Put_Line ("[DAEMON] Overdrive Flag Active! Holding fans in manual Overdrive (ffffffff) for " & 
+                      Long_Integer'Image (Overdrive_Time_Left) & " seconds.");
+         end if;
+
+         -- Engage pre-cooling or standard mathematical target
+         CPU_GPU_Target := SMC_Math.Compute_Target_RPM (
+            Current_Temp         => SMC_Math.Temperature_Value (Current_Temp),
+            Power                => SMC_Math.Power_Value (Power),
+            Battery_Low_Survival => (Battery_Percent <= 3),
+            Endurance_Active     => (Battery_Percent <= 10) or Overdrive_Active,
+            Emergency_Load       => (Daemon_State.Get_Spike_Count >= 5),
+            Turbo_Active         => Daemon_State.Is_Turbo_Active or Precool_Active,
+            Derivative           => Temp_Gradient / 0.1
+         );
+
+         -- Battery Temperature PID Controller Loop (Using battery temperatures from TB0T, TB1T, TB2T)
          declare
-            Total_Delta : constant Integer := Delta_X + Delta_Y + Delta_Z;
-            Limit       : constant Integer := (if Overdrive_Active then 200 else 50);
+            TB0T_Val : Float := 20.0;
+            TB1T_Val : Float := 20.0;
+            TB2T_Val : Float := 20.0;
          begin
-            if (Daemon_State.Is_Turbo_Active or Overdrive_Active) and then (Total_Delta > Limit) then
-               Daemon_State.Set_Turbo (False);
-               Daemon_State.Reset_Spikes;
-               if Overdrive_Active then
-                  Overdrive_Active := False;
-                  Overdrive_Time_Left := 0;
-                  SMC_Files.Notify_User ("SAFETY", "Extreme spatial movement (>2g) detected during TURBONOW! Deactivating Turbo/Overdrive Mode.");
-               else
-                  SMC_Files.Notify_User ("SAFETY", "Significant spatial movement detected. Deactivating Turbo Mode.");
-               end if;
+            TB0T_Val := Read_And_Validate_SMC_Temp ("TB0T", TB0T_Val);
+            TB1T_Val := Read_And_Validate_SMC_Temp ("TB1T", TB1T_Val);
+            TB2T_Val := Read_And_Validate_SMC_Temp ("TB2T", TB2T_Val);
+            
+            Max_Battery_Temp := TB0T_Val;
+            if TB1T_Val > Max_Battery_Temp then Max_Battery_Temp := TB1T_Val; end if;
+            if TB2T_Val > Max_Battery_Temp then Max_Battery_Temp := TB2T_Val; end if;
+            
+            SMC_Math.Update_Battery_PID (
+               State        => PID_Loop_State,
+               Current_Temp => SMC_Math.Temperature_Value (Max_Battery_Temp),
+               DT           => 0.1,
+               Output       => Battery_Target
+            );
+         end;
+
+         -- Target speed is maximum of CPU/GPU requirement and Battery PID requirement
+         Target_RPM := CPU_GPU_Target;
+         if Battery_Target > Target_RPM then
+            Target_RPM := Battery_Target;
+         end if;
+
+         -- Set optimal Target fan speed (F0Tg / F1Tg)
+         declare
+            F0Tg_Hex : chars_ptr;
+            F1Tg_Hex : chars_ptr;
+         begin
+            if Overdrive_Active then
+               F0Tg_Hex := New_String ("00102446");
+               F1Tg_Hex := New_String ("00102446");
+            elsif Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
+               F0Tg_Hex := New_String ("00102446");
+               F1Tg_Hex := New_String ("00102446");
+            else
+               declare
+                  Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));
+               begin
+                  F0Tg_Hex := New_String (Hex_Str);
+                  F1Tg_Hex := New_String (Hex_Str);
+               end;
+            end if;
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Tg, F0Tg_Hex);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Tg, F1Tg_Hex);
+            Free (F0Tg_Hex);
+            Free (F1Tg_Hex);
+
+            -- Re-enforce manual takeover keys in the loop to prevent macOS SMC firmware override
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Md, Hex_01);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Fb, Hex_Fb);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Dc, Hex_Dc);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0St, Hex_St);
+
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Md, Hex_01);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Fb, Hex_Fb);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Dc, Hex_Dc);
+            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1St, Hex_St);
+         end;
+
+         -- Read actual Fan Speeds for telemetry
+         declare
+            Res0 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Ac, F0Ac_Val);
+            Res1 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Ac, F1Ac_Val);
+         begin
+            if Res0 /= 0 or Res1 /= 0 then
+               Put_Line ("[DAEMON] WARNING: Read_Key F0Ac/F1Ac failed with code: " & 
+                         Interfaces.C.int'Image (Res0) & " / " & Interfaces.C.int'Image (Res1));
             end if;
          end;
-      end if;
-      Prev_X := CX;
-      Prev_Y := CY;
-      Prev_Z := CZ;
-      Prev_SMS_Valid := SMS_Success;
 
-      -- Temperature and Spike Activation/Deactivation Loop Rules
-      if Daemon_State.Is_Turbo_Active then
-         if Last_TCMZ_Temp < 80.0 and then Last_GPU_Temp < 80.0 and then Max_Battery_Temp < 38.0 and then Power < 35.0 then
-            Deactivate_Turbo_Mode ("TCMz, GPU, & Battery cooled down");
-         end if;
-      else
-         if Last_TCMZ_Temp >= 93.0 then
-            Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
-         elsif Last_GPU_Temp >= 93.0 then
-            Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
-         elsif Power >= 45.0 then
-            Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
-         elsif Max_Battery_Temp > 40.0 then
-            Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
-         elsif Daemon_State.Get_Spike_Count >= 3 then
-            Activate_Turbo_Mode ("Latency spikes detected by monitor");
-         end if;
-      end if;
+         -- Read target Fan Speeds for telemetry
+         declare
+            Res0_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Tg, F0Tg_Val);
+            Res1_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Tg, F1Tg_Val);
+         begin
+            if Res0_Tg /= 0 or Res1_Tg /= 0 then
+               Put_Line ("[DAEMON] WARNING: Read_Key F0Tg/F1Tg failed with code: " & 
+                         Interfaces.C.int'Image (Res0_Tg) & " / " & Interfaces.C.int'Image (Res1_Tg));
+            end if;
+         end;
 
-      -- Handle dynamic Fan Pressure Calibration during Turbo
-      if Calibration_Active then
-         Calibration_Sum := Calibration_Sum + Float (F0Ac_Val);
-         Calibration_Count := Calibration_Count + 1;
-         
-         -- Stop calibration after 10 seconds (100 loops)
-         if Clock - Calibration_Start_Time >= 10.0 then
-            Calibration_Active := False;
+         -- Accelerometer Delta Safety Check
+         SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
+         if SMS_Success and then Prev_SMS_Valid then
+            Delta_X := abs (CX - Prev_X);
+            Delta_Y := abs (CY - Prev_Y);
+            Delta_Z := abs (CZ - Prev_Z);
+            
             declare
-               Avg_RPM : constant Float := Calibration_Sum / Float (Calibration_Count);
-               Diff    : Float;
-               Est_HPa : Float;
+               Total_Delta : constant Integer := Delta_X + Delta_Y + Delta_Z;
+               Limit       : constant Integer := (if Overdrive_Active then 200 else 150);
             begin
-               if Calibrated_Pres_RPM > 0.0 then
-                  Diff := Avg_RPM - Calibrated_Pres_RPM;
-                  Est_HPa := 1006.0 * (Calibrated_Pres_RPM / Avg_RPM);
-                  SMC_Files.Write_Pressure_Report (
-                     Ref_RPM   => Calibrated_Pres_RPM,
-                     Cur_RPM   => Avg_RPM,
-                     Diff      => Diff,
-                     Est_HPa   => Est_HPa,
-                     Timestamp => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
-                  );
-                  Put_Line ("[CALIBRATION] Calibration complete. Estimated atmospheric pressure: " & Float'Image (Est_HPa) & " hPa.");
-               else
-                  -- Save current speed as reference RPM
-                  Calibrated_Pres_RPM := Avg_RPM;
-                  SMC_Files.Save_Fan_Calibration (Avg_RPM);
-                  Put_Line ("[CALIBRATION] Calibration complete. Pinned reference speed: " & Float'Image (Avg_RPM) & " RPM.");
-               end if;
-            end;
-         end if;
-      end if;
-
-      -- Export all individual sensor values to the EARU data directory using exact expected names
-      SMC_Files.Write_EARU_Temp ("TCMz", Last_TCMZ_Temp);
-      SMC_Files.Write_EARU_Temp ("Tg0X", Last_GPU_Temp);
-      SMC_Files.Write_EARU_Temp ("TaLP", Last_TaLP_Temp);
-      SMC_Files.Write_EARU_Temp ("TaRF", Last_TaRF_Temp);
-      SMC_Files.Write_EARU_Temp ("TaLT", Last_TaLT_Temp);
-      SMC_Files.Write_EARU_Temp ("TaLW", Last_TaLW_Temp);
-      SMC_Files.Write_EARU_Temp ("TaRT", Last_TaRT_Temp);
-      SMC_Files.Write_EARU_Temp ("TaRW", Last_TaRW_Temp);
-      SMC_Files.Write_EARU_Temp ("Ts0p", Last_Ts0P_Temp);
-      SMC_Files.Write_EARU_Temp ("Ts1p", Last_Ts1P_Temp);
-      SMC_Files.Write_EARU_Temp ("PSTR", Power);
-
-      SMC_Files.Write_EARU_Fan ("F0Ac", Float (F0Ac_Val));
-      SMC_Files.Write_EARU_Fan ("F1Ac", Float (F1Ac_Val));
-      SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
-      SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
-      SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
-
-      -- Write Telemetry CSV every 10 seconds (100 loops of 100ms)
-      if Clock - Last_Telemetry_Time >= 10.0 then
-         Last_Telemetry_Time := Clock;
-         SMC_Files.Log_Telemetry_CSV (
-            Day_Str         => Get_Day_Str,
-            Time_Only       => Get_Time_Str,
-            TCMZ_Temp       => Current_Temp,
-            GPU_Temp        => Last_GPU_Temp,
-            Battery_Temp    => Integer (Last_Ts0P_Temp), -- Using ts0p palm rest as secondary temp index in csv
-            Power           => Power,
-            Manual_Takeover => 1,
-            Overdrive       => (if Target_RPM >= 10100.0 then 1 else 0),
-            Temp_Gradient   => Temp_Gradient,
-            RPM_Gradient    => Float (F0Ac_Val) - Float (F1Ac_Val)
-         );
-
-         -- CoreML Automatic Training Trigger based on User Inactivity (HID idle time >= 7200 seconds / 2 hours)
-         if Clock - Last_ML_Check_Time >= 60.0 then
-            Last_ML_Check_Time := Clock;
-            declare
-               Idle_Time : constant Float := SMC_Files.Get_HID_Idle_Time;
-               Today     : constant String := Get_Day_Str;
-            begin
-               if Idle_Time >= 7200.0 then
-                  if Ada.Strings.Unbounded.To_String (Last_Trained_Day) /= Today then
-                     Spawn_CoreML_Training;
-                     Last_Trained_Day := Ada.Strings.Unbounded.To_Unbounded_String (Today);
-                     SMC_Files.Notify_User ("ML_TRAINING", "HID idle time reached 7200s. Automatically spawning model training.");
+               if (Daemon_State.Is_Turbo_Active or Overdrive_Active) and then (Total_Delta > Limit) then
+                  Daemon_State.Set_Turbo (False);
+                  Daemon_State.Reset_Spikes;
+                  if Overdrive_Active then
+                     Overdrive_Active := False;
+                     Overdrive_Time_Left := 0;
+                     SMC_Files.Notify_User ("SAFETY", "Extreme spatial movement (>2g) detected during TURBONOW! Deactivating Turbo/Overdrive Mode.");
+                  else
+                     SMC_Files.Notify_User ("SAFETY", "Significant spatial movement detected. Deactivating Turbo Mode.");
                   end if;
                end if;
             end;
          end if;
-      end if;
+         Prev_X := CX;
+         Prev_Y := CY;
+         Prev_Z := CZ;
+         Prev_SMS_Valid := SMS_Success;
 
-      -- Save state variables
-      Prev_Temp := Current_Temp;
-
-      -- High-precision delay to yield remaining loop time
-      declare
-         Elapsed_Span : constant Time_Span := Ada.Real_Time.Clock - Loop_Start_Time;
-         Target_Span  : constant Time_Span := Milliseconds (100);
-      begin
-         if Elapsed_Span < Target_Span then
-            delay To_Duration (Target_Span - Elapsed_Span);
+         -- Temperature and Spike Activation/Deactivation Loop Rules
+         if Daemon_State.Is_Turbo_Active then
+            if Last_TCMZ_Temp < 80.0 and then Last_GPU_Temp < 80.0 and then Max_Battery_Temp < 38.0 and then Power < 35.0 then
+               Deactivate_Turbo_Mode ("TCMz, GPU, & Battery cooled down");
+            end if;
+         else
+            if Last_TCMZ_Temp >= 93.0 then
+               Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
+            elsif Last_GPU_Temp >= 93.0 then
+               Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
+            elsif Power >= 45.0 then
+               Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
+            elsif Max_Battery_Temp > 40.0 then
+               Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
+            elsif Daemon_State.Get_Spike_Count >= 3 then
+               Activate_Turbo_Mode ("Latency spikes detected by monitor");
+            end if;
          end if;
-      end;
-      Ada.Text_IO.Flush;
-   end loop;
+
+         -- Handle dynamic Fan Pressure Calibration during Turbo
+         if Calibration_Active then
+            Calibration_Sum := Calibration_Sum + Float (F0Ac_Val);
+            Calibration_Count := Calibration_Count + 1;
+            
+            -- Stop calibration after 10 seconds (100 loops)
+            if Clock - Calibration_Start_Time >= 10.0 then
+               Calibration_Active := False;
+               declare
+                  Avg_RPM : constant Float := Calibration_Sum / Float (Calibration_Count);
+                  Diff    : Float;
+                  Est_HPa : Float;
+               begin
+                  if Calibrated_Pres_RPM > 0.0 then
+                     Diff := Avg_RPM - Calibrated_Pres_RPM;
+                     Est_HPa := 1006.0 * (Calibrated_Pres_RPM / Avg_RPM);
+                     SMC_Files.Write_Pressure_Report (
+                        Ref_RPM   => Calibrated_Pres_RPM,
+                        Cur_RPM   => Avg_RPM,
+                        Diff      => Diff,
+                        Est_HPa   => Est_HPa,
+                        Timestamp => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
+                     );
+                     Put_Line ("[CALIBRATION] Calibration complete. Estimated atmospheric pressure: " & Float'Image (Est_HPa) & " hPa.");
+                  else
+                     -- Save current speed as reference RPM
+                     Calibrated_Pres_RPM := Avg_RPM;
+                     SMC_Files.Save_Fan_Calibration (Avg_RPM);
+                     Put_Line ("[CALIBRATION] Calibration complete. Pinned reference speed: " & Float'Image (Avg_RPM) & " RPM.");
+                  end if;
+               end;
+            end if;
+         end if;
+
+         -- Export all individual sensor values to the EARU data directory using exact expected names
+         SMC_Files.Write_EARU_Temp ("TCMz", Last_TCMZ_Temp);
+         SMC_Files.Write_EARU_Temp ("Tg0X", Last_GPU_Temp);
+         SMC_Files.Write_EARU_Temp ("TaLP", Last_TaLP_Temp);
+         SMC_Files.Write_EARU_Temp ("TaRF", Last_TaRF_Temp);
+         SMC_Files.Write_EARU_Temp ("TaLT", Last_TaLT_Temp);
+         SMC_Files.Write_EARU_Temp ("TaLW", Last_TaLW_Temp);
+         SMC_Files.Write_EARU_Temp ("TaRT", Last_TaRT_Temp);
+         SMC_Files.Write_EARU_Temp ("TaRW", Last_TaRW_Temp);
+         SMC_Files.Write_EARU_Temp ("Ts0p", Last_Ts0P_Temp);
+         SMC_Files.Write_EARU_Temp ("Ts1p", Last_Ts1P_Temp);
+         SMC_Files.Write_EARU_Temp ("PSTR", Power);
+
+         SMC_Files.Write_EARU_Fan ("F0Ac", Float (F0Ac_Val));
+         SMC_Files.Write_EARU_Fan ("F1Ac", Float (F1Ac_Val));
+         SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
+         SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
+         SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
+
+         -- Write Telemetry CSV every 10 seconds (100 loops of 100ms)
+         if Clock - Last_Telemetry_Time >= 10.0 then
+            Last_Telemetry_Time := Clock;
+            SMC_Files.Log_Telemetry_CSV (
+               Day_Str         => Get_Day_Str,
+               Time_Only       => Get_Time_Str,
+               TCMZ_Temp       => Current_Temp,
+               GPU_Temp        => Last_GPU_Temp,
+               Battery_Temp    => Integer (Last_Ts0P_Temp), -- Using ts0p palm rest as secondary temp index in csv
+               Power           => Power,
+               Manual_Takeover => 1,
+               Overdrive       => (if Target_RPM >= 10100.0 then 1 else 0),
+               Temp_Gradient   => Temp_Gradient,
+               RPM_Gradient    => Float (F0Ac_Val) - Float (F1Ac_Val)
+            );
+
+            -- CoreML Automatic Training Trigger based on User Inactivity (HID idle time >= 7200 seconds / 2 hours)
+            if Clock - Last_ML_Check_Time >= 60.0 then
+               Last_ML_Check_Time := Clock;
+               declare
+                  Idle_Time : constant Float := SMC_Files.Get_HID_Idle_Time;
+                  Today     : constant String := Get_Day_Str;
+               begin
+                  if Idle_Time >= 7200.0 then
+                     if Ada.Strings.Unbounded.To_String (Last_Trained_Day) /= Today then
+                        Spawn_CoreML_Training;
+                        Last_Trained_Day := Ada.Strings.Unbounded.To_Unbounded_String (Today);
+                        SMC_Files.Notify_User ("ML_TRAINING", "HID idle time reached 7200s. Automatically spawning model training.");
+                     end if;
+                  end if;
+               end;
+            end if;
+         end if;
+
+         -- Save state variables
+         Prev_Temp := Current_Temp;
+
+         -- High-precision delay to yield remaining loop time
+         declare
+            use Ada.Real_Time;
+            Elapsed_Span : constant Time_Span := Ada.Real_Time.Clock - Loop_Start_Time;
+            Target_Span  : constant Time_Span := Milliseconds (100);
+         begin
+            if Elapsed_Span < Target_Span then
+               delay To_Duration (Target_Span - Elapsed_Span);
+            else
+               -- Loop overrun: just yield briefly to prevent CPU starvation
+               delay 0.001;
+            end if;
+         end;
+         Ada.Text_IO.Flush;
+      end loop;
+      SMC_Realtime.Leave_Audio_Workgroup (Main_Token'Access);
+   exception
+      when E : others =>
+         Put_Line ("[FATAL ERROR] Daemon main loop crashed: " & Ada.Exceptions.Exception_Information (E));
+         SMC_Realtime.Leave_Audio_Workgroup (Main_Token'Access);
+   end;
 
    -- Clean Restoration on Shutdown
    Put_Line ("[RESTORATION] Commencing system restoration procedures...");

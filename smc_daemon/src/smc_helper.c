@@ -224,7 +224,7 @@ int smc_helper_read_key(io_connect_t conn, const char *key, float *val)
     kern_return_t result = SMCReadKey2(key, &rawVal, conn);
     if (result == kIOReturnSuccess) {
         *val = getFloatFromVal(rawVal);
-        if (strcmp(key, "F0Ac") == 0 || strcmp(key, "F1Ac") == 0) {
+        if (strcmp(key, "F0Ac") == 0 || strcmp(key, "F1Ac") == 0 || strcmp(key, "F0Tg") == 0 || strcmp(key, "F1Tg") == 0) {
             printf("[DAEMON_C_HELPER] Read key %s: dataType=%s, dataSize=%d, val=%f, bytes=%02x%02x%02x%02x\n", 
                    key, rawVal.dataType, rawVal.dataSize, *val,
                    rawVal.bytes[0], rawVal.bytes[1], rawVal.bytes[2], rawVal.bytes[3]);

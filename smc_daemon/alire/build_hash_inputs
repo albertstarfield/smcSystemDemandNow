@@ -1,3 +1,5 @@
+dependency:aunit=26.0.0=5016b330b962c6f721e70106cb9e96fe7113d9c0d82842adb3b39c6d453b5e44
+dependency:strategy=0.1.0=f0148b17da057d65de358b03d3901e68b0624e9f9a54b0eefac10d57116538ee
 external:LIBRARY_TYPE=default
 external:SMC_DAEMON_LIBRARY_TYPE=default
 profile:smc_daemon=DEVELOPMENT

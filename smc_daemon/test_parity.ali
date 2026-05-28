@@ -1,0 +1,94 @@
+V "GNAT Lib v15"
+M P W=b
+P ZX
+
+RN
+RV NO_IO
+RV NO_DYNAMIC_SIZED_OBJECTS
+
+U test_parity%b		test_parity.adb		92559d9f NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.strings%s		a-string.ads		a-string.ali
+W ada.strings.fixed%s	a-strfix.adb		a-strfix.ali
+Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+W gnat%s		gnat.ads		gnat.ali
+W gnat.sha256%s		g-sha256.ads		g-sha256.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.img_int%s	s-imgint.ads		s-imgint.ali
+
+D ada.ads		20250419085653 76789da1 ada%s
+D a-charac.ads		20250419085653 2d3ec45b ada.characters%s
+D a-chlat1.ads		20250419085653 e0d72e76 ada.characters.latin_1%s
+D a-except.ads		20250419085653 e7970cd9 ada.exceptions%s
+D a-ioexce.ads		20250419085653 40018c65 ada.io_exceptions%s
+D a-stream.ads		20250419085653 17477cbd ada.streams%s
+D a-string.ads		20250419085653 90ac6797 ada.strings%s
+D a-strfix.ads		20250419085653 8648dedb ada.strings.fixed%s
+D a-strmap.ads		20250419085653 1f91ebb6 ada.strings.maps%s
+D a-strsea.ads		20250419085653 18c3c634 ada.strings.search%s
+D a-sttebu.ads		20250419085653 f1ad67a2 ada.strings.text_buffers%s
+D a-stuten.ads		20250419085653 c6ced0ae ada.strings.utf_encoding%s
+D a-tags.ads		20250419085653 fbca0ad5 ada.tags%s
+D a-textio.ads		20250419085653 34ef47de ada.text_io%s
+D a-unccon.ads		20250419085653 0e9b276f ada.unchecked_conversion%s
+D gnat.ads		20250419085653 b5988c27 gnat%s
+D g-bytswa.ads		20250419085653 a4d21639 gnat.byte_swapping%s
+D g-sechas.ads		20250419085653 302163b5 gnat.secure_hashes%s
+D g-shsh32.ads		20250419085653 ff78221c gnat.secure_hashes.sha2_32%s
+D g-shshco.ads		20250419085653 1144502c gnat.secure_hashes.sha2_common%s
+D g-sha256.ads		20250419085653 c083f050 gnat.sha256%s
+D interfac.ads		20250419085653 9111f9c1 interfaces%s
+D i-cstrea.ads		20250419085653 ffd01b9d interfaces.c_streams%s
+D system.ads		20250419085653 70765b54 system%s
+D s-conca2.ads		20250419085653 b5fb73f7 system.concat_2%s
+D s-crtl.ads		20250419085653 beb39b9e system.crtl%s
+D s-exctab.ads		20250419085653 91bef6ef system.exception_table%s
+D s-ficobl.ads		20250419085653 dc5161d4 system.file_control_block%s
+D s-imagei.ads		20250419085653 5e131ce0 system.image_i%s
+D s-imgint.ads		20250419085653 67e4edfb system.img_int%s
+D s-parame.ads		20250419085653 3597fc11 system.parameters%s
+D s-putima.ads		20250419085653 17291fe4 system.put_images%s
+D s-secsta.ads		20250419085653 578279f5 system.secondary_stack%s
+D s-soflin.ads		20250419085653 5d88fdea system.soft_links%s
+D s-stache.ads		20250419085653 0b81c1fe system.stack_checking%s
+D s-stalib.ads		20250419085653 1c9580f6 system.standard_library%s
+D s-stoele.ads		20250419085653 ccded4e8 system.storage_elements%s
+D s-traent.ads		20250419085653 c81cbf8c system.traceback_entries%s
+D s-unstyp.ads		20250419085653 fa2a7f59 system.unsigned_types%s
+D s-valspe.ads		20250419085653 f810d31c system.val_spec%s
+D s-vaispe.ads		20250419085653 8280550e system.value_i_spec%s
+D s-vauspe.ads		20250419085653 89269ba5 system.value_u_spec%s
+D s-vs_int.ads		20250419085653 06b6b724 system.vs_int%s
+D s-vs_uns.ads		20250419085653 e7f47a27 system.vs_uns%s
+D s-wchcon.ads		20250419085653 d9032363 system.wch_con%s
+D test_parity.adb	20260528072508 e071f4ca test_parity%b
+G a e
+G c Z b b [test_parity standard 5 11 none]
+X 1 ada.ads
+18K9*Ada 22e8 46|1r6 1r23 3r6 3r29
+X 7 a-string.ads
+16K13*Strings 35e16 46|3r10 3r33
+X 8 a-strfix.ads
+49K21*Fixed 1390e22 46|3w18 3r41
+252V13*Index{natural} 46|8s37
+X 14 a-textio.ads
+58K13*Text_IO 785e16 46|1w10 1r27
+565U14*Put_Line 46|10s4 11s4 20s10 21s10 22s10 23s10 24s10 27s13 29s13 33s7
+X 16 gnat.ads
+40K9*GNAT 63e9 46|2r6 18r41
+X 18 g-sechas.ads
+178A15*Message_Digest{string}<integer>
+186V16*Digest{178A15[21|43]} 46|18s53[21|43]
+X 21 g-sha256.ads
+43K14*SHA256[18|126] 46|2w11 18r46
+X 46 test_parity.adb
+5U11*Test_Parity 5b11 35l5 35t16
+6a4 S_Primary{string} 8r44 10r50 15r37 15r48 17r41 23r41 26r25
+7a4 P_Marker{string} 8r55 16r56
+8i4 Marker_Idx{integer} 11r46 13r7 15r67 16r43
+15a10 Part1{string} 18r61 20r32
+16i10 Hash_Start{integer} 21r52 23r52 26r36
+17i10 Hash_End{integer} 22r50 23r66 26r50
+18a10 Calc_Hash{18|178A15[21|43]} 24r42 26r13
+

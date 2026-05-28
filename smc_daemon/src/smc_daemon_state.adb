@@ -2,6 +2,7 @@ with Ada.Text_IO;
 with Ada.Numerics.Elementary_Functions;
 with Ada.Real_Time;
 with GNAT.OS_Lib;
+with SMC_Realtime;
 
 package body SMC_Daemon_State is
 
@@ -97,9 +98,15 @@ package body SMC_Daemon_State is
             end loop;
          end loop;
       end Sort_Medians;
+
+      Token : aliased SMC_Realtime.Join_Token_T;
    begin
       -- Allow daemon initialization first
       delay 2.0;
+
+      SMC_Realtime.Join_Audio_Workgroup (Token'Access);
+      -- Configure: period 10ms, computation 1ms, constraint 2ms
+      SMC_Realtime.Configure_Realtime (10, 1, 2);
 
       while Daemon_State.Should_Keep_Running loop
          Start_Time := Ada.Real_Time.Clock;
@@ -154,6 +161,10 @@ package body SMC_Daemon_State is
          
          delay 0.01; -- 10ms loop
       end loop;
+      SMC_Realtime.Leave_Audio_Workgroup (Token'Access);
+   exception
+      when others =>
+         SMC_Realtime.Leave_Audio_Workgroup (Token'Access);
    end Latency_Monitor_T;
 
    -----------------------
@@ -164,6 +175,7 @@ package body SMC_Daemon_State is
       Success : Boolean;
       Args    : GNAT.OS_Lib.Argument_List (1 .. 2);
    begin
+      SMC_Realtime.Configure_Realtime (5000, 50, 100);
       Args (1) := new String'("-STOP");
       Args (2) := new String'("thermalmonitord");
       

@@ -2,6 +2,7 @@ with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Calendar;
 with Ada.Strings.Fixed;
+with SMC_Integrity;
 
 package body SMC_Files is
 
@@ -29,6 +30,13 @@ package body SMC_Files is
       use Ada.Text_IO;
       File : File_Type;
    begin
+      if Path = EARU_DATA_FILE then
+         SMC_Integrity.Verify_And_Heal_File (Path, Content, Length, Success);
+         if Success then
+            return;
+         end if;
+      end if;
+
       Length := 0;
       Success := False;
       if not Ada.Directories.Exists (Path) then
@@ -170,6 +178,11 @@ package body SMC_Files is
          if Temp_Idx > 0 then
             FZ := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
          end if;
+
+         -- Clamp values to avoid Constraint_Error during integer conversion
+         FX := Float'Max (-327.0, Float'Min (327.0, FX));
+         FY := Float'Max (-327.0, Float'Min (327.0, FY));
+         FZ := Float'Max (-327.0, Float'Min (327.0, FZ));
 
          X := Integer (FX * 100.0);
          Y := Integer (FY * 100.0);

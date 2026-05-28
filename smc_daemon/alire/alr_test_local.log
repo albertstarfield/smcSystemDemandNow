@@ -1,0 +1,7 @@
+[alr test] Testing smc_daemon=0.1.0-dev
+[alr test] Spawning default local test: alr -d -n build --release
+Note: Building smc_daemon=0.1.0-dev/smc_daemon.gpr...
+gprbuild: "smc_daemon" up to date
+Success: Build finished successfully in 0.65 seconds.
+Found declared GPR file: smc_daemon.gpr
+[alr test] Test completed SUCCESSFULLY
