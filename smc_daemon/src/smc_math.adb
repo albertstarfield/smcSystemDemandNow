@@ -1,3 +1,6 @@
+with Ada.Numerics.Elementary_Functions;
+with Ada.Numerics;
+
 package body SMC_Math with SPARK_Mode is
 
    ------------------------
@@ -127,5 +130,51 @@ package body SMC_Math with SPARK_Mode is
       -- Save error for next iteration
       State.Prev_Error := Error;
    end Update_Battery_PID;
+
+   ---------------------------------
+   -- Compute_Log_Transition_RPM --
+   ---------------------------------
+
+   function Compute_Log_Transition_RPM (
+      Start_RPM : Float;
+      End_RPM   : Float;
+      Elapsed   : Float;
+      Duration  : Float
+   ) return RPM_Value 
+     with SPARK_Mode => Off
+   is
+      use Ada.Numerics.Elementary_Functions;
+      T : Float;
+      Factor : Float;
+      Result : Float;
+   begin
+      if Elapsed >= Duration then
+         return RPM_Value (End_RPM);
+      end if;
+      if Elapsed <= 0.0 then
+         return RPM_Value (Start_RPM);
+      end if;
+
+      -- Normalized time t from 0 to 1
+      T := Elapsed / Duration;
+      
+      -- We want a decay curve from Start to End.
+      -- A natural log decay: Factor = 1.0 - ln(1 + (e - 1) * t)
+      -- At t=0, Factor = 1.0 - ln(1) = 1.0 -> Start_RPM
+      -- At t=1, Factor = 1.0 - ln(e) = 0.0 -> End_RPM
+      -- This curve stays high and then drops, providing high cooling for longer.
+      Factor := 1.0 - Log (1.0 + (Ada.Numerics.e - 1.0) * T);
+      
+      Result := End_RPM + (Start_RPM - End_RPM) * Factor;
+      
+      -- Clamp result to valid RPM range
+      if Result < 0.0 then
+         return 0.0;
+      elsif Result > 10100.0 then
+         return 10100.0;
+      else
+         return RPM_Value (Result);
+      end if;
+   end Compute_Log_Transition_RPM;
 
 end SMC_Math;

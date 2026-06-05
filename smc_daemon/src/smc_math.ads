@@ -46,4 +46,12 @@ package SMC_Math with SPARK_Mode is
             State.Prev_Error in -1000.0 .. 1000.0,
      Post => Output in MIN_MANUAL_FAN_RPM .. MAX_NORMAL_FAN_RPM;
 
+   -- Compute logarithmic transition between two RPM values over a duration
+   function Compute_Log_Transition_RPM (
+      Start_RPM : Float;
+      End_RPM   : Float;
+      Elapsed   : Float;
+      Duration  : Float
+   ) return RPM_Value;
+
 end SMC_Math;

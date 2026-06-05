@@ -1,6 +1,5 @@
 with Ada.Text_IO;
 with Ada.Numerics.Elementary_Functions;
-with Ada.Real_Time;
 with GNAT.OS_Lib;
 with SMC_Realtime;
 
@@ -30,6 +29,33 @@ package body SMC_Daemon_State is
       begin
          return Turbo_Active;
       end Is_Turbo_Active;
+
+      procedure Start_Cooldown (Start_RPM : Float) is
+      begin
+         In_Cooldown := True;
+         Cooldown_Start_Time := Ada.Real_Time.Clock;
+         Cooldown_Start_RPM := Start_RPM;
+      end Start_Cooldown;
+
+      procedure Cancel_Cooldown is
+      begin
+         In_Cooldown := False;
+      end Cancel_Cooldown;
+
+      function Is_In_Cooldown return Boolean is
+      begin
+         return In_Cooldown;
+      end Is_In_Cooldown;
+
+      function Get_Cooldown_Start_Time return Ada.Real_Time.Time is
+      begin
+         return Cooldown_Start_Time;
+      end Get_Cooldown_Start_Time;
+
+      function Get_Cooldown_Start_RPM return Float is
+      begin
+         return Cooldown_Start_RPM;
+      end Get_Cooldown_Start_RPM;
 
       procedure Register_Spike is
       begin

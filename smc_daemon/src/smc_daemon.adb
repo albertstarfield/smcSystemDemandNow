@@ -252,7 +252,11 @@ procedure Smc_Daemon is
       
       Daemon_State.Set_Turbo (False);
       Daemon_State.Reset_Spikes;
-      Put_Line ("[DAEMON] Deactivating Turbo/Endurance Mode and Restoring Normal State... (Trigger: " & Reason & ")");
+      
+      -- Start natural logarithmic cooldown from current actual RPM
+      Daemon_State.Start_Cooldown (Float (F0Ac_Val));
+      
+      Put_Line ("[DAEMON] Deactivating Turbo/Endurance Mode. Transitioning to normal PID via 60s log curve... (Trigger: " & Reason & ")");
       
       -- Restore Performance SMC Keys
       Res := SMC_IO.Write_Key_Hex (Conn, Key_aPMX, Hex_00);
@@ -519,6 +523,7 @@ begin
          SMC_Files.Check_Precool_Mode (Precool_Active, Precool_Time_Left);
          
          declare
+            Prev_Overdrive : constant Boolean := Overdrive_Active;
             File_Overdrive_Active : Boolean;
             File_Overdrive_Time_Left : Long_Integer;
          begin
@@ -542,6 +547,14 @@ begin
                -- If not emergency load, fall back to file-based overdrive state
                Overdrive_Active := File_Overdrive_Active;
                Overdrive_Time_Left := File_Overdrive_Time_Left;
+            end if;
+
+            -- Trigger cooldown if Overdrive was active and is now disabled
+            if Prev_Overdrive and then not Overdrive_Active then
+               if not Daemon_State.Is_Turbo_Active then
+                  Daemon_State.Start_Cooldown (Float (F0Ac_Val));
+                  Put_Line ("[DAEMON] Overdrive deactivated. Starting natural log transition (60s)...");
+               end if;
             end if;
          end;
          
@@ -587,6 +600,33 @@ begin
          Target_RPM := CPU_GPU_Target;
          if Battery_Target > Target_RPM then
             Target_RPM := Battery_Target;
+         end if;
+
+         -- Handle Cooldown Transition (Natural Logarithmic)
+         if Daemon_State.Is_Turbo_Active or else Overdrive_Active then
+            if Daemon_State.Is_In_Cooldown then
+               Daemon_State.Cancel_Cooldown;
+               Put_Line ("[DAEMON] Turbo/Overdrive re-engaged. Cooldown transition CANCELLED.");
+            end if;
+         elsif Daemon_State.Is_In_Cooldown then
+            declare
+               use Ada.Real_Time;
+               Elapsed : constant Time_Span := Clock - Daemon_State.Get_Cooldown_Start_Time;
+               Elapsed_Sec : constant Float := Float (To_Duration (Elapsed));
+               Cooldown_Duration : constant Float := 60.0;
+            begin
+               if Elapsed_Sec >= Cooldown_Duration then
+                  Daemon_State.Cancel_Cooldown;
+                  Put_Line ("[DAEMON] Turbo Cooldown complete. Resuming normal PID control.");
+               else
+                  Target_RPM := SMC_Math.Compute_Log_Transition_RPM (
+                     Start_RPM => Daemon_State.Get_Cooldown_Start_RPM,
+                     End_RPM   => Float (Target_RPM),
+                     Elapsed   => Elapsed_Sec,
+                     Duration  => Cooldown_Duration
+                  );
+               end if;
+            end;
          end if;
 
          -- Set optimal Target fan speed (F0Tg / F1Tg)
@@ -831,7 +871,6 @@ begin
 
          -- High-precision delay to yield remaining loop time
          declare
-            use Ada.Real_Time;
             Elapsed_Span : constant Time_Span := Ada.Real_Time.Clock - Loop_Start_Time;
             Target_Span  : constant Time_Span := Milliseconds (100);
          begin
