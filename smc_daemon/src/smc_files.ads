@@ -7,6 +7,8 @@ package SMC_Files is
    TURBONOW_FLAG  : constant String := "/usr/local/smcSystemDemandNow/TURBONOW";
    EARU_DATA_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_data.dat";
    SILENT_MODE_FLAG : constant String := "/usr/local/smcSystemDemandNow/SilentMode";
+   DISABLE_SAFETY_FLAG : constant String := "/usr/local/smcSystemDemandNow/DisableSafety";
+   FULL_POWER_OVERRIDE_FLAG : constant String := "/usr/local/smcSystemDemandNow/TOGAFULLPOWEROVERRIDE";
    CALIBRATION_FILE : constant String := "calibrated1006presRPM.pinnedrpm";
    
    PRESSURE_REPORT_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/smcFanPressurehPaDetection";
@@ -41,6 +43,9 @@ package SMC_Files is
 
    -- rolling log implementation for notifications (max 1000 lines)
    procedure Notify_User (Title, Message : String);
+
+   -- Fetch and cache all telemetry from EARU_data.dat in one pass
+   procedure Update_Telemetry_Cache;
 
    -- Check if TURBONOW file exists. If so, delete it and set OverdriveMode for 10 minutes
    procedure Check_And_Handle_TurboNow;

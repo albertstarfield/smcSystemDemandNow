@@ -20,8 +20,12 @@ package body SMC_Math with SPARK_Mode is
          return 0.0;
       end if;
 
-      if Endurance_Active or Emergency_Load then
+      if Emergency_Load then
          return 10100.0;
+      end if;
+
+      if Endurance_Active then
+         return MIN_MANUAL_FAN_RPM;
       end if;
 
       if Turbo_Active then

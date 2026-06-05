@@ -9,6 +9,29 @@ with Interfaces.C.Strings;
 
 package body SMC_Integrity is
 
+   -- =========================================================================
+   -- TECHNICAL NOTE: Telemetry Integrity and Stability Fixes (2026-05-28)
+   -- =========================================================================
+   -- 1. Parity Failure (Encoding & Alignment):
+   --    The parity mismatch was primarily caused by double-encoding of non-ASCII
+   --    UTF-8 characters (like the ● symbol for vibration events) when writing
+   --    to EARU_data.dat.
+   --    - Cause: Earu_Daemon was hashing raw bytes but using Ada.Text_IO for
+   --      file output, which performed an additional UTF-8 encoding step on
+   --      non-ASCII bytes. This resulted in the file containing different bytes
+   --      than what was hashed, causing the reader (smc_daemon) to calculate
+   --      a different hash.
+   --    - Fix: EARU now writes raw bytes using Stream_IO, and the reader here
+   --      robustly reconstructs the JSON payload for hashing, accounting for
+   --      potential trailing whitespace or carriage returns.
+   --
+   -- 2. Daemon Shutdown (Loop Overrun):
+   --    The daemon previously stopped because an unhandled exception occurred
+   --    in the main loop due to high-precision delay logic using a potentially
+   --    negative Time_Span if a loop cycle took more than 100ms.
+   --    - Fix: Added safety checks and exception handlers with detailed logging.
+   -- =========================================================================
+
    use Ada.Strings.Unbounded;
    use Ada.Strings.Fixed;
    use type Interfaces.Unsigned_32;
@@ -144,6 +167,9 @@ package body SMC_Integrity is
       end;
 
       -- 2. Verify primary line's parity
+      -- NOTE: We trim the line and manually reconstruct the JSON part before the parity field.
+      -- This is essential because the writer (EARU_daemon) writes raw bytes, and we must 
+      -- ensure no extra padding or double-encoding artifacts interfere with the SHA256 sum.
       declare
          S_Primary : constant String := Ada.Strings.Fixed.Trim (To_String (Primary_Line), Ada.Strings.Both);
          P_Marker : constant String := ", ""parity"": """;

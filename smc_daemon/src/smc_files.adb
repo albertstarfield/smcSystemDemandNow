@@ -144,51 +144,171 @@ package body SMC_Files is
       return C_Time (0);
    end Get_Unix_Time;
 
-   ----------------------
-   -- Read_SMS_Values  --
-   ----------------------
+   ---------------------
+   -- Telemetry_Cache --
+   ---------------------
 
-   procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean) is
+   -- Internal state for telemetry cache to avoid redundant SHA256 hashing and file parsing
+   protected Telemetry_Cache is
+      procedure Update (
+         New_Battery : Integer;
+         New_X, New_Y, New_Z : Integer;
+         New_L1, New_L2, New_L3 : Float;
+         New_Idle : Float;
+         New_Success : Boolean
+      );
+      function Get_Battery return Integer;
+      procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean);
+      procedure Check_Load (Max_Load : out Float; Status : out Integer);
+      function Get_Idle return Float;
+   private
+      Battery : Integer := 100;
+      X, Y, Z : Integer := 0;
+      L1, L2, L3 : Float := 0.0;
+      Idle : Float := 0.0;
+      Success : Boolean := False;
+   end Telemetry_Cache;
+
+   protected body Telemetry_Cache is
+      procedure Update (
+         New_Battery : Integer;
+         New_X, New_Y, New_Z : Integer;
+         New_L1, New_L2, New_L3 : Float;
+         New_Idle : Float;
+         New_Success : Boolean
+      ) is
+      begin
+         Battery := New_Battery;
+         X := New_X; Y := New_Y; Z := New_Z;
+         L1 := New_L1; L2 := New_L2; L3 := New_L3;
+         Idle := New_Idle;
+         Success := New_Success;
+      end Update;
+
+      function Get_Battery return Integer is (Battery);
+
+      procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean) is
+      begin
+         X := Telemetry_Cache.X;
+         Y := Telemetry_Cache.Y;
+         Z := Telemetry_Cache.Z;
+         Success := Telemetry_Cache.Success;
+      end Get_SMS;
+
+      procedure Check_Load (Max_Load : out Float; Status : out Integer) is
+         ML : Float;
+      begin
+         ML := L1;
+         if L2 > ML then ML := L2; end if;
+         if L3 > ML then ML := L3; end if;
+         
+         Max_Load := ML;
+         if ML >= 100.0 then
+            Status := 2;
+         elsif ML >= 50.0 then
+            Status := 1;
+         else
+            Status := 0;
+         end if;
+      end Check_Load;
+
+      function Get_Idle return Float is (Idle);
+   end Telemetry_Cache;
+
+   ----------------------------
+   -- Update_Telemetry_Cache --
+   ----------------------------
+
+   procedure Update_Telemetry_Cache is
       Content : String (1 .. 65536);
       Length : Natural;
       File_Success : Boolean;
       use Ada.Strings.Fixed;
-      Idx, Temp_Idx : Natural;
+      Idx, Temp_Idx, Comma_Idx : Natural;
+      
+      -- Temps for SMS
       FX, FY, FZ : Float := 0.0;
+      CX, CY, CZ : Integer := 0;
+      
+      -- Temps for Load
+      L1, L2, L3 : Float := 0.0;
+      
+      -- Temps for Battery
+      B_Percent : Integer := 100;
+      
+      -- Temps for Idle
+      Idle_Sec : Float := 0.0;
    begin
-      X := 0; Y := 0; Z := 0; Success := False;
       Read_File_Content (EARU_DATA_FILE, Content, Length, File_Success);
       if not File_Success then
+         Telemetry_Cache.Update (100, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, False);
          return;
       end if;
 
+      -- 1. Parse Battery
+      Idx := Index (Content (1 .. Length), """battery_percent"":");
+      if Idx > 0 then
+         B_Percent := Parse_Int_After (Content (1 .. Length), Idx + 18, 100);
+      end if;
+
+      -- 2. Parse SMS
       Idx := Index (Content (1 .. Length), """accel"": {");
       if Idx > 0 then
          Temp_Idx := Index (Content (Idx .. Length), """x"":");
          if Temp_Idx > 0 then
             FX := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
          end if;
-
          Temp_Idx := Index (Content (Idx .. Length), """y"":");
          if Temp_Idx > 0 then
             FY := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
          end if;
-
          Temp_Idx := Index (Content (Idx .. Length), """z"":");
          if Temp_Idx > 0 then
             FZ := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
          end if;
-
-         -- Clamp values to avoid Constraint_Error during integer conversion
+         
          FX := Float'Max (-327.0, Float'Min (327.0, FX));
          FY := Float'Max (-327.0, Float'Min (327.0, FY));
          FZ := Float'Max (-327.0, Float'Min (327.0, FZ));
-
-         X := Integer (FX * 100.0);
-         Y := Integer (FY * 100.0);
-         Z := Integer (FZ * 100.0);
-         Success := True;
+         CX := Integer (FX * 100.0);
+         CY := Integer (FY * 100.0);
+         CZ := Integer (FZ * 100.0);
       end if;
+
+      -- 3. Parse Load
+      Idx := Index (Content (1 .. Length), """load_avg"": [");
+      if Idx > 0 then
+         Idx := Idx + 12;
+         L1 := Parse_Float_After (Content (1 .. Length), Idx, 0.0);
+         Comma_Idx := Index (Content (Idx .. Length), ",");
+         if Comma_Idx > 0 then
+            L2 := Parse_Float_After (Content (1 .. Length), Comma_Idx + 1, 0.0);
+            Comma_Idx := Index (Content (Comma_Idx + 1 .. Length), ",");
+            if Comma_Idx > 0 then
+               L3 := Parse_Float_After (Content (1 .. Length), Comma_Idx + 1, 0.0);
+            end if;
+         end if;
+         if L1 < 0.0 or L1 > 2000.0 then L1 := 0.0; end if;
+         if L2 < 0.0 or L2 > 2000.0 then L2 := 0.0; end if;
+         if L3 < 0.0 or L3 > 2000.0 then L3 := 0.0; end if;
+      end if;
+
+      -- 4. Parse HID Idle
+      Idx := Index (Content (1 .. Length), """nonHumanInputHIDIdle"":");
+      if Idx > 0 then
+         Idle_Sec := Parse_Float_After (Content (1 .. Length), Idx + 22, 0.0);
+      end if;
+
+      Telemetry_Cache.Update (B_Percent, CX, CY, CZ, L1, L2, L3, Idle_Sec, True);
+   end Update_Telemetry_Cache;
+
+   ----------------------
+   -- Read_SMS_Values  --
+   ----------------------
+
+   procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean) is
+   begin
+      Telemetry_Cache.Get_SMS (X, Y, Z, Success);
    end Read_SMS_Values;
 
    --------------------------
@@ -196,45 +316,8 @@ package body SMC_Files is
    --------------------------
 
    procedure Check_Load_Avg_Status (Max_Load : out Float; Status : out Integer) is
-      Content : String (1 .. 65536);
-      Length : Natural;
-      File_Success : Boolean;
-      use Ada.Strings.Fixed;
-      Idx, Comma_Idx : Natural;
-      L1, L2, L3 : Float := 0.0;
    begin
-      Max_Load := 0.0; Status := 0;
-      Read_File_Content (EARU_DATA_FILE, Content, Length, File_Success);
-      if not File_Success then
-         return;
-      end if;
-
-      Idx := Index (Content (1 .. Length), """load_avg"": [");
-      if Idx > 0 then
-         Idx := Idx + 13; -- Skip to elements
-         L1 := Parse_Float_After (Content (1 .. Length), Idx, 0.0);
-         
-         Comma_Idx := Index (Content (Idx .. Length), ",");
-         if Comma_Idx > 0 then
-            L2 := Parse_Float_After (Content (1 .. Length), Idx + Comma_Idx, 0.0);
-            Comma_Idx := Index (Content (Idx + Comma_Idx .. Length), ",");
-            if Comma_Idx > 0 then
-               L3 := Parse_Float_After (Content (1 .. Length), Idx + Comma_Idx, 0.0);
-            end if;
-         end if;
-
-         Max_Load := L1;
-         if L2 > Max_Load then Max_Load := L2; end if;
-         if L3 > Max_Load then Max_Load := L3; end if;
-
-         if Max_Load >= 100.0 then
-            Status := 2;
-         elsif Max_Load >= 50.0 then
-            Status := 1;
-         else
-            Status := 0;
-         end if;
-      end if;
+      Telemetry_Cache.Check_Load (Max_Load, Status);
    end Check_Load_Avg_Status;
 
    -------------------------
@@ -242,23 +325,8 @@ package body SMC_Files is
    -------------------------
 
    function Get_Battery_Percent return Integer is
-      Content : String (1 .. 65536);
-      Length : Natural;
-      File_Success : Boolean;
-      use Ada.Strings.Fixed;
-      Idx : Natural;
    begin
-      Read_File_Content (EARU_DATA_FILE, Content, Length, File_Success);
-      if not File_Success then
-         return 100;
-      end if;
-
-      Idx := Index (Content (1 .. Length), """battery_percent"":");
-      if Idx > 0 then
-         return Parse_Int_After (Content (1 .. Length), Idx + 18, 100);
-      else
-         return 100;
-      end if;
+      return Telemetry_Cache.Get_Battery;
    end Get_Battery_Percent;
 
    -----------------------
@@ -666,23 +734,8 @@ package body SMC_Files is
    -----------------------
 
    function Get_HID_Idle_Time return Float is
-      Content : String (1 .. 65536);
-      Length : Natural;
-      File_Success : Boolean;
-      use Ada.Strings.Fixed;
-      Idx : Natural;
    begin
-      Read_File_Content (EARU_DATA_FILE, Content, Length, File_Success);
-      if not File_Success then
-         return 0.0;
-      end if;
-
-      Idx := Index (Content (1 .. Length), """nonHumanInputHIDIdle"":");
-      if Idx > 0 then
-         return Parse_Float_After (Content (1 .. Length), Idx + 22, 0.0);
-      end if;
-
-      return 0.0;
+      return Telemetry_Cache.Get_Idle;
    end Get_HID_Idle_Time;
 
 end SMC_Files;

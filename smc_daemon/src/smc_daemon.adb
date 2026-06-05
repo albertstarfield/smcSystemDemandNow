@@ -1,6 +1,7 @@
 with Ada.Text_IO;
 with Ada.Calendar;
 with Ada.Real_Time;
+with Ada.Directories;
 with Ada.Strings.Fixed;
 with Ada.Unchecked_Conversion;
 with Interfaces.C;
@@ -183,6 +184,10 @@ procedure Smc_Daemon is
    LM_Task : Latency_Monitor_Access;
    TS_Task : Thermal_Suspender_Access;
 
+   Loop_Count  : Natural := 0;
+   Max_Load    : Float   := 0.0;
+   Load_Status : Integer := 0;
+
    procedure Run_Power_Command (Args : GNAT.OS_Lib.Argument_List) is
       Success : Boolean;
    begin
@@ -265,35 +270,8 @@ procedure Smc_Daemon is
       end;
 
       -- Restore default low power modes based on battery percent
-      declare
-         Args : GNAT.OS_Lib.Argument_List (1 .. 2);
-      begin
-         if Battery_Percent <= 20 then
-            Args (1) := new String'("powermode");
-            Args (2) := new String'("1");
-            Run_Power_Command (Args);
-            GNAT.OS_Lib.Free (Args (1));
-            GNAT.OS_Lib.Free (Args (2));
-            
-            Args (1) := new String'("lowpowermode");
-            Args (2) := new String'("1");
-            Run_Power_Command (Args);
-            GNAT.OS_Lib.Free (Args (1));
-            GNAT.OS_Lib.Free (Args (2));
-         else
-            Args (1) := new String'("powermode");
-            Args (2) := new String'("0");
-            Run_Power_Command (Args);
-            GNAT.OS_Lib.Free (Args (1));
-            GNAT.OS_Lib.Free (Args (2));
-            
-            Args (1) := new String'("lowpowermode");
-            Args (2) := new String'("0");
-            Run_Power_Command (Args);
-            GNAT.OS_Lib.Free (Args (1));
-            GNAT.OS_Lib.Free (Args (2));
-         end if;
-      end;
+      -- Enforced continuously in main loop to handle Overdrive/Override flags
+      null;
 
       SMC_Files.Notify_User ("RESTORATION", "Temperature Normal. Restoring default power settings.");
    end Deactivate_Turbo_Mode;
@@ -486,6 +464,7 @@ begin
 
       while Daemon_State.Should_Keep_Running loop
          Loop_Start_Time := Ada.Real_Time.Clock;
+         Loop_Count := Loop_Count + 1;
 
          -- Read and validate all 10 system temperatures plus PSTR Power using safe SMC bounds readers
          Last_TCMZ_Temp := Read_And_Validate_SMC_Temp ("TCMz", Last_TCMZ_Temp);
@@ -518,7 +497,16 @@ begin
          Power := Read_And_Validate_SMC_Temp ("PSTR", Power);
 
          Current_Temp := Last_TCMZ_Temp;
-         Battery_Percent := SMC_Files.Get_Battery_Percent;
+
+         -- Update Telemetry Cache from EARU_data.dat every 500ms (SHA256 optimization)
+         if Loop_Count = 1 or else Loop_Count mod 5 = 0 then
+            SMC_Files.Update_Telemetry_Cache;
+         end if;
+
+         -- Update Battery Percent every 30 seconds (300 loops)
+         if Loop_Count = 1 or else Loop_Count mod 300 = 0 then
+            Battery_Percent := SMC_Files.Get_Battery_Percent;
+         end if;
 
          -- Calculate Gradients and Derivatives
          if Prev_Temp > 0.0 then
@@ -527,12 +515,35 @@ begin
             Temp_Gradient := 0.0;
          end if;
 
-         -- Check for explicit TURBONOW request
-         SMC_Files.Check_And_Handle_TurboNow;
-
-         -- Read active Precool and Overdrive Mode flags
+         -- Check active Precool and Overdrive Mode flags
          SMC_Files.Check_Precool_Mode (Precool_Active, Precool_Time_Left);
-         SMC_Files.Check_Overdrive_Mode (Overdrive_Active, Overdrive_Time_Left);
+         
+         declare
+            File_Overdrive_Active : Boolean;
+            File_Overdrive_Time_Left : Long_Integer;
+         begin
+            SMC_Files.Check_Overdrive_Mode (File_Overdrive_Active, File_Overdrive_Time_Left);
+            
+            -- Check System Load for Emergency Overdrive every 2 minutes (1200 loops)
+            if Loop_Count = 1 or else Loop_Count mod 1200 = 0 then
+               SMC_Files.Check_Load_Avg_Status (Max_Load, Load_Status);
+            end if;
+
+            if Load_Status = 2 then
+               if not Overdrive_Active then
+                  Put_Line ("[DAEMON] EMERGENCY: System load " & Float'Image (Max_Load) & " >= 100. Activating Overdrive Mode.");
+                  SMC_Files.Notify_User ("EMERGENCY", "System load " & Float'Image (Max_Load) & " exceeds 100. Overdrive Mode ENGAGED.");
+               end if;
+               Overdrive_Active := True;
+               if Overdrive_Time_Left < 60 then
+                  Overdrive_Time_Left := 60; -- Hold for at least 60 seconds
+               end if;
+            else
+               -- If not emergency load, fall back to file-based overdrive state
+               Overdrive_Active := File_Overdrive_Active;
+               Overdrive_Time_Left := File_Overdrive_Time_Left;
+            end if;
+         end;
          
          if Overdrive_Active then
             Put_Line ("[DAEMON] Overdrive Flag Active! Holding fans in manual Overdrive (ffffffff) for " & 
@@ -584,11 +595,11 @@ begin
             F1Tg_Hex : chars_ptr;
          begin
             if Overdrive_Active then
-               F0Tg_Hex := New_String ("00102446");
-               F1Tg_Hex := New_String ("00102446");
+               F0Tg_Hex := New_String ("0050c347");
+               F1Tg_Hex := New_String ("0050c347");
             elsif Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
-               F0Tg_Hex := New_String ("00102446");
-               F1Tg_Hex := New_String ("00102446");
+               F0Tg_Hex := New_String ("0050c347");
+               F1Tg_Hex := New_String ("0050c347");
             else
                declare
                   Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));
@@ -636,34 +647,44 @@ begin
             end if;
          end;
 
-         -- Accelerometer Delta Safety Check
-         SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
-         if SMS_Success and then Prev_SMS_Valid then
-            Delta_X := abs (CX - Prev_X);
-            Delta_Y := abs (CY - Prev_Y);
-            Delta_Z := abs (CZ - Prev_Z);
-            
-            declare
-               Total_Delta : constant Integer := Delta_X + Delta_Y + Delta_Z;
-               Limit       : constant Integer := (if Overdrive_Active then 200 else 150);
-            begin
-               if (Daemon_State.Is_Turbo_Active or Overdrive_Active) and then (Total_Delta > Limit) then
-                  Daemon_State.Set_Turbo (False);
-                  Daemon_State.Reset_Spikes;
-                  if Overdrive_Active then
-                     Overdrive_Active := False;
-                     Overdrive_Time_Left := 0;
-                     SMC_Files.Notify_User ("SAFETY", "Extreme spatial movement (>2g) detected during TURBONOW! Deactivating Turbo/Overdrive Mode.");
-                  else
-                     SMC_Files.Notify_User ("SAFETY", "Significant spatial movement detected. Deactivating Turbo Mode.");
+         -- Accelerometer Delta Safety Check every 500ms (5 loops)
+         if Loop_Count = 1 or else Loop_Count mod 5 = 0 then
+            SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
+            if SMS_Success and then Prev_SMS_Valid then
+               Delta_X := abs (CX - Prev_X);
+               Delta_Y := abs (CY - Prev_Y);
+               Delta_Z := abs (CZ - Prev_Z);
+
+               declare
+                  Total_Delta : constant Integer := Delta_X + Delta_Y + Delta_Z;
+                  Limit       : constant Integer := (if Overdrive_Active then 200 else 150);
+                  Safety_Disabled : constant Boolean := Ada.Directories.Exists (SMC_Files.DISABLE_SAFETY_FLAG);
+               begin
+                  if (Daemon_State.Is_Turbo_Active or Overdrive_Active) and then (Total_Delta > Limit) then
+                     if Safety_Disabled then
+                        -- Log that we are suppressing the safety shutdown
+                        if Loop_Count mod 100 = 0 then
+                           Put_Line ("[SAFETY] Movement detected (" & Integer'Image (Total_Delta) & " >" & Integer'Image (Limit) & "), but safety is DISABLED via flag.");
+                        end if;
+                     else
+                        Daemon_State.Set_Turbo (False);
+                        Daemon_State.Reset_Spikes;
+                        if Overdrive_Active then
+                           Overdrive_Active := False;
+                           Overdrive_Time_Left := 0;
+                           SMC_Files.Notify_User ("SAFETY", "Extreme spatial movement (>2g) detected during TURBONOW! Deactivating Turbo/Overdrive Mode.");
+                        else
+                           SMC_Files.Notify_User ("SAFETY", "Significant spatial movement detected. Deactivating Turbo Mode.");
+                        end if;
+                     end if;
                   end if;
-               end if;
-            end;
+               end;
+            end if;
+            Prev_X := CX;
+            Prev_Y := CY;
+            Prev_Z := CZ;
+            Prev_SMS_Valid := SMS_Success;
          end if;
-         Prev_X := CX;
-         Prev_Y := CY;
-         Prev_Z := CZ;
-         Prev_SMS_Valid := SMS_Success;
 
          -- Temperature and Spike Activation/Deactivation Loop Rules
          if Daemon_State.Is_Turbo_Active then
@@ -718,24 +739,26 @@ begin
             end if;
          end if;
 
-         -- Export all individual sensor values to the EARU data directory using exact expected names
-         SMC_Files.Write_EARU_Temp ("TCMz", Last_TCMZ_Temp);
-         SMC_Files.Write_EARU_Temp ("Tg0X", Last_GPU_Temp);
-         SMC_Files.Write_EARU_Temp ("TaLP", Last_TaLP_Temp);
-         SMC_Files.Write_EARU_Temp ("TaRF", Last_TaRF_Temp);
-         SMC_Files.Write_EARU_Temp ("TaLT", Last_TaLT_Temp);
-         SMC_Files.Write_EARU_Temp ("TaLW", Last_TaLW_Temp);
-         SMC_Files.Write_EARU_Temp ("TaRT", Last_TaRT_Temp);
-         SMC_Files.Write_EARU_Temp ("TaRW", Last_TaRW_Temp);
-         SMC_Files.Write_EARU_Temp ("Ts0p", Last_Ts0P_Temp);
-         SMC_Files.Write_EARU_Temp ("Ts1p", Last_Ts1P_Temp);
-         SMC_Files.Write_EARU_Temp ("PSTR", Power);
+         -- Export all individual sensor values to the EARU data directory every 1 second (10 loops)
+         if Loop_Count mod 10 = 0 then
+            SMC_Files.Write_EARU_Temp ("TCMz", Last_TCMZ_Temp);
+            SMC_Files.Write_EARU_Temp ("Tg0X", Last_GPU_Temp);
+            SMC_Files.Write_EARU_Temp ("TaLP", Last_TaLP_Temp);
+            SMC_Files.Write_EARU_Temp ("TaRF", Last_TaRF_Temp);
+            SMC_Files.Write_EARU_Temp ("TaLT", Last_TaLT_Temp);
+            SMC_Files.Write_EARU_Temp ("TaLW", Last_TaLW_Temp);
+            SMC_Files.Write_EARU_Temp ("TaRT", Last_TaRT_Temp);
+            SMC_Files.Write_EARU_Temp ("TaRW", Last_TaRW_Temp);
+            SMC_Files.Write_EARU_Temp ("Ts0p", Last_Ts0P_Temp);
+            SMC_Files.Write_EARU_Temp ("Ts1p", Last_Ts1P_Temp);
+            SMC_Files.Write_EARU_Temp ("PSTR", Power);
 
-         SMC_Files.Write_EARU_Fan ("F0Ac", Float (F0Ac_Val));
-         SMC_Files.Write_EARU_Fan ("F1Ac", Float (F1Ac_Val));
-         SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
-         SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
-         SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
+            SMC_Files.Write_EARU_Fan ("F0Ac", Float (F0Ac_Val));
+            SMC_Files.Write_EARU_Fan ("F1Ac", Float (F1Ac_Val));
+            SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
+            SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
+            SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
+         end if;
 
          -- Write Telemetry CSV every 10 seconds (100 loops of 100ms)
          if Clock - Last_Telemetry_Time >= 10.0 then
@@ -769,6 +792,38 @@ begin
                   end if;
                end;
             end if;
+         end if;
+
+         -- Enforce Power Mode and Low Power Mode settings every 1 second
+         -- This ensures TOGAFULLPOWEROVERRIDE and Overdrive Mode are respected even if 
+         -- the user or OS changes settings in the background.
+         if Loop_Count mod 10 = 0 then
+            declare
+               Args : GNAT.OS_Lib.Argument_List (1 .. 2);
+               Override_Flag : constant Boolean := Ada.Directories.Exists (SMC_Files.FULL_POWER_OVERRIDE_FLAG);
+               Force_LPM_Off : constant Boolean := Overdrive_Active and Override_Flag;
+               -- Forced LPM OFF ("0") periodically as requested.
+               Target_Val    : constant String := "0";
+            begin
+               Args (1) := new String'("powermode");
+               Args (2) := new String'(Target_Val);
+               Run_Power_Command (Args);
+               GNAT.OS_Lib.Free (Args (1));
+               GNAT.OS_Lib.Free (Args (2));
+               
+               Args (1) := new String'("lowpowermode");
+               Args (2) := new String'(Target_Val);
+               Run_Power_Command (Args);
+               GNAT.OS_Lib.Free (Args (1));
+               GNAT.OS_Lib.Free (Args (2));
+               
+               if Force_LPM_Off and then Battery_Percent <= 20 then
+                  if Loop_Count mod 500 = 0 then -- Log every 50 seconds to avoid spam
+                     Put_Line ("[DAEMON] Battery low (" & Integer'Image (Battery_Percent) & "%), but LPM forced OFF due to " & 
+                              (if Overdrive_Active then "Overdrive Mode." else "TOGAFULLPOWEROVERRIDE."));
+                  end if;
+               end if;
+            end;
          end if;
 
          -- Save state variables
@@ -845,6 +900,18 @@ begin
       Args : GNAT.OS_Lib.Argument_List (1 .. 2);
    begin
       Args (1) := new String'("thermaldp");
+      Args (2) := new String'("0");
+      Run_Power_Command (Args);
+      GNAT.OS_Lib.Free (Args (1));
+      GNAT.OS_Lib.Free (Args (2));
+      
+      Args (1) := new String'("powermode");
+      Args (2) := new String'("0");
+      Run_Power_Command (Args);
+      GNAT.OS_Lib.Free (Args (1));
+      GNAT.OS_Lib.Free (Args (2));
+      
+      Args (1) := new String'("lowpowermode");
       Args (2) := new String'("0");
       Run_Power_Command (Args);
       GNAT.OS_Lib.Free (Args (1));
