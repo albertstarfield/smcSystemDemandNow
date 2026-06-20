@@ -16,6 +16,8 @@ with SMC_Math;
 with SMC_Files;
 with SMC_Daemon_State;
 with SMC_Realtime;
+with SMC_Utils;
+with SMC_Thresholds;
 
 procedure Smc_Daemon is
    use Ada.Text_IO;
@@ -29,6 +31,9 @@ procedure Smc_Daemon is
    -- Thin C function import for UID check
    function Get_EUID return Interfaces.C.int;
    pragma Import (C, Get_EUID, "geteuid");
+
+   function Get_PID return Interfaces.C.int;
+   pragma Import (C, Get_PID, "getpid");
 
    -- Low-level Standard C signal registration import
    type Signal_Handler_T is access procedure (Sig : int);
@@ -47,36 +52,7 @@ procedure Smc_Daemon is
       Daemon_State.Request_Shutdown;
    end Handle_Signal;
 
-   function Float_To_Hex (Val : Float) return String is
-      use Interfaces;
-      function Float_To_Word is new Ada.Unchecked_Conversion (Float, Unsigned_32);
-      Word : Unsigned_32;
-      B0, B1, B2, B3 : Unsigned_8;
-      Hex_Map : constant String (1 .. 16) := "0123456789abcdef";
-      Result : String (1 .. 8);
-      
-      function To_Hex_Char (V : Unsigned_8) return Character is
-      begin
-         return Hex_Map (Natural (V) + 1);
-      end To_Hex_Char;
-   begin
-      Word := Float_To_Word (Val);
-      B0 := Unsigned_8 (Word and 16#FF#);
-      B1 := Unsigned_8 (Shift_Right (Word, 8) and 16#FF#);
-      B2 := Unsigned_8 (Shift_Right (Word, 16) and 16#FF#);
-      B3 := Unsigned_8 (Shift_Right (Word, 24) and 16#FF#);
-      
-      Result (1) := To_Hex_Char (Shift_Right (B0, 4) and 16#0F#);
-      Result (2) := To_Hex_Char (B0 and 16#0F#);
-      Result (3) := To_Hex_Char (Shift_Right (B1, 4) and 16#0F#);
-      Result (4) := To_Hex_Char (B1 and 16#0F#);
-      Result (5) := To_Hex_Char (Shift_Right (B2, 4) and 16#0F#);
-      Result (6) := To_Hex_Char (B2 and 16#0F#);
-      Result (7) := To_Hex_Char (Shift_Right (B3, 4) and 16#0F#);
-      Result (8) := To_Hex_Char (B3 and 16#0F#);
-      
-      return Result;
-   end Float_To_Hex;
+   -- Float_To_Hex moved to SMC_Utils package
 
 
 
@@ -102,8 +78,156 @@ procedure Smc_Daemon is
    Key_F0Ac : chars_ptr := New_String ("F0Ac");
    Key_F1Ac : chars_ptr := New_String ("F1Ac");
 
+   -- ============================================================================
+   -- SMC KEYS: HIGH-PERFORMANCE POWER MODE CONTROL (write-only, toggled by daemon)
+   -- ============================================================================
+   --
+   -- aPMX (Active Performance Mode eXtension)
+   --   Type:     ui32
+   --   Values:   0x01 = High-performance mode ACTIVE
+   --             0x00 = Normal/default mode
+   --   Purpose:  Signals to the SMC firmware that the system should operate in
+   --             an elevated performance state. When active, the SMC allows higher
+   --             sustained clock speeds and increased power delivery to the SoC.
+   --             Used in tandem with mTPL to remove power restrictions.
+   --   Set by:   Activate_Turbo_Mode / Deactivate_Turbo_Mode
+   --
+   -- mTPL (Max Turbo Power Limit)
+   --   Type:     si32
+   --   Values:   0xffffffff = UNLIMITED — no SoC power cap enforced
+   --             0x00000000 = STOCK — Apple's default power limit applies
+   --   Purpose:  Controls the SoC package-level power limit (PPT). When set to
+   --             0xffffffff, the SMC allows the CPU/GPU to draw as much power as
+   --             the voltage regulators and thermal solution can handle, removing
+   --             Apple's default power throttling. This is the primary key for
+   --             unlocking maximum sustained performance on Apple Silicon.
+   --   Set by:   Activate_Turbo_Mode / Deactivate_Turbo_Mode
+   --
    Key_aPMX : chars_ptr := New_String ("aPMX");
    Key_mTPL : chars_ptr := New_String ("mTPL");
+
+   -- ============================================================================
+   -- SMC KEYS: POWER TELEMETRY (read-only sensors, monitored each loop cycle)
+   -- ============================================================================
+   --
+   -- mUTL (Max User Turbo Limit)
+   --   Type:     flt (float)
+   --   Typical:  0.0 (unused/default — no user-imposed turbo limit)
+   --   Purpose:  Represents a user-configured ceiling on turbo power draw.
+   --             On most Macs this is 0.0, meaning the user has not set a custom
+   --             turbo power limit. If non-zero, it acts as an upper bound on how
+   --             much power the SoC can draw during turbo boost, overriding mTPL.
+   --             Useful for power-conscious users who want turbo but not full blast.
+   --
+   -- xPPT (Max Package Power Tracking)
+   --   Type:     flt (float)
+   --   Typical:  255.0 (no limit — maximum tracking range)
+   --   Purpose:  The SoC's package power tracking limit. This defines the maximum
+   --             wattage the power management subsystem will track and enforce.
+   --             At 255.0, the tracking is effectively disabled (no cap). Values
+   --             below 255.0 would clamp the SoC to that wattage. Apple sets this
+   --             high to let thermal management handle throttling instead of a
+   --             hard power wall.
+   --
+   -- xLPM (Max Low Power Mode)
+   --   Type:     flt (float)
+   --   Typical:  255.0 (no limit — LPM ceiling not enforced)
+   --   Purpose:  Ceiling for Low Power Mode operation. When macOS LPM is active,
+   --             this limits how much power the SoC can draw. At 255.0, LPM has
+   --             no effect on power draw (effectively disabled). Lower values
+   --             would restrict power during battery-saving scenarios.
+   --
+   -- PHPB (Package High Power Budget)
+   --   Type:     flt (float)
+   --   Typical:  200.0 (watts — total SoC power budget)
+   --   Purpose:  The total power budget allocated to the SoC package. This is
+   --             the "wallet" of watts the CPU+GPU+ANE can collectively spend.
+   --             On M-series chips, this is typically 200W for high-end configs.
+   --             The power manager distributes this budget across cores, GPU, and
+   --             neural engine based on workload demands.
+   --
+   -- PHPM (Package High Power Mode)
+   --   Type:     flt (float)
+   --   Typical:  0.89 (89% utilization target)
+   --   Purpose:  The target utilization fraction for the SoC in high-power mode.
+   --             0.89 means the power manager aims for 89% of the theoretical
+   --             maximum sustained power. This headroom prevents hitting the
+   --             absolute power wall, allowing brief bursts above this target
+   --             while maintaining thermal stability over time.
+   --
+   -- PHPC (Package High Power Current)
+   --   Type:     flt (float)
+   --   Typical:  6.0-15.0 (amps — varies with load)
+   --   Purpose:  Real-time current delivery to the SoC package. Measured in
+   --             amps, this shows how much current the voltage regulators are
+   --             supplying to the CPU/GPU. Higher values indicate heavier workloads.
+   --             Used by the SMC to detect overcurrent conditions and manage
+   --             power phase balancing across VRM phases.
+   --
+   -- PHPS (Package High Power Sensor)
+   --   Type:     flt (float)
+   --   Typical:  10.0-20.0 (sensor reading)
+   --   Purpose:  A secondary power sensor on the SoC package. Provides an
+   --             additional measurement point for power consumption, often used
+   --             for cross-validation with PHPC and PSTR. Helps the SMC detect
+   --             sensor drift or VRM efficiency changes.
+   --
+   -- PMVC (Power Management Voltage Current)
+   --   Type:     flt (float)
+   --   Typical:  5.0-10.0 (amps)
+   --   Purpose:  Current draw through the main power management voltage rail.
+   --             This measures the total current flowing through the voltage
+   --             regulators that supply the SoC. Includes power for CPU, GPU,
+   --             memory controller, and I/O. Useful for diagnosing VRM stress
+   --             and efficiency under different load profiles.
+   --
+   -- PPSC (Power Supply Current)
+   --   Type:     flt (float)
+   --   Typical:  2.0-5.0 (amps)
+   --   Purpose:  Current output from the main power supply (charger/battery).
+   --             Shows how much current the system is drawing from its power
+   --             source. When on battery, this indicates discharge rate. When
+   --             plugged in, this shows charging + system draw combined.
+   --
+   -- PSVR (Power Supply Voltage Regulator)
+   --   Type:     flt (float)
+   --   Typical:  10.0-15.0 (sensor value)
+   --   Purpose:  Status/reading from the main voltage regulator module. Provides
+   --             information about the health and operating point of the power
+   --             delivery system. Abnormal values may indicate VRM degradation,
+   --             thermal throttling at the regulator level, or power supply issues.
+   --
+   -- PDBR (Power Device Battery Rate)
+   --   Type:     flt (float)
+   --   Typical:  0.0-50.0 (watts — positive = discharge, negative = charge)
+   --   Purpose:  Battery charge/discharge rate in watts. Positive values mean
+   --             the battery is discharging (powering the system), negative
+   --             values mean the battery is charging. This is the primary
+   --             indicator of battery power flow. The daemon can use this to
+   --             detect heavy discharge during turbo mode and potentially back
+   --             off if battery drain is too aggressive.
+   --
+   -- PDTR (Power Device Temperature Rate)
+   --   Type:     flt (float)
+   --   Typical:  20.0-40.0 (degrees C or rate, depending on firmware)
+   --   Purpose:  Temperature-related reading from the battery/power device.
+   --             May represent either the absolute temperature of the power
+   --             delivery components or the rate of temperature change. Used by
+   --             the SMC to detect thermal runaway in the battery or VRM and
+   --             trigger emergency power reduction if needed.
+   --
+   Key_mUTL : chars_ptr := New_String ("mUTL");
+   Key_xPPT : chars_ptr := New_String ("xPPT");
+   Key_xLPM : chars_ptr := New_String ("xLPM");
+   Key_PHPB : chars_ptr := New_String ("PHPB");
+   Key_PHPM : chars_ptr := New_String ("PHPM");
+   Key_PHPC : chars_ptr := New_String ("PHPC");
+   Key_PHPS : chars_ptr := New_String ("PHPS");
+   Key_PMVC : chars_ptr := New_String ("PMVC");
+   Key_PPSC : chars_ptr := New_String ("PPSC");
+   Key_PSVR : chars_ptr := New_String ("PSVR");
+   Key_PDBR : chars_ptr := New_String ("PDBR");
+   Key_PDTR : chars_ptr := New_String ("PDTR");
 
    Hex_01   : chars_ptr := New_String ("01");
    Hex_00   : chars_ptr := New_String ("00");
@@ -121,6 +245,87 @@ procedure Smc_Daemon is
    
    Power            : Float := 0.0;
    Battery_Percent  : Integer := 100;
+
+   -- ============================================================================
+   -- POWER TELEMETRY STATE VARIABLES (updated every 100ms loop cycle)
+   -- ============================================================================
+   -- These variables hold the most recent readings from the SMC power sensors.
+   -- Each is initialized to 0.0 and updated via Read_And_Validate_SMC_Temp().
+   -- The "Pwr_" prefix distinguishes them from the temperature state variables.
+   --
+   -- Pwr_mUTL: Max User Turbo Limit
+   --   User-configured turbo power ceiling. 0.0 means no user limit is set.
+   --   If non-zero, this acts as a hard cap on turbo power draw regardless of
+   --   what mTPL or xPPT say. Useful for battery preservation during turbo.
+   --
+   -- Pwr_xPPT: Max Package Power Tracking
+   --   The SoC's package-level power tracking limit in watts. 255.0 means the
+   --   tracking is wide open (no cap). Lower values would throttle the SoC at
+   --   that wattage. Apple typically leaves this at 255.0 and uses thermal
+   --   management instead of hard power limits.
+   --
+   -- Pwr_xLPM: Max Low Power Mode
+   --   Power ceiling when macOS Low Power Mode is active. 255.0 means LPM has
+   --   no power restriction (effectively disabled). Lower values restrict how
+   --   much power the SoC can draw during battery-saving scenarios.
+   --
+   -- Pwr_PHPB: Package High Power Budget
+   --   Total power budget for the entire SoC package (CPU + GPU + ANE + memory
+   --   controller). Typically 200W on high-end M-series chips. The power manager
+   --   distributes this budget dynamically across processing units.
+   --
+   -- Pwr_PHPM: Package High Power Mode
+   --   Target utilization fraction for sustained operation. 0.89 = 89% of max.
+   --   The remaining 11% headroom allows brief turbo bursts without hitting the
+   --   absolute power wall, preventing thermal throttling during sustained loads.
+   --
+   -- Pwr_PHPC: Package High Power Current
+   --   Real-time current delivery to the SoC in amps. Higher values indicate
+   --   heavier workloads. Used by the SMC for overcurrent protection and VRM
+   --   phase balancing. Spikes may indicate power-hungry operations (e.g. ANE).
+   --
+   -- Pwr_PHPS: Package High Power Sensor
+   --   Secondary power measurement on the SoC package. Cross-validates with
+   --   PHPC and PSTR to detect sensor drift or VRM efficiency changes. Provides
+   --   redundancy for critical power monitoring.
+   --
+   -- Pwr_PMVC: Power Management Voltage Current
+   --   Total current through the main voltage regulator rail. Includes power
+   --   for CPU, GPU, memory controller, and I/O subsystems. Useful for
+   --   diagnosing VRM stress under different load profiles.
+   --
+   -- Pwr_PPSC: Power Supply Current
+   --   Current output from the main power source (charger/battery). On battery,
+   --   positive values indicate discharge rate. When plugged in, shows combined
+   --   system draw + charging current.
+   --
+   -- Pwr_PSVR: Power Supply Voltage Regulator
+   --   Status reading from the main voltage regulator module. Abnormal values
+   --   may indicate VRM degradation, thermal throttling at the regulator level,
+   --   or power supply health issues.
+   --
+   -- Pwr_PDBR: Power Device Battery Rate
+   --   Battery charge/discharge rate in watts. Positive = discharging (system
+   --   on battery), negative = charging. Primary indicator of battery power
+   --   flow. The daemon can use this to detect excessive drain during turbo.
+   --
+   -- Pwr_PDTR: Power Device Temperature Rate
+   --   Temperature-related reading from battery/power delivery components. May
+   --   represent absolute temperature or rate of change. Used by the SMC to
+   --   detect thermal runaway and trigger emergency power reduction.
+   --
+   Pwr_mUTL : Float := 0.0;
+   Pwr_xPPT : Float := 0.0;
+   Pwr_xLPM : Float := 0.0;
+   Pwr_PHPB : Float := 0.0;
+   Pwr_PHPM : Float := 0.0;
+   Pwr_PHPC : Float := 0.0;
+   Pwr_PHPS : Float := 0.0;
+   Pwr_PMVC : Float := 0.0;
+   Pwr_PPSC : Float := 0.0;
+   Pwr_PSVR : Float := 0.0;
+   Pwr_PDBR : Float := 0.0;
+   Pwr_PDTR : Float := 0.0;
    
    F0Ac_Val         : C_float := 0.0;
    F1Ac_Val         : C_float := 0.0;
@@ -180,9 +385,11 @@ procedure Smc_Daemon is
    -- Dynamic task pointers to prevent premature activation prior to root checks
    type Latency_Monitor_Access is access Latency_Monitor_T;
    type Thermal_Suspender_Access is access Thermal_Suspender_T;
+   type Watchdog_Access is access Watchdog_T;
 
    LM_Task : Latency_Monitor_Access;
    TS_Task : Thermal_Suspender_Access;
+   WD_Task : Watchdog_Access;
 
    Loop_Count  : Natural := 0;
    Max_Load    : Float   := 0.0;
@@ -253,8 +460,12 @@ procedure Smc_Daemon is
       Daemon_State.Set_Turbo (False);
       Daemon_State.Reset_Spikes;
       
-      -- Start natural logarithmic cooldown from current actual RPM
-      Daemon_State.Start_Cooldown (Float (F0Ac_Val));
+      -- Start natural logarithmic cooldown from current actual RPM (max of both fans)
+      declare
+         Max_Ac_RPM : constant Float := (if Float (F0Ac_Val) > Float (F1Ac_Val) then Float (F0Ac_Val) else Float (F1Ac_Val));
+      begin
+         Daemon_State.Start_Cooldown (Max_Ac_RPM);
+      end;
       
       Put_Line ("[DAEMON] Deactivating Turbo/Endurance Mode. Transitioning to normal PID via 60s log curve... (Trigger: " & Reason & ")");
       
@@ -280,38 +491,7 @@ procedure Smc_Daemon is
       SMC_Files.Notify_User ("RESTORATION", "Temperature Normal. Restoring default power settings.");
    end Deactivate_Turbo_Mode;
 
-   -- Helper to print current timestamp string for logs
-   function Get_Time_Str return String is
-      use Ada.Strings.Fixed;
-      Now : constant Ada.Calendar.Time := Clock;
-      Year : Year_Number;
-      Month : Month_Number;
-      Day : Day_Number;
-      Seconds : Day_Duration;
-      Hour, Min, Sec : Natural;
-   begin
-      Split (Now, Year, Month, Day, Seconds);
-      Hour := Natural (Seconds) / 3600;
-      Min := (Natural (Seconds) mod 3600) / 60;
-      Sec := Natural (Seconds) mod 60;
-      return Trim (Hour'Image, Ada.Strings.Both) & ":" & 
-             Trim (Min'Image, Ada.Strings.Both) & ":" & 
-             Trim (Sec'Image, Ada.Strings.Both);
-   end Get_Time_Str;
-
-   function Get_Day_Str return String is
-      use Ada.Strings.Fixed;
-      Now : constant Ada.Calendar.Time := Clock;
-      Year : Year_Number;
-      Month : Month_Number;
-      Day : Day_Number;
-      Seconds : Day_Duration;
-   begin
-      Split (Now, Year, Month, Day, Seconds);
-      return Trim (Year'Image, Ada.Strings.Both) & "-" & 
-             Trim (Month'Image, Ada.Strings.Both) & "-" & 
-             Trim (Day'Image, Ada.Strings.Both);
-   end Get_Day_Str;
+    -- Get_Time_Str and Get_Day_Str moved to SMC_Utils package
 
    procedure Spawn_CoreML_Training is
        Args        : GNAT.OS_Lib.Argument_List (1 .. 1);
@@ -369,6 +549,41 @@ begin
       GNAT.OS_Lib.OS_Exit (1);
    end if;
 
+   -- Ensure single instance and cleanup orphaned sidecars
+   declare
+      File    : Ada.Text_IO.File_Type;
+      Success : Boolean;
+      Args    : GNAT.OS_Lib.Argument_List (1 .. 3);
+   begin
+      -- 1. Write current PID to lock file
+      begin
+         Ada.Text_IO.Create (File, Ada.Text_IO.Out_File, SMC_Files.PID_FILE);
+         Ada.Text_IO.Put_Line (File, int'Image (Get_PID));
+         Ada.Text_IO.Close (File);
+      exception
+         when others =>
+            Put_Line ("[WARNING] Could not write PID file to " & SMC_Files.PID_FILE);
+      end;
+
+      -- 2. Clean up any orphaned Python sidecars from previous crashes
+      Args (1) := new String'("-9");
+      Args (2) := new String'("-f");
+      Args (3) := new String'("inference_ane.py");
+      GNAT.OS_Lib.Spawn ("/usr/bin/pkill", Args, Success);
+      GNAT.OS_Lib.Free (Args (1));
+      GNAT.OS_Lib.Free (Args (2));
+      GNAT.OS_Lib.Free (Args (3));
+
+      Args (1) := new String'("-9");
+      Args (2) := new String'("-f");
+      Args (3) := new String'("train_coreml.py");
+      GNAT.OS_Lib.Spawn ("/usr/bin/pkill", Args, Success);
+      GNAT.OS_Lib.Free (Args (1));
+      GNAT.OS_Lib.Free (Args (2));
+      GNAT.OS_Lib.Free (Args (3));
+      Put_Line ("[DAEMON] Initial cleanup of orphaned Python sidecars complete.");
+   end;
+
    -- Register standard Unix Signals using the direct libc link
    Sig_ResINT := C_Signal (2, Handle_Signal'Access);  -- SIGINT
    Sig_ResTERM := C_Signal (15, Handle_Signal'Access); -- SIGTERM
@@ -377,7 +592,8 @@ begin
    -- Dynamically allocate and activate the background tasks now that root access is verified
    LM_Task := new Latency_Monitor_T;
    TS_Task := new Thermal_Suspender_T;
-   Put_Line ("[DAEMON] Background tasks successfully activated.");
+   WD_Task := new Watchdog_T;
+   Put_Line ("[DAEMON] Background tasks successfully activated (Latency Monitor, Thermal Suspender, Sensor Watchdog).");
 
    -- Initialize AppleSMC Connection
    Res := SMC_IO.Open_Connection (Conn);
@@ -470,40 +686,82 @@ begin
          Loop_Start_Time := Ada.Real_Time.Clock;
          Loop_Count := Loop_Count + 1;
 
-         -- Read and validate all 10 system temperatures plus PSTR Power using safe SMC bounds readers
+         -- Read and validate critical system temperatures plus PSTR Power at 10Hz
          Last_TCMZ_Temp := Read_And_Validate_SMC_Temp ("TCMz", Last_TCMZ_Temp);
          Last_GPU_Temp  := Read_And_Validate_SMC_Temp ("Tg0X", Last_GPU_Temp);
-         Last_TaLP_Temp := Read_And_Validate_SMC_Temp ("TaLP", Last_TaLP_Temp);
-         Last_TaRF_Temp := Read_And_Validate_SMC_Temp ("TaRF", Last_TaRF_Temp);
-         Last_TaLT_Temp := Read_And_Validate_SMC_Temp ("TaLT", Last_TaLT_Temp);
-         Last_TaLW_Temp := Read_And_Validate_SMC_Temp ("TaLW", Last_TaLW_Temp);
-         Last_TaRT_Temp := Read_And_Validate_SMC_Temp ("TaRT", Last_TaRT_Temp);
-         Last_TaRW_Temp := Read_And_Validate_SMC_Temp ("TaRW", Last_TaRW_Temp);
-         
-         -- ts0p and ts1p support hierarchy fallbacks
-         Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TS0P", Last_Ts0P_Temp);
-         if Last_Ts0P_Temp <= 0.0 then
-            Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("Ts0P", Last_Ts0P_Temp);
-         end if;
-         if Last_Ts0P_Temp <= 0.0 then
-            Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TW0P", Last_Ts0P_Temp);
-         end if;
-
-         Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TS1P", Last_Ts1P_Temp);
-         if Last_Ts1P_Temp <= 0.0 then
-            Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("Ts1P", Last_Ts1P_Temp);
-         end if;
-         if Last_Ts1P_Temp <= 0.0 then
-            Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TW1P", Last_Ts1P_Temp);
-         end if;
-
-         -- Read power consumption
          Power := Read_And_Validate_SMC_Temp ("PSTR", Power);
 
+         -- BUGFIX: Copy primary sensor to Current_Temp for PID and CSV.
+         -- Previously Current_Temp was never assigned (stayed 0.0).
          Current_Temp := Last_TCMZ_Temp;
 
-         -- Update Telemetry Cache from EARU_data.dat every 500ms (SHA256 optimization)
-         if Loop_Count = 1 or else Loop_Count mod 5 = 0 then
+         -- Feed sensor snapshot to watchdog for flatline/anomaly detection
+         Watchdog_Monitor.Update_Heartbeat (
+            TCMz     => Current_Temp,
+            GPU      => Last_GPU_Temp,
+            Power    => Power,
+            Battery  => Max_Battery_Temp,
+            Fan_F0Ac => Float (F0Ac_Val),
+            Fan_F1Ac => Float (F1Ac_Val),
+            Turbo    => Daemon_State.Is_Turbo_Active
+         );
+
+         -- Read secondary sensors at 0.1Hz (every 100 loops / 10 seconds)
+         -- Optimization: Throttled from 10Hz to 0.1Hz to eliminate redundant kernel traps.
+         -- These sensors are thermally slow-moving and do not require high-frequency polling.
+         if Loop_Count = 1 or else Loop_Count mod 100 = 0 then
+            Last_TaLP_Temp := Read_And_Validate_SMC_Temp ("TaLP", Last_TaLP_Temp);
+            Last_TaRF_Temp := Read_And_Validate_SMC_Temp ("TaRF", Last_TaRF_Temp);
+            Last_TaLT_Temp := Read_And_Validate_SMC_Temp ("TaLT", Last_TaLT_Temp);
+            Last_TaLW_Temp := Read_And_Validate_SMC_Temp ("TaLW", Last_TaLW_Temp);
+            Last_TaRT_Temp := Read_And_Validate_SMC_Temp ("TaRT", Last_TaRT_Temp);
+            Last_TaRW_Temp := Read_And_Validate_SMC_Temp ("TaRW", Last_TaRW_Temp);
+            
+            -- ts0p and ts1p support hierarchy fallbacks
+            Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TS0P", Last_Ts0P_Temp);
+            if Last_Ts0P_Temp <= 0.0 then
+               Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("Ts0P", Last_Ts0P_Temp);
+            end if;
+            if Last_Ts0P_Temp <= 0.0 then
+               Last_Ts0P_Temp := Read_And_Validate_SMC_Temp ("TW0P", Last_Ts0P_Temp);
+            end if;
+
+            Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TS1P", Last_Ts1P_Temp);
+            if Last_Ts1P_Temp <= 0.0 then
+               Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("Ts1P", Last_Ts1P_Temp);
+            end if;
+            if Last_Ts1P_Temp <= 0.0 then
+               Last_Ts1P_Temp := Read_And_Validate_SMC_Temp ("TW1P", Last_Ts1P_Temp);
+            end if;
+
+            -- Read power telemetry sensors (non-critical, read every 10s)
+            declare
+               Val_aPMX : C_float := 0.0;
+               Val_mTPL : C_float := 0.0;
+            begin
+               Res := SMC_IO.Read_Key (Conn, Key_aPMX, Val_aPMX);
+               Res := SMC_IO.Read_Key (Conn, Key_mTPL, Val_mTPL);
+               Daemon_State.Set_aPMX_Val (Float (Val_aPMX));
+               Daemon_State.Set_mTPL_Val (Float (Val_mTPL));
+            end;
+
+            Pwr_mUTL := Read_And_Validate_SMC_Temp ("mUTL", Pwr_mUTL);
+            Pwr_xPPT := Read_And_Validate_SMC_Temp ("xPPT", Pwr_xPPT);
+            Pwr_xLPM := Read_And_Validate_SMC_Temp ("xLPM", Pwr_xLPM);
+            Pwr_PHPB := Read_And_Validate_SMC_Temp ("PHPB", Pwr_PHPB);
+            Pwr_PHPM := Read_And_Validate_SMC_Temp ("PHPM", Pwr_PHPM);
+            Pwr_PHPC := Read_And_Validate_SMC_Temp ("PHPC", Pwr_PHPC);
+            Pwr_PHPS := Read_And_Validate_SMC_Temp ("PHPS", Pwr_PHPS);
+            Pwr_PMVC := Read_And_Validate_SMC_Temp ("PMVC", Pwr_PMVC);
+            Pwr_PPSC := Read_And_Validate_SMC_Temp ("PPSC", Pwr_PPSC);
+            Pwr_PSVR := Read_And_Validate_SMC_Temp ("PSVR", Pwr_PSVR);
+            Pwr_PDBR := Read_And_Validate_SMC_Temp ("PDBR", Pwr_PDBR);
+            Pwr_PDTR := Read_And_Validate_SMC_Temp ("PDTR", Pwr_PDTR);
+         end if;
+
+         -- Update Telemetry Cache from EARU_data.dat every 10s (SHA256 optimization)
+         -- This reads from disk and hashes content; frequency reduced to minimize I/O overhead.
+         if Loop_Count = 1 or else Loop_Count mod 100 = 0 then
             SMC_Files.Update_Telemetry_Cache;
          end if;
 
@@ -511,6 +769,7 @@ begin
          if Loop_Count = 1 or else Loop_Count mod 300 = 0 then
             Battery_Percent := SMC_Files.Get_Battery_Percent;
          end if;
+
 
          -- Calculate Gradients and Derivatives
          if Prev_Temp > 0.0 then
@@ -534,7 +793,7 @@ begin
                SMC_Files.Check_Load_Avg_Status (Max_Load, Load_Status);
             end if;
 
-            if Load_Status = 2 then
+            if SMC_Thresholds.Should_Engage_Overdrive (Load_Status) then
                if not Overdrive_Active then
                   Put_Line ("[DAEMON] EMERGENCY: System load " & Float'Image (Max_Load) & " >= 100. Activating Overdrive Mode.");
                   SMC_Files.Notify_User ("EMERGENCY", "System load " & Float'Image (Max_Load) & " exceeds 100. Overdrive Mode ENGAGED.");
@@ -552,13 +811,17 @@ begin
             -- Trigger cooldown if Overdrive was active and is now disabled
             if Prev_Overdrive and then not Overdrive_Active then
                if not Daemon_State.Is_Turbo_Active then
-                  Daemon_State.Start_Cooldown (Float (F0Ac_Val));
+                  declare
+                     Max_Ac_RPM : constant Float := (if Float (F0Ac_Val) > Float (F1Ac_Val) then Float (F0Ac_Val) else Float (F1Ac_Val));
+                  begin
+                     Daemon_State.Start_Cooldown (Max_Ac_RPM);
+                  end;
                   Put_Line ("[DAEMON] Overdrive deactivated. Starting natural log transition (60s)...");
                end if;
             end if;
          end;
          
-         if Overdrive_Active then
+         if Overdrive_Active and then Loop_Count mod 10 = 0 then
             Put_Line ("[DAEMON] Overdrive Flag Active! Holding fans in manual Overdrive (ffffffff) for " & 
                       Long_Integer'Image (Overdrive_Time_Left) & " seconds.");
          end if;
@@ -629,7 +892,7 @@ begin
             end;
          end if;
 
-         -- Set optimal Target fan speed (F0Tg / F1Tg)
+         -- Set optimal Target fan speed (F0Tg / F1Tg) at 10Hz
          declare
             F0Tg_Hex : chars_ptr;
             F1Tg_Hex : chars_ptr;
@@ -642,7 +905,7 @@ begin
                F1Tg_Hex := New_String ("0050c347");
             else
                declare
-                  Hex_Str : constant String := Float_To_Hex (Float (Target_RPM));
+                   Hex_Str : constant String := SMC_Utils.Float_To_Hex (Float (Target_RPM));
                begin
                   F0Tg_Hex := New_String (Hex_Str);
                   F1Tg_Hex := New_String (Hex_Str);
@@ -653,19 +916,23 @@ begin
             Free (F0Tg_Hex);
             Free (F1Tg_Hex);
 
-            -- Re-enforce manual takeover keys in the loop to prevent macOS SMC firmware override
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Md, Hex_01);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Fb, Hex_Fb);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Dc, Hex_Dc);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0St, Hex_St);
+            -- Re-enforce manual takeover keys every 10 seconds (100 loops) to prevent firmware override
+            -- Optimization: Throttled to 0.1Hz. Frequent re-writes to SMC keys cause significant 
+            -- context switching between user space and kernel/SMC firmware.
+            if Loop_Count = 1 or else Loop_Count mod 100 = 0 then
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Md, Hex_01);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Fb, Hex_Fb);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Dc, Hex_Dc);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F0St, Hex_St);
 
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Md, Hex_01);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Fb, Hex_Fb);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Dc, Hex_Dc);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1St, Hex_St);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Md, Hex_01);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Fb, Hex_Fb);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Dc, Hex_Dc);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F1St, Hex_St);
+            end if;
          end;
 
-         -- Read actual Fan Speeds for telemetry
+         -- Read actual Fan Speeds for telemetry at 10Hz
          declare
             Res0 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Ac, F0Ac_Val);
             Res1 : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Ac, F1Ac_Val);
@@ -676,19 +943,21 @@ begin
             end if;
          end;
 
-         -- Read target Fan Speeds for telemetry
-         declare
-            Res0_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Tg, F0Tg_Val);
-            Res1_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Tg, F1Tg_Val);
-         begin
-            if Res0_Tg /= 0 or Res1_Tg /= 0 then
-               Put_Line ("[DAEMON] WARNING: Read_Key F0Tg/F1Tg failed with code: " & 
-                         Interfaces.C.int'Image (Res0_Tg) & " / " & Interfaces.C.int'Image (Res1_Tg));
-            end if;
-         end;
+         -- Read target Fan Speeds for telemetry at 0.1Hz
+         if Loop_Count mod 100 = 0 then
+            declare
+               Res0_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F0Tg, F0Tg_Val);
+               Res1_Tg : constant Interfaces.C.int := SMC_IO.Read_Key (Conn, Key_F1Tg, F1Tg_Val);
+            begin
+               if Res0_Tg /= 0 or Res1_Tg /= 0 then
+                  Put_Line ("[DAEMON] WARNING: Read_Key F0Tg/F1Tg failed with code: " & 
+                            Interfaces.C.int'Image (Res0_Tg) & " / " & Interfaces.C.int'Image (Res1_Tg));
+               end if;
+            end;
+         end if;
 
-         -- Accelerometer Delta Safety Check every 500ms (5 loops)
-         if Loop_Count = 1 or else Loop_Count mod 5 = 0 then
+         -- Accelerometer Delta Safety Check every 1s (10 loops)
+         if Loop_Count = 1 or else Loop_Count mod 10 = 0 then
             SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
             if SMS_Success and then Prev_SMS_Valid then
                Delta_X := abs (CX - Prev_X);
@@ -728,20 +997,34 @@ begin
 
          -- Temperature and Spike Activation/Deactivation Loop Rules
          if Daemon_State.Is_Turbo_Active then
-            if Last_TCMZ_Temp < 80.0 and then Last_GPU_Temp < 80.0 and then Max_Battery_Temp < 38.0 and then Power < 35.0 then
+            if SMC_Thresholds.Should_Deactivate_Turbo (
+                  CPU_Temp     => Last_TCMZ_Temp,
+                  GPU_Temp     => Last_GPU_Temp,
+                  Battery_Temp => Max_Battery_Temp,
+                  Power        => Power)
+            then
                Deactivate_Turbo_Mode ("TCMz, GPU, & Battery cooled down");
             end if;
          else
-            if Last_TCMZ_Temp >= 93.0 then
-               Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
-            elsif Last_GPU_Temp >= 93.0 then
-               Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
-            elsif Power >= 45.0 then
-               Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
-            elsif Max_Battery_Temp > 40.0 then
-               Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
-            elsif Daemon_State.Get_Spike_Count >= 3 then
-               Activate_Turbo_Mode ("Latency spikes detected by monitor");
+            if SMC_Thresholds.Should_Activate_Turbo (
+                  CPU_Temp     => Last_TCMZ_Temp,
+                  GPU_Temp     => Last_GPU_Temp,
+                  Power        => Power,
+                  Battery_Temp => Max_Battery_Temp,
+                  Spike_Count  => Daemon_State.Get_Spike_Count)
+            then
+               -- Determine which threshold triggered for logging
+               if Last_TCMZ_Temp >= SMC_Thresholds.TURBO_TEMP_CPU_THRESHOLD then
+                  Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
+               elsif Last_GPU_Temp >= SMC_Thresholds.TURBO_TEMP_GPU_THRESHOLD then
+                  Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
+               elsif Power >= SMC_Thresholds.TURBO_POWER_THRESHOLD then
+                  Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
+               elsif Max_Battery_Temp > SMC_Thresholds.TURBO_BATT_TEMP_THRESHOLD then
+                  Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
+               elsif Daemon_State.Get_Spike_Count >= SMC_Thresholds.TURBO_SPIKE_COUNT_MIN then
+                  Activate_Turbo_Mode ("Latency spikes detected by monitor");
+               end if;
             end if;
          end if;
 
@@ -779,8 +1062,10 @@ begin
             end if;
          end if;
 
-         -- Export all individual sensor values to the EARU data directory every 1 second (10 loops)
-         if Loop_Count mod 10 = 0 then
+         -- Export all individual sensor values to the EARU data directory every 10 seconds (100 loops)
+         -- Optimization: Throttled from 0.5Hz to 0.1Hz to minimize disk I/O.
+         -- Writing ~20 files per cycle is expensive; reducing frequency saves significant CPU.
+         if Loop_Count mod 100 = 0 then
             SMC_Files.Write_EARU_Temp ("TCMz", Last_TCMZ_Temp);
             SMC_Files.Write_EARU_Temp ("Tg0X", Last_GPU_Temp);
             SMC_Files.Write_EARU_Temp ("TaLP", Last_TaLP_Temp);
@@ -793,6 +1078,21 @@ begin
             SMC_Files.Write_EARU_Temp ("Ts1p", Last_Ts1P_Temp);
             SMC_Files.Write_EARU_Temp ("PSTR", Power);
 
+            SMC_Files.Write_EARU_SMC ("aPMX", Daemon_State.Get_aPMX_Val);
+            SMC_Files.Write_EARU_SMC ("mTPL", Daemon_State.Get_mTPL_Val);
+            SMC_Files.Write_EARU_SMC ("mUTL", Pwr_mUTL);
+            SMC_Files.Write_EARU_SMC ("xPPT", Pwr_xPPT);
+            SMC_Files.Write_EARU_SMC ("xLPM", Pwr_xLPM);
+            SMC_Files.Write_EARU_SMC ("PHPB", Pwr_PHPB);
+            SMC_Files.Write_EARU_SMC ("PHPM", Pwr_PHPM);
+            SMC_Files.Write_EARU_SMC ("PHPC", Pwr_PHPC);
+            SMC_Files.Write_EARU_SMC ("PHPS", Pwr_PHPS);
+            SMC_Files.Write_EARU_SMC ("PMVC", Pwr_PMVC);
+            SMC_Files.Write_EARU_SMC ("PPSC", Pwr_PPSC);
+            SMC_Files.Write_EARU_SMC ("PSVR", Pwr_PSVR);
+            SMC_Files.Write_EARU_SMC ("PDBR", Pwr_PDBR);
+            SMC_Files.Write_EARU_SMC ("PDTR", Pwr_PDTR);
+
             SMC_Files.Write_EARU_Fan ("F0Ac", Float (F0Ac_Val));
             SMC_Files.Write_EARU_Fan ("F1Ac", Float (F1Ac_Val));
             SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
@@ -804,8 +1104,8 @@ begin
          if Clock - Last_Telemetry_Time >= 10.0 then
             Last_Telemetry_Time := Clock;
             SMC_Files.Log_Telemetry_CSV (
-               Day_Str         => Get_Day_Str,
-               Time_Only       => Get_Time_Str,
+               Day_Str         => SMC_Utils.Get_Day_Str,
+               Time_Only       => SMC_Utils.Get_Time_Str,
                TCMZ_Temp       => Current_Temp,
                GPU_Temp        => Last_GPU_Temp,
                Battery_Temp    => Integer (Last_Ts0P_Temp), -- Using ts0p palm rest as secondary temp index in csv
@@ -821,7 +1121,7 @@ begin
                Last_ML_Check_Time := Clock;
                declare
                   Idle_Time : constant Float := SMC_Files.Get_HID_Idle_Time;
-                  Today     : constant String := Get_Day_Str;
+                   Today     : constant String := SMC_Utils.Get_Day_Str;
                begin
                   if Idle_Time >= 7200.0 then
                      if Ada.Strings.Unbounded.To_String (Last_Trained_Day) /= Today then
@@ -834,15 +1134,14 @@ begin
             end if;
          end if;
 
-         -- Enforce Power Mode and Low Power Mode settings every 1 second
-         -- This ensures TOGAFULLPOWEROVERRIDE and Overdrive Mode are respected even if 
-         -- the user or OS changes settings in the background.
-         if Loop_Count mod 10 = 0 then
+         -- Enforce Power Mode and Low Power Mode settings every 10 seconds (100 loops)
+         -- Optimization: Throttled to 0.1Hz. Spawning '/usr/sbin/pmset' involves expensive 
+         -- fork/exec cycles. 10s is sufficient to maintain desired system state.
+         if Loop_Count mod 100 = 0 then
             declare
                Args : GNAT.OS_Lib.Argument_List (1 .. 2);
                Override_Flag : constant Boolean := Ada.Directories.Exists (SMC_Files.FULL_POWER_OVERRIDE_FLAG);
                Force_LPM_Off : constant Boolean := Overdrive_Active and Override_Flag;
-               -- Forced LPM OFF ("0") periodically as requested.
                Target_Val    : constant String := "0";
             begin
                Args (1) := new String'("powermode");
@@ -966,6 +1265,9 @@ begin
    Res := SMC_IO.Close_Connection (Conn);
    Put_Line ("[RESTORATION] AppleSMC connection closed safely.");
 
+   -- Delete PID file
+   SMC_Files.Delete_File (SMC_Files.PID_FILE);
+
    -- Free chars_ptr allocations
    Free (Key_F0Tg);
    Free (Key_F1Tg);
@@ -981,6 +1283,18 @@ begin
    Free (Key_F1Ac);
    Free (Key_aPMX);
    Free (Key_mTPL);
+   Free (Key_mUTL);
+   Free (Key_xPPT);
+   Free (Key_xLPM);
+   Free (Key_PHPB);
+   Free (Key_PHPM);
+   Free (Key_PHPC);
+   Free (Key_PHPS);
+   Free (Key_PMVC);
+   Free (Key_PPSC);
+   Free (Key_PSVR);
+   Free (Key_PDBR);
+   Free (Key_PDTR);
    Free (Hex_01);
    Free (Hex_00);
    Free (Hex_Fb);

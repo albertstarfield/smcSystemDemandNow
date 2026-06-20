@@ -13,6 +13,7 @@ package SMC_Files is
    
    PRESSURE_REPORT_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/smcFanPressurehPaDetection";
    NOTIFICATIONS_LOG    : constant String := "/usr/local/smcSystemDemandNow/smc_notifications.log";
+   PID_FILE             : constant String := "/var/run/smc_daemon.pid";
 
    -- Read accelerometer values from EARU_data.dat
    procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean);
@@ -52,6 +53,7 @@ package SMC_Files is
 
    -- EARU temperature/fan/turbo state exports
    procedure Write_EARU_Temp (Name : String; Val : Float);
+   procedure Write_EARU_SMC (Name : String; Val : Float);
    procedure Write_EARU_Fan (Name : String; Val : Float);
    procedure Write_EARU_Turbo (Active : Integer);
 

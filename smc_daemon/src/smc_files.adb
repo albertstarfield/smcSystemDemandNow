@@ -555,19 +555,60 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_temp_" & Name & ".dat";
+      Max_Retries : constant := 3;
    begin
-      -- Self-heal EARU directory if lost (wait until it is restored or dynamically recreate it)
       Ensure_Directory_Exists (Path);
 
-      begin
-         Create (File, Out_File, Path);
-         Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
-         Close (File);
-      exception
-         when others =>
-            if Is_Open (File) then Close (File); end if;
-      end;
+      for Retry in 1 .. Max_Retries loop
+         begin
+            Create (File, Out_File, Path);
+            Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
+            Close (File);
+            return; -- success
+         exception
+            when others =>
+               if Is_Open (File) then Close (File); end if;
+               if Retry = Max_Retries then
+                  Ada.Text_IO.Put_Line ("[EARU WRITE FAIL] sensor_temp_" & Name &
+                                       " failed after" & Integer'Image (Max_Retries) & " retries.");
+               else
+                  delay Duration'(0.05); -- 50ms backoff before retry
+               end if;
+         end;
+      end loop;
    end Write_EARU_Temp;
+
+   ---------------------
+   -- Write_EARU_SMC --
+   ---------------------
+
+   procedure Write_EARU_SMC (Name : String; Val : Float) is
+      use Ada.Text_IO;
+      use Ada.Strings.Fixed;
+      File : File_Type;
+      Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_smc_" & Name & ".dat";
+      Max_Retries : constant := 3;
+   begin
+      Ensure_Directory_Exists (Path);
+
+      for Retry in 1 .. Max_Retries loop
+         begin
+            Create (File, Out_File, Path);
+            Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
+            Close (File);
+            return;
+         exception
+            when others =>
+               if Is_Open (File) then Close (File); end if;
+               if Retry = Max_Retries then
+                  Ada.Text_IO.Put_Line ("[EARU WRITE FAIL] sensor_smc_" & Name &
+                                       " failed after" & Integer'Image (Max_Retries) & " retries.");
+               else
+                  delay Duration'(0.05);
+               end if;
+         end;
+      end loop;
+   end Write_EARU_SMC;
 
    --------------------
    -- Write_EARU_Fan --
@@ -578,17 +619,27 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_fan_" & Name & ".dat";
+      Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
 
-      begin
-         Create (File, Out_File, Path);
-         Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
-         Close (File);
-      exception
-         when others =>
-            if Is_Open (File) then Close (File); end if;
-      end;
+      for Retry in 1 .. Max_Retries loop
+         begin
+            Create (File, Out_File, Path);
+            Put (File, Trim (Float'Image (Val), Ada.Strings.Both));
+            Close (File);
+            return;
+         exception
+            when others =>
+               if Is_Open (File) then Close (File); end if;
+               if Retry = Max_Retries then
+                  Ada.Text_IO.Put_Line ("[EARU WRITE FAIL] sensor_fan_" & Name &
+                                       " failed after" & Integer'Image (Max_Retries) & " retries.");
+               else
+                  delay Duration'(0.05);
+               end if;
+         end;
+      end loop;
    end Write_EARU_Fan;
 
    ----------------------
@@ -600,17 +651,27 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       File : File_Type;
       Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_TURBO_MODE.dat";
+      Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
 
-      begin
-         Create (File, Out_File, Path);
-         Put (File, Trim (Integer'Image (Active), Ada.Strings.Both));
-         Close (File);
-      exception
-         when others =>
-            if Is_Open (File) then Close (File); end if;
-      end;
+      for Retry in 1 .. Max_Retries loop
+         begin
+            Create (File, Out_File, Path);
+            Put (File, Trim (Integer'Image (Active), Ada.Strings.Both));
+            Close (File);
+            return;
+         exception
+            when others =>
+               if Is_Open (File) then Close (File); end if;
+               if Retry = Max_Retries then
+                  Ada.Text_IO.Put_Line ("[EARU WRITE FAIL] sensor_TURBO_MODE" &
+                                       " failed after" & Integer'Image (Max_Retries) & " retries.");
+               else
+                  delay Duration'(0.05);
+               end if;
+         end;
+      end loop;
    end Write_EARU_Turbo;
 
    --------------------------
