@@ -1,12 +1,62 @@
-**inst.txt
-**LegacySMC**
+# === Build Artifacts ===
+**/obj/
+**/bin/
+*.o
+*.ali
+*.exe
+*.dSYM/
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+**/.venv/
+**/ml_venv/
+*.verified
+*.pkl
+
+# === Machine Learning Models ===
+**ThermalForecaster.mlpackage/
+
+# === Test Binaries & Data ===
+test_get_line
+test_get_line_long
+test_parity
+long_line_10k.txt
+long_line.txt
 **test_data**
-**ThermalForecaster.mlpackage**
-**.pkl**
-**telemetry**
-**.pinnedrpm**
-**__pycache__**
-**helm-diag**
-telemetry.csv
+
+# === Personal / Trackable Data ===
+*.csv
+*.pinnedrpm
+**inst.txt
+smc_notifications.log
+silentmode
+resources.txt
+
+# === Runtime Flags ===
+DisableSafety
+TOGAFULLPOWEROVERRIDE
 PrecoolMode
-**.csv**
+.source_hash
+
+# === Legacy ===
+**LegacySMC**
+
+# === Editor / IDE ===
+.opencode/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Helm / Diagnostics ===
+**helm-diag/
+
+# === GNATprove Logs ===
+gnatprove-level4-run*.txt
+
+# === Alire Build Cache ===
+**/alire/build/
+.alire/
