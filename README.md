@@ -3,7 +3,7 @@
 > [!WARNING]
 > **This daemon is designed specifically for the T6020 APL1113 A2779 laptop running macOS with Apple Silicon.** SMC keys and IOKit interfaces are Apple-proprietary and may not work on other hardware. Use at your own risk — it's just a humble attempt to talk to your Mac's SMC, not a magic bullet.
 
-**Created by:** Albert Starfield Wahyu Suryo Samudra
+**Created by:** Albert Starfield Wahyu Suryo Samudro
 
 ---
 
