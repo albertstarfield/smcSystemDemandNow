@@ -9,7 +9,7 @@
 
 ## What Is This?
 
-This is a small, ordinary macOS daemon that tries its best to communicate with your Mac's System Management Controller (SMC). It reads temperature sensors, monitors power telemetry, and adjusts fan speeds — all written in **Ada/SPARK** with some help from GNATprove for static analysis.
+This is a small, ordinary macOS daemon that tries its best to communicate with your Mac's System Management Controller (SMC). It reads temperature sensors, monitors power telemetry, and adjusts fan speeds.
 
 Think of it as a well-meaning little butler who lives inside your Mac, gently nudging the thermostat and occasionally whispering to the fans. It's not perfect, but it tries.
 
