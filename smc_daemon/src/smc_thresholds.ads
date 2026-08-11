@@ -6,9 +6,9 @@ package SMC_Thresholds with SPARK_Mode is
    -- These are the thermal/power thresholds that trigger Turbo Mode.
    -- Extracted here as pure functions for SPARK provability.
 
-   TURBO_TEMP_CPU_THRESHOLD  : constant Float := 93.0;  -- TCMz >= 93°C
+   TURBO_TEMP_CPU_THRESHOLD  : constant Float := 95.0;  -- TCMz >= 95°C
    TURBO_TEMP_GPU_THRESHOLD  : constant Float := 93.0;  -- GPU >= 93°C
-   TURBO_POWER_THRESHOLD     : constant Float := 45.0;  -- Power >= 45W
+   TURBO_POWER_THRESHOLD     : constant Float := 50.0;  -- Power >= 50W
    TURBO_BATT_TEMP_THRESHOLD : constant Float := 40.0;  -- Battery > 40°C
    TURBO_SPIKE_COUNT_MIN     : constant Natural := 3;    -- Latency spikes >= 3
 

@@ -394,6 +394,7 @@ procedure Smc_Daemon is
    Loop_Count  : Natural := 0;
    Max_Load    : Float   := 0.0;
    Load_Status : Integer := 0;
+   Silent_Mode : Boolean := False;
 
    procedure Run_Power_Command (Args : GNAT.OS_Lib.Argument_List) is
       Success : Boolean;
@@ -686,6 +687,9 @@ begin
          Loop_Start_Time := Ada.Real_Time.Clock;
          Loop_Count := Loop_Count + 1;
 
+         -- Check Silent Mode flag (for when fan roar in a closed room is embarrassing)
+         Silent_Mode := Ada.Directories.Exists (SMC_Files.SILENT_MODE_FLAG);
+
          -- Read and validate critical system temperatures plus PSTR Power at 10Hz
          Last_TCMZ_Temp := Read_And_Validate_SMC_Temp ("TCMz", Last_TCMZ_Temp);
          Last_GPU_Temp  := Read_And_Validate_SMC_Temp ("Tg0X", Last_GPU_Temp);
@@ -826,17 +830,6 @@ begin
                       Long_Integer'Image (Overdrive_Time_Left) & " seconds.");
          end if;
 
-         -- Engage pre-cooling or standard mathematical target
-         CPU_GPU_Target := SMC_Math.Compute_Target_RPM (
-            Current_Temp         => SMC_Math.Temperature_Value (Current_Temp),
-            Power                => SMC_Math.Power_Value (Power),
-            Battery_Low_Survival => (Battery_Percent <= 3),
-            Endurance_Active     => (Battery_Percent <= 10) or Overdrive_Active,
-            Emergency_Load       => (Daemon_State.Get_Spike_Count >= 5),
-            Turbo_Active         => Daemon_State.Is_Turbo_Active or Precool_Active,
-            Derivative           => Temp_Gradient / 0.1
-         );
-
          -- Battery Temperature PID Controller Loop (Using battery temperatures from TB0T, TB1T, TB2T)
          declare
             TB0T_Val : Float := 20.0;
@@ -859,62 +852,90 @@ begin
             );
          end;
 
-         -- Target speed is maximum of CPU/GPU requirement and Battery PID requirement
-         Target_RPM := CPU_GPU_Target;
-         if Battery_Target > Target_RPM then
-            Target_RPM := Battery_Target;
-         end if;
-
-         -- Handle Cooldown Transition (Natural Logarithmic)
-         if Daemon_State.Is_Turbo_Active or else Overdrive_Active then
-            if Daemon_State.Is_In_Cooldown then
-               Daemon_State.Cancel_Cooldown;
-               Put_Line ("[DAEMON] Turbo/Overdrive re-engaged. Cooldown transition CANCELLED.");
-            end if;
-         elsif Daemon_State.Is_In_Cooldown then
-            declare
-               use Ada.Real_Time;
-               Elapsed : constant Time_Span := Clock - Daemon_State.Get_Cooldown_Start_Time;
-               Elapsed_Sec : constant Float := Float (To_Duration (Elapsed));
-               Cooldown_Duration : constant Float := 60.0;
-            begin
-               if Elapsed_Sec >= Cooldown_Duration then
-                  Daemon_State.Cancel_Cooldown;
-                  Put_Line ("[DAEMON] Turbo Cooldown complete. Resuming normal PID control.");
-               else
-                  Target_RPM := SMC_Math.Compute_Log_Transition_RPM (
-                     Start_RPM => Daemon_State.Get_Cooldown_Start_RPM,
-                     End_RPM   => Float (Target_RPM),
-                     Elapsed   => Elapsed_Sec,
-                     Duration  => Cooldown_Duration
-                  );
-               end if;
-            end;
-         end if;
-
-         -- Set optimal Target fan speed (F0Tg / F1Tg) at 10Hz
+         -- Determine if thermal thresholds are crossed requiring fan ramping
          declare
-            F0Tg_Hex : chars_ptr;
-            F1Tg_Hex : chars_ptr;
+            Is_Thermal_Demand : constant Boolean := (
+               Last_TCMZ_Temp   >= SMC_Thresholds.TURBO_TEMP_CPU_THRESHOLD or else
+               Last_GPU_Temp    >= SMC_Thresholds.TURBO_TEMP_GPU_THRESHOLD or else
+               Power            >= SMC_Thresholds.TURBO_POWER_THRESHOLD or else
+               Max_Battery_Temp  > SMC_Thresholds.TURBO_BATT_TEMP_THRESHOLD
+            );
          begin
-            if Overdrive_Active then
-               F0Tg_Hex := New_String ("0050c347");
-               F1Tg_Hex := New_String ("0050c347");
-            elsif Target_RPM >= 10100.0 or else Daemon_State.Is_Turbo_Active then
-               F0Tg_Hex := New_String ("0050c347");
-               F1Tg_Hex := New_String ("0050c347");
-            else
+            -- Engage pre-cooling or standard mathematical target
+            CPU_GPU_Target := SMC_Math.Compute_Target_RPM (
+               Current_Temp         => SMC_Math.Temperature_Value (Current_Temp),
+               Power                => SMC_Math.Power_Value (Power),
+               Battery_Low_Survival => (Battery_Percent <= 3),
+               Endurance_Active     => (Battery_Percent <= 10) or Overdrive_Active,
+               Emergency_Load       => False,
+               Turbo_Active         => (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand) or Precool_Active,
+               Derivative           => Temp_Gradient / 0.1
+            );
+
+            -- Target speed is maximum of CPU/GPU requirement and Battery PID requirement
+            Target_RPM := CPU_GPU_Target;
+            if Battery_Target > Target_RPM then
+               Target_RPM := Battery_Target;
+            end if;
+
+            -- Silent Mode: clamp fan RPM to prevent roaring in closed rooms
+            if Silent_Mode and then Target_RPM > 3500.0 then
+               Target_RPM := 3500.0;
+            end if;
+
+            -- Handle Cooldown Transition (Natural Logarithmic)
+            if Daemon_State.Is_Turbo_Active or else Overdrive_Active then
+               if Daemon_State.Is_In_Cooldown then
+                  Daemon_State.Cancel_Cooldown;
+                  Put_Line ("[DAEMON] Turbo/Overdrive re-engaged. Cooldown transition CANCELLED.");
+               end if;
+            elsif Daemon_State.Is_In_Cooldown then
                declare
-                   Hex_Str : constant String := SMC_Utils.Float_To_Hex (Float (Target_RPM));
+                  use Ada.Real_Time;
+                  Elapsed : constant Time_Span := Clock - Daemon_State.Get_Cooldown_Start_Time;
+                  Elapsed_Sec : constant Float := Float (To_Duration (Elapsed));
+                  Cooldown_Duration : constant Float := 60.0;
                begin
-                  F0Tg_Hex := New_String (Hex_Str);
-                  F1Tg_Hex := New_String (Hex_Str);
+                  if Elapsed_Sec >= Cooldown_Duration then
+                     Daemon_State.Cancel_Cooldown;
+                     Put_Line ("[DAEMON] Turbo Cooldown complete. Resuming normal PID control.");
+                  else
+                     Target_RPM := SMC_Math.Compute_Log_Transition_RPM (
+                        Start_RPM => Daemon_State.Get_Cooldown_Start_RPM,
+                        End_RPM   => Float (Target_RPM),
+                        Elapsed   => Elapsed_Sec,
+                        Duration  => Cooldown_Duration
+                     );
+                  end if;
                end;
             end if;
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Tg, F0Tg_Hex);
-            Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Tg, F1Tg_Hex);
-            Free (F0Tg_Hex);
-            Free (F1Tg_Hex);
+
+            -- Set optimal Target fan speed (F0Tg / F1Tg) at 10Hz
+            declare
+               F0Tg_Hex : chars_ptr;
+               F1Tg_Hex : chars_ptr;
+            begin
+               if Overdrive_Active and then not Silent_Mode then
+                  F0Tg_Hex := New_String ("0050c347");
+                  F1Tg_Hex := New_String ("0050c347");
+               elsif (Target_RPM >= 10100.0 or else (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand))
+                     and then not Silent_Mode
+               then
+                  F0Tg_Hex := New_String ("0050c347");
+                  F1Tg_Hex := New_String ("0050c347");
+               else
+                  declare
+                      Hex_Str : constant String := SMC_Utils.Float_To_Hex (Float (Target_RPM));
+                  begin
+                     F0Tg_Hex := New_String (Hex_Str);
+                     F1Tg_Hex := New_String (Hex_Str);
+                  end;
+               end if;
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F0Tg, F0Tg_Hex);
+               Res := SMC_IO.Write_Key_Hex (Conn, Key_F1Tg, F1Tg_Hex);
+               Free (F0Tg_Hex);
+               Free (F1Tg_Hex);
+            end;
 
             -- Re-enforce manual takeover keys every 10 seconds (100 loops) to prevent firmware override
             -- Optimization: Throttled to 0.1Hz. Frequent re-writes to SMC keys cause significant 
@@ -1015,11 +1036,11 @@ begin
             then
                -- Determine which threshold triggered for logging
                if Last_TCMZ_Temp >= SMC_Thresholds.TURBO_TEMP_CPU_THRESHOLD then
-                  Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 93C");
+                  Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 95C");
                elsif Last_GPU_Temp >= SMC_Thresholds.TURBO_TEMP_GPU_THRESHOLD then
                   Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
                elsif Power >= SMC_Thresholds.TURBO_POWER_THRESHOLD then
-                  Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 45W");
+                  Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 50W");
                elsif Max_Battery_Temp > SMC_Thresholds.TURBO_BATT_TEMP_THRESHOLD then
                   Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
                elsif Daemon_State.Get_Spike_Count >= SMC_Thresholds.TURBO_SPIKE_COUNT_MIN then

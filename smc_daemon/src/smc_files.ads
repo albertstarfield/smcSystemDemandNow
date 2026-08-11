@@ -6,6 +6,8 @@ package SMC_Files is
    OVERDRIVE_FLAG : constant String := "/usr/local/smcSystemDemandNow/OverdriveMode";
    TURBONOW_FLAG  : constant String := "/usr/local/smcSystemDemandNow/TURBONOW";
    EARU_DATA_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_data.dat";
+   -- Silent Mode: for when you're in a closed room and the fan roar is really
+   -- quite embarrassing. Create the SilentMode file to suppress aggressive fan curves.
    SILENT_MODE_FLAG : constant String := "/usr/local/smcSystemDemandNow/SilentMode";
    DISABLE_SAFETY_FLAG : constant String := "/usr/local/smcSystemDemandNow/DisableSafety";
    FULL_POWER_OVERRIDE_FLAG : constant String := "/usr/local/smcSystemDemandNow/TOGAFULLPOWEROVERRIDE";
