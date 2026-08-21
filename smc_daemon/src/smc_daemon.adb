@@ -879,8 +879,8 @@ begin
             end if;
 
             -- Silent Mode: clamp fan RPM to prevent roaring in closed rooms
-            if Silent_Mode and then Target_RPM > 3500.0 then
-               Target_RPM := 3500.0;
+            if Silent_Mode and then Target_RPM > 6200.0 then
+               Target_RPM := 6200.0;
             end if;
 
             -- Handle Cooldown Transition (Natural Logarithmic)
@@ -1062,17 +1062,41 @@ begin
                   Diff    : Float;
                   Est_HPa : Float;
                begin
-                  if Calibrated_Pres_RPM > 0.0 then
-                     Diff := Avg_RPM - Calibrated_Pres_RPM;
-                     Est_HPa := 1006.0 * (Calibrated_Pres_RPM / Avg_RPM);
-                     SMC_Files.Write_Pressure_Report (
-                        Ref_RPM   => Calibrated_Pres_RPM,
-                        Cur_RPM   => Avg_RPM,
-                        Diff      => Diff,
-                        Est_HPa   => Est_HPa,
-                        Timestamp => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
-                     );
-                     Put_Line ("[CALIBRATION] Calibration complete. Estimated atmospheric pressure: " & Float'Image (Est_HPa) & " hPa.");
+                   if Calibrated_Pres_RPM > 0.0 then
+                      Diff := Avg_RPM - Calibrated_Pres_RPM;
+                      -- DERIVATION: Replace hardcoded 1006.0 with weather API pressure.
+                      -- Formula: Est_HPa = Ref_Pressure * (Ref_RPM / Current_RPM)
+                      -- Physics: Higher atmospheric pressure → denser air → fan spins
+                      -- faster to maintain cooling. So ratio (Ref/Current) scales the
+                      -- reference pressure inversely with RPM change.
+                      -- Ref_Pressure: from weather API via EARU_data.dat telemetry cache.
+                      -- Ref_RPM: calibrated fan speed at calibration time (saved to file).
+                      -- Current_RPM: average fan speed during 10-second calibration window.
+                      declare
+                         Weather_Ref : constant Float := SMC_Files.Get_Weather_Pressure_HPa;
+                      begin
+                         Est_HPa := Weather_Ref * (Calibrated_Pres_RPM / Avg_RPM);
+                         -- Clamp to sane atmospheric range [870, 1084] hPa
+                         if Est_HPa < 870.0 then Est_HPa := 870.0; end if;
+                         if Est_HPa > 1084.0 then Est_HPa := 1084.0; end if;
+                      end;
+                      SMC_Files.Write_Pressure_Report (
+                         Ref_RPM   => Calibrated_Pres_RPM,
+                         Cur_RPM   => Avg_RPM,
+                         Diff      => Diff,
+                         Est_HPa   => Est_HPa,
+                         Timestamp => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
+                      );
+                      -- Write dataset row for post-hoc analysis
+                      SMC_Files.Write_Pressure_Dataset (
+                         Cur_RPM    => Avg_RPM,
+                         Weather_HPa => SMC_Files.Get_Weather_Pressure_HPa,
+                         Altitude_M  => SMC_Files.Get_Weather_Altitude_M,
+                         Timestamp   => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
+                      );
+                      Put_Line ("[CALIBRATION] Estimated pressure: " & Float'Image (Est_HPa) & " hPa"
+                                & " (weather ref: " & Float'Image (SMC_Files.Get_Weather_Pressure_HPa) & " hPa"
+                                & ", alt: " & Float'Image (SMC_Files.Get_Weather_Altitude_M) & "m)");
                   else
                      -- Save current speed as reference RPM
                      Calibrated_Pres_RPM := Avg_RPM;

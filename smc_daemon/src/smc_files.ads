@@ -64,6 +64,13 @@ package SMC_Files is
    procedure Save_Fan_Calibration (Calibrated_RPM : Float);
    procedure Write_Pressure_Report (Ref_RPM, Cur_RPM, Diff, Est_HPa : Float; Timestamp : Long_Integer);
 
+   -- Weather reference: reads pressure_hpa and altitude from EARU_data.dat location section
+   function Get_Weather_Pressure_HPa return Float;
+   function Get_Weather_Altitude_M return Float;
+
+   -- Pressure calibration dataset CSV (fan_RPM, weather_hPa, altitude, timestamp)
+   procedure Write_Pressure_Dataset (Cur_RPM, Weather_HPa, Altitude_M : Float; Timestamp : Long_Integer);
+
    -- Delete a file safely
    procedure Delete_File (Path : String);
 
