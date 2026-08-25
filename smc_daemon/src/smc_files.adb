@@ -1008,22 +1008,75 @@ package body SMC_Files is
       return Telemetry_Cache.Get_Idle;
    end Get_HID_Idle_Time;
 
-   -------------------------------------
-   -- Get_Weather_Pressure_HPa --
-   -------------------------------------
+    -------------------------------------
+    -- Get_Weather_Pressure_HPa --
+    -------------------------------------
 
-   -- PUBLIC WRAPPER: Exposes the weather API pressure from the telemetry cache.
-   -- DERIVATION: The cached value comes from Update_Telemetry_Cache which parses
-   -- the "location" section of EARU_data.dat. When the pressure_hpa field is
-   -- outside the valid range [870, 1084] hPa, it is derived from altitude using
-   -- ISA barometric formula: P = 1013.25 * (1 - 2.25577e-5 * h)^5.25588
-   -- This function is called by smc_daemon.adb to replace the hardcoded 1006.0
-   -- reference in the fan-RPM-based pressure estimation formula.
+    -- Reads the TRUE weather API pressure (pressure_msl from Open-Meteo) written
+    -- by EARU's weather fetcher to sensor_weather_pressure.dat.
+    --
+    -- CIRCULAR REASONING BUG FIX:
+    -- Previously this read pressure_hpa from EARU_data.dat, but that value IS
+    -- the fan-RPM estimate itself (set by earu_daemon.adb from Read_Fan_Pressure_Est
+    -- which reads smcFanPressurehPaDetection — the OUTPUT of our calibration formula).
+    -- So the calibration formula was using its own output as the reference input.
+    --
+    -- NEW DATA FLOW:
+    --   Open-Meteo API → earu-weather_fetcher.adb (Extract_Pressure_MSL)
+    --   → /Volumes/EARU_dataIO/sensor_weather_pressure.dat (single float)
+    --   → THIS FUNCTION reads it → smc_daemon.adb calibration formula
+    --
+    -- DERIVATION: Open-Meteo returns pressure_msl (sea-level reduced pressure)
+    -- per WMO-No. 8 CIMO Guide Ch.9. This is the TRUE atmospheric reference,
+    -- independent of the fan-RPM estimation loop.
+    --
+    -- FALLBACK: If the file doesn't exist (EARU hasn't fetched yet), falls back
+    -- to the telemetry cache value from EARU_data.dat (which may be circular).
+    -- After the first weather fetch (within 5s of daemon start), the file exists.
 
-   function Get_Weather_Pressure_HPa return Float is
-   begin
-      return Telemetry_Cache.Get_Weather_HPa;
-   end Get_Weather_Pressure_HPa;
+    function Get_Weather_Pressure_HPa return Float is
+       use Ada.Text_IO;
+       File : File_Type;
+       Line : String (1 .. 64);
+       Len  : Natural;
+       Val  : Float;
+    begin
+       --  Primary: read from standalone weather pressure file
+       begin
+          Open (File, In_File, WEATHER_PRESSURE_FILE);
+          Get_Line (File, Line, Len);
+          Close (File);
+          Val := Float'Value (Line (1 .. Len));
+          --  Sanity clamp: atmospheric pressure must be in [870, 1084] hPa
+          if Val >= 870.0 and then Val <= 1084.0 then
+             return Val;
+          end if;
+       exception
+          when others =>
+             if Is_Open (File) then
+                Close (File);
+             end if;
+       end;
+
+       --  Fallback: try project-local path
+       begin
+          Open (File, In_File, WEATHER_PRESSURE_FALLBACK);
+          Get_Line (File, Line, Len);
+          Close (File);
+          Val := Float'Value (Line (1 .. Len));
+          if Val >= 870.0 and then Val <= 1084.0 then
+             return Val;
+          end if;
+       exception
+          when others =>
+             if Is_Open (File) then
+                Close (File);
+             end if;
+       end;
+
+       --  Last resort: fall back to telemetry cache (may be circular)
+       return Telemetry_Cache.Get_Weather_HPa;
+    end Get_Weather_Pressure_HPa;
 
    -----------------------------------
    -- Get_Weather_Altitude_M --

@@ -17,6 +17,15 @@ package SMC_Files is
    NOTIFICATIONS_LOG    : constant String := "/usr/local/smcSystemDemandNow/smc_notifications.log";
    PID_FILE             : constant String := "/var/run/smc_daemon.pid";
 
+   -- TRUE weather API pressure: extracted from Open-Meteo JSON by EARU
+   -- weather fetcher. Contains the sea-level reduced pressure (pressure_msl)
+   -- per WMO-No. 8 CIMO Guide Ch.9. This breaks the circular reasoning
+   -- where the calibration formula used its own fan-RPM output as reference.
+   WEATHER_PRESSURE_FILE : constant String :=
+      "/Volumes/EARU_dataIO/sensor_weather_pressure.dat";
+   WEATHER_PRESSURE_FALLBACK : constant String :=
+      "/usr/local/EnvironmentalAwareReferentialUnit/sensor_weather_pressure.dat";
+
    -- Read accelerometer values from EARU_data.dat
    procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean);
 
