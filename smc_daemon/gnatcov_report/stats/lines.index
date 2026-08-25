@@ -1,0 +1,15 @@
+lines
+
+Global:
+        - 100%, !   0%, +   0%     out of 45 lines
+
+
+Other sources:
+        - 100%, !   0%, +   0%     out of 45 lines
+
+    test_get_line.adb:
+        - 100%, !   0%, +   0%     out of 13 lines
+    test_get_line_long.adb:
+        - 100%, !   0%, +   0%     out of 13 lines
+    test_parity.adb:
+        - 100%, !   0%, +   0%     out of 19 lines

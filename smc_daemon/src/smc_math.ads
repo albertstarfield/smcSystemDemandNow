@@ -24,16 +24,19 @@ package SMC_Math with SPARK_Mode is
       Initialized : Boolean := False;
    end record;
 
-   -- Compute target RPM for CPU/GPU based on temperature, power, and state triggers
-   function Compute_Target_RPM (
-      Current_Temp         : Temperature_Value;
-      Power                : Power_Value;
-      Battery_Low_Survival : Boolean;
-      Endurance_Active     : Boolean;
-      Emergency_Load       : Boolean;
-      Turbo_Active         : Boolean;
-      Derivative           : Float
-   ) return RPM_Value;
+    -- Compute target RPM for CPU/GPU based on temperature, power, and state triggers
+    function Compute_Target_RPM (
+       Current_Temp         : Temperature_Value;
+       Power                : Power_Value;
+       Battery_Low_Survival : Boolean;
+       Endurance_Active     : Boolean;
+       Emergency_Load       : Boolean;
+       Turbo_Active         : Boolean;
+       Derivative           : Float
+    ) return RPM_Value
+      with
+        Pre => Derivative in -100.0 .. 100.0,
+        Post => Compute_Target_RPM'Result in 0.0 .. 10100.0;
 
    -- Run PID loop for battery temperature control
    procedure Update_Battery_PID (
@@ -46,12 +49,15 @@ package SMC_Math with SPARK_Mode is
             State.Prev_Error in -1000.0 .. 1000.0,
      Post => Output in MIN_MANUAL_FAN_RPM .. MAX_NORMAL_FAN_RPM;
 
-   -- Compute logarithmic transition between two RPM values over a duration
-   function Compute_Log_Transition_RPM (
-      Start_RPM : Float;
-      End_RPM   : Float;
-      Elapsed   : Float;
-      Duration  : Float
-   ) return RPM_Value;
+    -- Compute logarithmic transition between two RPM values over a duration
+    function Compute_Log_Transition_RPM (
+       Start_RPM : Float;
+       End_RPM   : Float;
+       Elapsed   : Float;
+       Duration  : Float
+    ) return RPM_Value
+      with
+        Pre => Duration > 0.0 and then Elapsed >= 0.0,
+        Post => Compute_Log_Transition_RPM'Result in 0.0 .. 10100.0;
 
 end SMC_Math;

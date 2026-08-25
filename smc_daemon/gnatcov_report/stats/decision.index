@@ -1,0 +1,15 @@
+decision
+
+Global:
+        - 100%, !   0%, +   0%     out of 2 obligations
+
+
+Other sources:
+        - 100%, !   0%, +   0%     out of 2 obligations
+
+    test_get_line.adb:
+        -   -%, !   -%, +   -%     out of 0 obligations
+    test_get_line_long.adb:
+        -   -%, !   -%, +   -%     out of 0 obligations
+    test_parity.adb:
+        - 100%, !   0%, +   0%     out of 2 obligations

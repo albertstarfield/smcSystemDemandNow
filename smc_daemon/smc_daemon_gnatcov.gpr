@@ -1,0 +1,41 @@
+with "/Users/albertstarfield/.local/share/alire/gnatcov-rts/share/gpr/gnatcov_rts.gpr";
+
+project Smc_Daemon_Gnatcov is
+
+   for Source_Dirs use ("obj/smc_daemon-gnatcov-instr", "src");
+   for Object_Dir   use "obj";
+   for Exec_Dir     use "bin";
+   for Main         use ("smc_daemon.adb");
+   for Languages    use ("Ada", "C");
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        ("-g",
+         "-gnato",   -- overflow checks
+         "-gnatwa",  -- all warnings
+         "-gnata",   -- assertions
+         "-gnat2012",
+         "-O2");
+      for Default_Switches ("C") use
+        ("-g",
+         "-O2",
+         "-I/usr/local/smcSystemDemandNow/smc_daemon/src",
+         "-I/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk/usr/include",
+         "-I/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk/System/Library/Frameworks");
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-static", "-E");
+   end Binder;
+
+   package Linker is
+      for Switches ("Ada") use
+        ("-g",
+         "-mmacosx-version-min=14.0",
+         "-F/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk/System/Library/Frameworks",
+         "-L/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk/usr/lib",
+         "-framework", "IOKit",
+         "-framework", "CoreFoundation");
+   end Linker;
+
+end Smc_Daemon_Gnatcov;

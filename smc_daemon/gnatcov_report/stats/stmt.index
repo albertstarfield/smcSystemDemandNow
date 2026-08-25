@@ -1,0 +1,15 @@
+stmt
+
+Global:
+        - 100%, !   0%, +   0%     out of 45 obligations
+
+
+Other sources:
+        - 100%, !   0%, +   0%     out of 45 obligations
+
+    test_get_line.adb:
+        - 100%, !   0%, +   0%     out of 13 obligations
+    test_get_line_long.adb:
+        - 100%, !   0%, +   0%     out of 13 obligations
+    test_parity.adb:
+        - 100%, !   0%, +   0%     out of 19 obligations

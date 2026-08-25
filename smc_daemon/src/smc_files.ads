@@ -1,3 +1,29 @@
+-- =============================================================================
+-- SMC_Files — File I/O, telemetry parsing, calibration persistence
+-- =============================================================================
+--
+-- Axioms:
+--   A1. EARU Data Bus: The EARU daemon writes JSON telemetry to EARU_data.dat
+--       every 1 second. smcSystemDemandNow reads it every 10 seconds (100 loop
+--       iterations at 10 Hz). [EARU Architecture Spec]
+--   A2. Weather Pressure Independence: Open-Meteo API provides pressure_msl
+--       (sea-level reduced pressure) independent of fan-RPM estimation.
+--       [WMO-No. 8 CIMO Guide Ch.9]
+--   A3. File Self-Healing: All file operations use Ensure_Directory_Exists and
+--       exception handlers to recover from missing directories/files.
+--   A4. Telemetry Cache: Thread-safe protected object caches parsed values
+--       to avoid redundant SHA256 hashing and file parsing.
+--   A5. Atomic Write-Retry: EARU sensor writes use 3 retries with 50ms backoff
+--       to handle concurrent file access from the EARU daemon.
+--
+-- Citations:
+--   [WMO-No. 8 CIMO Guide Ch.9] WMO Guide to Instruments and Methods of
+--     Observation, Chapter 9: Surface Pressure
+--   [RFC 8259] JSON Data Interchange Format
+--   [Ada RM §9.4] Protected Objects for thread safety
+--
+-- =============================================================================
+
 package SMC_Files is
 
    -- Paths matching C daemon
