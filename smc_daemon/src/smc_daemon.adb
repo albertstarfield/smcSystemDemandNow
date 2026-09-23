@@ -396,6 +396,17 @@ procedure Smc_Daemon is
    Load_Status : Integer := 0;
    Silent_Mode : Boolean := False;
 
+   -- EARU 7-file power tracking state (SMC_Files.Write_Power_Tracking contract)
+   -- Long_Float accumulators: meter crosses 62842 Wh — Float32 would drift.
+   Power_Day_Wh     : Long_Float := 0.0;
+   Power_Month_Wh   : Long_Float := 0.0;
+   Power_Meter_Wh   : Long_Float := 0.0;
+   Power_Day_Key    : Integer := 0;  -- yyyymmdd (0 = unstamped)
+   Power_Month_Key  : Integer := 0;  -- 1..12 (0 = unstamped)
+   Last_Power_Tick  : Ada.Calendar.Time := Ada.Calendar.Clock;
+   Power_Tick_Count : Natural := 0;
+   Full_Wh_Warned   : Boolean := False;  -- one-shot capacity warning latch
+
     procedure Run_Power_Command (Args : GNAT.OS_Lib.Argument_List) is
       -- ============================================================================
       -- FUNCTION: Run_Power_Command
@@ -913,6 +924,63 @@ begin
       Put_Line ("[CALIBRATION] No reference RPM found. Standard sea-level reference (1006 hPa) will remain active.");
    end if;
 
+   -- Load persistent EARU power-tracking accumulators (7-file export state)
+   declare
+      L_Day, L_Month, L_Meter : Long_Float;
+      L_Day_Key, L_Month_Key  : Integer;
+      L_Epoch                 : Long_Integer;
+      L_Source                : Natural;
+      Split_Y : Ada.Calendar.Year_Number;
+      Split_M : Ada.Calendar.Month_Number;
+      Split_D : Ada.Calendar.Day_Number;
+      Split_S : Ada.Calendar.Day_Duration;
+      Today_Key  : Integer;
+      This_Month : Integer;
+   begin
+      SMC_Files.Load_Power_Metrics (L_Day, L_Month, L_Meter,
+                                    L_Day_Key, L_Month_Key, L_Epoch, L_Source);
+      Ada.Calendar.Split (Ada.Calendar.Clock, Split_Y, Split_M, Split_D, Split_S);
+      Today_Key  := Integer (Split_Y) * 10000 + Integer (Split_M) * 100 + Integer (Split_D);
+      This_Month := Integer (Split_M);
+
+      Power_Day_Wh   := L_Day;
+      Power_Month_Wh := L_Month;
+      Power_Meter_Wh := L_Meter;
+
+      if L_Source = 1 then
+         -- Persist file: wipe day/month if calendar rolled while daemon was down
+         if L_Day_Key /= 0 and then L_Day_Key /= Today_Key then
+            Power_Day_Wh := 0.0;
+            Put_Line ("[POWER] Day rolled while down; day accumulator reset (" &
+                      Integer'Image (L_Day_Key) & " -> " & Integer'Image (Today_Key) & ").");
+         end if;
+         if L_Month_Key /= 0 and then L_Month_Key /= This_Month then
+            Power_Month_Wh := 0.0;
+            Put_Line ("[POWER] Month rolled while down; month accumulator reset.");
+         end if;
+         Power_Day_Key   := Today_Key;
+         Power_Month_Key := This_Month;
+         -- Restore last-integration epoch so the first tick can integrate a
+         -- short restart gap (dt guard in the loop skips gaps > 300s).
+         if L_Epoch > 0 then
+            Last_Power_Tick := Ada.Calendar.Time_Of (1970, 1, 1, 0.0) + Duration (L_Epoch);
+         else
+            Last_Power_Tick := Ada.Calendar.Clock;
+         end if;
+      else
+         -- Source 0 (no data) or 2 (seeded from EARU_data.dat): stamp today's
+         -- keys so the first rollover check does not wipe seeded Wh values.
+         Power_Day_Key   := Today_Key;
+         Power_Month_Key := This_Month;
+         Last_Power_Tick := Ada.Calendar.Clock;
+      end if;
+
+      Put_Line ("[POWER] Metrics load source=" & Natural'Image (L_Source) &
+                " day=" & Long_Float'Image (Power_Day_Wh) &
+                " month=" & Long_Float'Image (Power_Month_Wh) &
+                " meter=" & Long_Float'Image (Power_Meter_Wh) & " Wh.");
+   end;
+
    -- Notify user daemon is fully active
    SMC_Files.Notify_User ("BOOTSTRAP", "Ada/SPARK SMC Telemetry Engine and Controller loaded successfully.");
 
@@ -1417,6 +1485,128 @@ begin
             SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
             SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
             SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
+
+            -- === EARU 7-file power tracking export (0.1 Hz) ===
+            -- Mirrors earu Accumulate_Power (earu-system_bridge.adb:614-717)
+            -- order: rollover first, then dt-guarded integrate, then est_today.
+            -- Survival: smc is source of truth (EARU only reacts to wake=0/≠0).
+            declare
+               Now_C : constant Ada.Calendar.Time := Ada.Calendar.Clock;
+               Dt    : constant Duration := Now_C - Last_Power_Tick;
+               Split_Y : Ada.Calendar.Year_Number;
+               Split_M : Ada.Calendar.Month_Number;
+               Split_D : Ada.Calendar.Day_Number;
+               Split_S : Ada.Calendar.Day_Duration;
+               Today_Key       : Integer;
+               This_Month      : Integer;
+               Delta_Wh        : Long_Float;
+               Remaining_Hours : Long_Float;
+               Est_Today_Wh    : Long_Float;
+               Full_Wh         : Float;
+               Energy_Wh       : Long_Float;
+               Surv_W          : Long_Float;
+               Wake_V          : Long_Float;
+               Len_V           : Long_Float;
+            begin
+               Ada.Calendar.Split (Now_C, Split_Y, Split_M, Split_D, Split_S);
+               Today_Key  := Integer (Split_Y) * 10000 + Integer (Split_M) * 100 + Integer (Split_D);
+               This_Month := Integer (Split_M);
+
+               -- Day rollover (mirror earu-system_bridge.adb:675-679)
+               if Power_Day_Key /= Today_Key then
+                  if Power_Day_Key /= 0 then
+                     Put_Line ("[POWER] Day rollover; day accumulator reset (" &
+                               Integer'Image (Power_Day_Key) & " -> " &
+                               Integer'Image (Today_Key) & ").");
+                  end if;
+                  Power_Day_Wh := 0.0;
+               end if;
+               Power_Day_Key := Today_Key;
+
+               -- Month rollover (mirror earu-system_bridge.adb:681-685)
+               if Power_Month_Key /= This_Month then
+                  if Power_Month_Key /= 0 then
+                     Put_Line ("[POWER] Month rollover; month accumulator reset.");
+                  end if;
+                  Power_Month_Wh := 0.0;
+               end if;
+               Power_Month_Key := This_Month;
+
+               -- dt guard 0 < dt < 300 (mirror earu-system_bridge.adb:688)
+               if Dt > 0.0 and then Dt < 300.0 then
+                  Delta_Wh := Long_Float (Power) * Long_Float (Dt) / 3600.0;
+                  Power_Day_Wh   := Long_Float'Max (0.0, Power_Day_Wh + Delta_Wh);
+                  Power_Month_Wh := Long_Float'Max (0.0, Power_Month_Wh + Delta_Wh);
+                  Power_Meter_Wh := Long_Float'Max (0.0, Power_Meter_Wh + Delta_Wh);
+               end if;
+               -- Always advance tick (invalid dt still resyncs the clock)
+               Last_Power_Tick := Now_C;
+
+               -- est_today = day + PWR * hours_until_midnight (EARU :702-709)
+               Remaining_Hours := Long_Float'Max
+                 (0.0, (86400.0 - Long_Float (Split_S)) / 3600.0);
+               Est_Today_Wh := Power_Day_Wh + Long_Float (Power) * Remaining_Hours;
+
+               -- Survival decision: on_battery := Pwr_PDBR > 0.0 (smc_daemon.adb:307-310)
+               Full_Wh := SMC_Files.Get_Battery_Full_Wh;
+               if Pwr_PDBR > 0.0 then
+                  if Full_Wh <= 0.0 then
+                     -- Conservative fallback: capacity unknown → wake=0 keeps
+                     -- current EARU behaviour (export survive, no pulse solve).
+                     if not Full_Wh_Warned then
+                        Put_Line
+                          ("[POWER] WARN: BatteryFullChargeCapacityWh unknown (0.0); " &
+                           "cannot decide survival — writing wake=0 (survive). " &
+                           "Capacity populates after EARU_data.dat exposes the key.");
+                        Full_Wh_Warned := True;
+                     end if;
+                     Surv_W := 0.0;
+                     Wake_V := 0.0;
+                     Len_V  := 0.0;
+                  else
+                     Energy_Wh := Long_Float (Battery_Percent) * Long_Float (Full_Wh) / 100.0;
+                     if Remaining_Hours > 0.0 then
+                        Surv_W := Energy_Wh / Remaining_Hours;
+                     else
+                        Surv_W := 0.0;
+                     end if;
+                     if Long_Float (Pwr_PDBR) > Surv_W then
+                        -- Cannot reach midnight at current draw: pulse trigger.
+                        -- Non-zero wake makes EARU run Solve_Pulsing_Numerically
+                        -- (earu-system_bridge.adb:841-882) and overwrite our
+                        -- wake/length/survival with its own schedule.
+                        Wake_V := 1.0;
+                        Len_V  := 0.0;
+                     else
+                        Wake_V := 0.0;
+                        Len_V  := 0.0;
+                        Surv_W := 0.0;  -- EARU forces survival_w=0 when wake=0
+                     end if;
+                  end if;
+               else
+                  -- On AC (Pwr_PDBR <= 0): battery survives by definition
+                  Surv_W := 0.0;
+                  Wake_V := 0.0;
+                  Len_V  := 0.0;
+               end if;
+
+               SMC_Files.Write_Power_Tracking
+                 (Power_Day_Wh, Est_Today_Wh, Power_Month_Wh, Power_Meter_Wh,
+                  Surv_W, Wake_V, Len_V);
+
+               -- Persist every 6th export tick (~60s) to bound restart loss
+               Power_Tick_Count := Power_Tick_Count + 1;
+               if Power_Tick_Count mod 6 = 0 then
+                  SMC_Files.Save_Power_Metrics
+                    (Power_Day_Wh, Power_Month_Wh, Power_Meter_Wh,
+                     Power_Day_Key, Power_Month_Key,
+                     Long_Integer (Now_C - Ada.Calendar.Time_Of (1970, 1, 1, 0.0)));
+               end if;
+            exception
+               when E : others =>
+                  Put_Line ("[POWER] tracking export failed: " &
+                            Ada.Exceptions.Exception_Message (E));
+            end;
          end if;
 
          -- Write Telemetry CSV every 10 seconds (100 loops of 100ms)

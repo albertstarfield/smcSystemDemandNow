@@ -1,6 +1,7 @@
 with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Calendar;
+with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Numerics.Elementary_Functions;
 with SMC_Integrity;
@@ -202,31 +203,36 @@ package body SMC_Files is
    ---------------------
 
    -- Internal state for telemetry cache to avoid redundant SHA256 hashing and file parsing
-   protected Telemetry_Cache is
-      procedure Update (
-         New_Battery : Integer;
-         New_X, New_Y, New_Z : Integer;
-         New_L1, New_L2, New_L3 : Float;
-         New_Idle : Float;
-         New_Weather_HPa : Float;
-         New_Altitude_M : Float;
-         New_Success : Boolean
-      );
-      function Get_Battery return Integer;
-      procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean);
-      procedure Check_Load (Max_Load : out Float; Status : out Integer);
-      function Get_Idle return Float;
-      function Get_Weather_HPa return Float;
-      function Get_Altitude_M return Float;
-   private
-      Battery : Integer := 100;
-      X, Y, Z : Integer := 0;
-      L1, L2, L3 : Float := 0.0;
-      Idle : Float := 0.0;
-      Weather_HPa : Float := 1013.25;
-      Altitude_M : Float := 0.0;
-      Success : Boolean := False;
-   end Telemetry_Cache;
+    protected Telemetry_Cache is
+       procedure Update (
+          New_Battery : Integer;
+          New_Full_Wh : Float;
+          New_X, New_Y, New_Z : Integer;
+          New_L1, New_L2, New_L3 : Float;
+          New_Idle : Float;
+          New_Weather_HPa : Float;
+          New_Altitude_M : Float;
+          New_Success : Boolean
+       );
+       function Get_Battery return Integer;
+       function Get_Full_Wh return Float;
+       procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean);
+       procedure Check_Load (Max_Load : out Float; Status : out Integer);
+       function Get_Idle return Float;
+       function Get_Weather_HPa return Float;
+       function Get_Altitude_M return Float;
+    private
+       Battery : Integer := 100;
+       -- Full-charge capacity in Wh; 0.0 = unknown (EARU_data.dat parse has
+       -- not succeeded yet) — callers must treat as "cannot decide"
+       Full_Wh : Float := 0.0;
+       X, Y, Z : Integer := 0;
+       L1, L2, L3 : Float := 0.0;
+       Idle : Float := 0.0;
+       Weather_HPa : Float := 1013.25;
+       Altitude_M : Float := 0.0;
+       Success : Boolean := False;
+    end Telemetry_Cache;
 
     -- =========================================================================
     -- Telemetry_Cache (Protected Body)
@@ -241,9 +247,10 @@ package body SMC_Files is
     -- TIMING: WCET <50ns per access (protected entry), O(1) space
     -- =========================================================================
 
-    protected body Telemetry_Cache is
+     protected body Telemetry_Cache is
       procedure Update (
          New_Battery : Integer;
+         New_Full_Wh : Float;
          New_X, New_Y, New_Z : Integer;
          New_L1, New_L2, New_L3 : Float;
          New_Idle : Float;
@@ -253,6 +260,7 @@ package body SMC_Files is
       ) is
       begin
          Battery := New_Battery;
+         Full_Wh := New_Full_Wh;
          X := New_X; Y := New_Y; Z := New_Z;
          L1 := New_L1; L2 := New_L2; L3 := New_L3;
          Idle := New_Idle;
@@ -262,6 +270,7 @@ package body SMC_Files is
       end Update;
 
       function Get_Battery return Integer is (Battery);
+      function Get_Full_Wh return Float is (Full_Wh);
 
       procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean) is
       begin
@@ -391,8 +400,12 @@ package body SMC_Files is
       -- Temps for Battery (percentage 0-100)
       B_Percent : Integer := 100;
 
-      -- Temps for HID Idle (seconds since last human input, 0-3600)
-      Idle_Sec : Float := 0.0;
+       -- Temps for HID Idle (seconds since last human input, 0-3600)
+       Idle_Sec : Float := 0.0;
+
+       -- Temps for battery full-charge capacity (Wh) from
+       -- "BatteryFullChargeCapacityWh" (earu-io.adb:934). 0.0 = unknown.
+       Full_Wh : Float := 0.0;
 
       -- Temps for Weather API pressure reference and GPS altitude
       -- These come from the "location" section of EARU_data.dat
@@ -413,10 +426,10 @@ package body SMC_Files is
       if not File_Success then
          -- Fallback: use ISA standard values so daemon can still estimate pressure
          -- even when EARU_data.dat is temporarily unavailable (e.g., during file write)
-         -- ISA standard: P0 = 1013.25 hPa, alt = 0m (sea level)
-         Telemetry_Cache.Update (100, 0, 0, 0, 0.0, 0.0, 0.0, 0.0,
-                                 1013.25, 0.0, False);
-         return;
+          -- ISA standard: P0 = 1013.25 hPa, alt = 0m (sea level)
+          Telemetry_Cache.Update (100, 0.0, 0, 0, 0, 0.0, 0.0, 0.0,
+                                  0.0, 1013.25, 0.0, False);
+          return;
       end if;
 
       -- Step 1: Parse battery_percent
@@ -428,10 +441,24 @@ package body SMC_Files is
          B_Percent := Parse_Int_After (Content (1 .. Length), Idx + 18, 100);
          -- Clamp to valid range [0, 100] — protects against corrupt JSON values
          if B_Percent < 0 then B_Percent := 0; end if;
-         if B_Percent > 100 then B_Percent := 100; end if;
-      end if;
+          if B_Percent > 100 then B_Percent := 100; end if;
+       end if;
 
-      -- Step 2: Parse accelerometer (SMS — Shock/Motion Sensing)
+       -- Step 1b: Parse BatteryFullChargeCapacityWh (full-charge capacity, Wh)
+       -- JSON pattern: "BatteryFullChargeCapacityWh": 49.17
+       -- DERIVATION: Written by earu-io.adb:934 from System_Stats.Battery_Full_Wh.
+       -- Used by survival math: energy = battery% / 100 * Full_Wh.
+       -- Out-of-range (>500 Wh, impossible for laptop packs) is treated as
+       -- unknown (0.0) rather than clamped up — a corrupt high value would
+       -- overestimate energy and could suppress a needed hibernate trigger.
+       Idx := Index (Content (1 .. Length), """BatteryFullChargeCapacityWh"":");
+       if Idx > 0 then
+          Full_Wh := Parse_Float_After (Content (1 .. Length), Idx + 30, 0.0);
+          if Full_Wh < 0.0 then Full_Wh := 0.0; end if;
+          if Full_Wh > 500.0 then Full_Wh := 0.0; end if;
+       end if;
+
+       -- Step 2: Parse accelerometer (SMS — Shock/Motion Sensing)
       -- JSON pattern: "accel": { "x": 0.12, "y": -0.45, "z": 9.81 }
       -- DERIVATION: CoreMotion provides raw acceleration in g (9.81 m/s²).
       -- We clamp to ±327g to match the integer storage format (16-bit signed * 100).
@@ -570,11 +597,11 @@ package body SMC_Files is
          end if;
       end if;
 
-      -- Store all parsed values in the thread-safe cache
-      -- The cache is a Ada protected type, so concurrent reads are safe
-      Telemetry_Cache.Update (B_Percent, CX, CY, CZ, L1, L2, L3, Idle_Sec,
-                              Weather_HPa, Altitude_M, True);
-   end Update_Telemetry_Cache;
+       -- Store all parsed values in the thread-safe cache
+       -- The cache is a Ada protected type, so concurrent reads are safe
+       Telemetry_Cache.Update (B_Percent, Full_Wh, CX, CY, CZ, L1, L2, L3,
+                               Idle_Sec, Weather_HPa, Altitude_M, True);
+    end Update_Telemetry_Cache;
 
     -- =========================================================================
     -- Read_SMS_Values
@@ -636,6 +663,15 @@ package body SMC_Files is
    begin
       return Telemetry_Cache.Get_Battery;
    end Get_Battery_Percent;
+
+   ----------------------------
+   -- Get_Battery_Full_Wh --
+   ----------------------------
+
+   function Get_Battery_Full_Wh return Float is
+   begin
+      return Telemetry_Cache.Get_Full_Wh;
+   end Get_Battery_Full_Wh;
 
    -- =========================================================================
    -- Log_Telemetry_CSV
@@ -918,7 +954,7 @@ package body SMC_Files is
       use Ada.Text_IO;
       use Ada.Strings.Fixed;
       File : File_Type;
-      Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_temp_" & Name & ".dat";
+      Path : constant String := "/Volumes/EARU_dataIO/sensor_temp_" & Name & ".dat";
       Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
@@ -960,7 +996,7 @@ package body SMC_Files is
       use Ada.Text_IO;
       use Ada.Strings.Fixed;
       File : File_Type;
-      Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_smc_" & Name & ".dat";
+      Path : constant String := "/Volumes/EARU_dataIO/sensor_smc_" & Name & ".dat";
       Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
@@ -1002,7 +1038,7 @@ package body SMC_Files is
       use Ada.Text_IO;
       use Ada.Strings.Fixed;
       File : File_Type;
-      Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_fan_" & Name & ".dat";
+      Path : constant String := "/Volumes/EARU_dataIO/sensor_fan_" & Name & ".dat";
       Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
@@ -1044,7 +1080,7 @@ package body SMC_Files is
       use Ada.Text_IO;
       use Ada.Strings.Fixed;
       File : File_Type;
-      Path : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/sensor_TURBO_MODE.dat";
+      Path : constant String := "/Volumes/EARU_dataIO/sensor_TURBO_MODE.dat";
       Max_Retries : constant := 3;
    begin
       Ensure_Directory_Exists (Path);
@@ -1061,12 +1097,80 @@ package body SMC_Files is
                if Retry = Max_Retries then
                   Ada.Text_IO.Put_Line ("[EARU WRITE FAIL] sensor_TURBO_MODE" &
                                        " failed after" & Integer'Image (Max_Retries) & " retries.");
+                else
+                   delay Duration'(0.05);
+                end if;
+         end;
+      end loop;
+   end Write_EARU_Turbo;
+
+   -- =========================================================================
+   -- Write_Sensor_Value (shared retry helper for Write_Power_Tracking)
+   -- =========================================================================
+   -- AXIOMS:
+   --   Axiom 1 (Single Implementation): One retry loop used by all 7 power
+   --     tracking file writes — avoids 7 divergent copies of the same logic.
+   --   Axiom 2 (Atomic Retry): 3 retries with 50ms backoff, matching
+   --     Write_EARU_Temp/Turbo. Logs full failure with path + attempt +
+   --     exception message on final failure. [Murphy's Law]
+   -- TIMING: WCET <200ms (3 retries x file I/O), O(1) space
+   -- =========================================================================
+
+   procedure Write_Sensor_Value (Path : String; Val : Long_Float) is
+      use Ada.Text_IO;
+      use Ada.Strings.Fixed;
+      File : File_Type;
+      Max_Retries : constant := 3;
+   begin
+      Ensure_Directory_Exists (Path);
+
+      for Retry in 1 .. Max_Retries loop
+         begin
+            Create (File, Out_File, Path);
+            Put (File, Trim (Long_Float'Image (Val), Ada.Strings.Both));
+            Close (File);
+            return;
+         exception
+            when E : others =>
+               if Is_Open (File) then Close (File); end if;
+               if Retry = Max_Retries then
+                  Ada.Text_IO.Put_Line
+                    ("[EARU WRITE FAIL] " & Path &
+                     " failed after" & Integer'Image (Max_Retries) &
+                     " retries: " &
+                     Ada.Exceptions.Exception_Message (E));
                else
                   delay Duration'(0.05);
                end if;
          end;
       end loop;
-   end Write_EARU_Turbo;
+      -- All retries exhausted: helper already logged; caller continues so one
+      -- stuck path does not abort the remaining six file writes.
+   end Write_Sensor_Value;
+
+   -------------------------------
+   -- Write_Power_Tracking --
+   -------------------------------
+
+   procedure Write_Power_Tracking (
+      Day_Wh       : Long_Float;
+      Est_Wh       : Long_Float;
+      Month_Wh     : Long_Float;
+      Meter_Wh     : Long_Float;
+      Survival_W   : Long_Float;
+      Pulse_Wake   : Long_Float;
+      Pulse_Length : Long_Float)
+   is
+      Dir : constant String := "/Volumes/EARU_dataIO/";
+   begin
+      Write_Sensor_Value (Dir & "sensor_power_day_wh.dat", Day_Wh);
+      Write_Sensor_Value (Dir & "sensor_power_est_today_wh.dat", Est_Wh);
+      Write_Sensor_Value (Dir & "sensor_power_month_wh.dat", Month_Wh);
+      Write_Sensor_Value (Dir & "sensor_power_meter_wh.dat", Meter_Wh);
+      Write_Sensor_Value (Dir & "sensor_power_survival_w.dat", Survival_W);
+      Write_Sensor_Value (Dir & "sensor_pulse_wake.dat", Pulse_Wake);
+      Write_Sensor_Value (Dir & "sensor_pulse_length.dat", Pulse_Length);
+   end Write_Power_Tracking;
 
     -- =========================================================================
     -- Load_Fan_Calibration
@@ -1387,5 +1491,173 @@ package body SMC_Files is
       when others =>
          if Is_Open (File) then Close (File); end if;
    end Write_Pressure_Dataset;
+
+   -- =========================================================================
+   -- Load_Power_Metrics
+   -- =========================================================================
+   -- See smc_files.ads for AXIOMS/TIMING contract. Seed priority:
+   --   1. POWER_METRICS_FILE  (6 whitespace-separated tokens)
+   --   2. EARU_data.dat JSON  (DayPowerUsage_Wh / ThisMonth / Meter keys)
+   --   3. all zeros (Source = 0)
+   -- =========================================================================
+
+   procedure Load_Power_Metrics (
+      Day_Wh     : out Long_Float;
+      Month_Wh   : out Long_Float;
+      Meter_Wh   : out Long_Float;
+      Day_Key    : out Integer;
+      Month_Key  : out Integer;
+      Last_Epoch : out Long_Integer;
+      Source     : out Natural)
+   is
+      use Ada.Text_IO;
+      use Ada.Strings.Fixed;
+      File : File_Type;
+
+      -- Sequential whitespace-token scanner; raises Constraint_Error on
+      -- missing/invalid tokens so the caller exception path can fall back.
+      function Scan_Tok (S : String; Pos : in out Integer) return String is
+         First : Integer;
+      begin
+         while Pos <= S'Last and then S (Pos) = ' ' loop
+            Pos := Pos + 1;
+         end loop;
+         First := Pos;
+         while Pos <= S'Last and then S (Pos) /= ' ' loop
+            Pos := Pos + 1;
+         end loop;
+         if First >= Pos then
+            raise Constraint_Error with "empty token";
+         end if;
+         return S (First .. Pos - 1);
+      end Scan_Tok;
+
+      Content : String (1 .. 65536);
+      Length  : Natural;
+      Ok      : Boolean;
+   begin
+      Day_Wh     := 0.0;
+      Month_Wh   := 0.0;
+      Meter_Wh   := 0.0;
+      Day_Key    := 0;
+      Month_Key  := 0;
+      Last_Epoch := 0;
+      Source     := 0;
+
+      -- Priority 1: persist file written by Save_Power_Metrics
+      if Ada.Directories.Exists (POWER_METRICS_FILE) then
+         begin
+            Open (File, In_File, POWER_METRICS_FILE);
+            declare
+               Line : constant String := Get_Line (File);
+               Pos  : Integer := Line'First;
+               -- Sequential declarations elaborate in source order, so each
+               -- Scan_Tok sees the cursor advanced by the previous token.
+               T1 : constant String := Scan_Tok (Line, Pos);
+               T2 : constant String := Scan_Tok (Line, Pos);
+               T3 : constant String := Scan_Tok (Line, Pos);
+               T4 : constant String := Scan_Tok (Line, Pos);
+               T5 : constant String := Scan_Tok (Line, Pos);
+               T6 : constant String := Scan_Tok (Line, Pos);
+            begin
+               Close (File);
+               Day_Wh     := Long_Float'Value (T1);
+               Month_Wh   := Long_Float'Value (T2);
+               Meter_Wh   := Long_Float'Value (T3);
+               Day_Key    := Integer'Value (T4);
+               Month_Key  := Integer'Value (T5);
+               Last_Epoch := Long_Integer'Value (T6);
+               Source     := 1;
+               return;
+            end;
+         exception
+            when E : others =>
+               if Is_Open (File) then Close (File); end if;
+               Ada.Text_IO.Put_Line
+                 ("[POWER] power_metrics.dat unreadable (falling back to seed): " &
+                  Ada.Exceptions.Exception_Message (E));
+         end;
+      end if;
+
+      -- Priority 2: seed from today's authoritative EARU JSON snapshot
+      Read_File_Content (EARU_DATA_FILE, Content, Length, Ok);
+      if not Ok then
+         Source := 0;
+         return;
+      end if;
+
+      declare
+         Idx : Natural;
+      begin
+         Idx := Index (Content (1 .. Length), """DayPowerUsage_Wh"":");
+         if Idx > 0 then
+            Day_Wh := Long_Float (Parse_Float_After (Content (1 .. Length), Idx + 19, 0.0));
+         end if;
+         Idx := Index (Content (1 .. Length), """AccumulativePowerUsageThisMonth_Wh"":");
+         if Idx > 0 then
+            Month_Wh := Long_Float (Parse_Float_After (Content (1 .. Length), Idx + 36, 0.0));
+         end if;
+         Idx := Index (Content (1 .. Length), """AccumulativePowerUsageMeter_Wh"":");
+         if Idx > 0 then
+            Meter_Wh := Long_Float (Parse_Float_After (Content (1 .. Length), Idx + 32, 0.0));
+         end if;
+      end;
+      Source := 2;
+   exception
+      when E : others =>
+         Day_Wh     := 0.0;
+         Month_Wh   := 0.0;
+         Meter_Wh   := 0.0;
+         Day_Key    := 0;
+         Month_Key  := 0;
+         Last_Epoch := 0;
+         Source     := 0;
+         Ada.Text_IO.Put_Line
+           ("[POWER] Load_Power_Metrics failed (zeros): " &
+            Ada.Exceptions.Exception_Message (E));
+   end Load_Power_Metrics;
+
+   -- =========================================================================
+   -- Save_Power_Metrics
+   -- =========================================================================
+   -- AXIOMS:
+   --   Axiom 1 (Atomic Write): Self-healing directory + single-line format
+   --     matching Load_Power_Metrics. [Murphy's Law]
+   --   Axiom 2 (Exception Safety): File always closed; failure logged with
+   --     exception message — never raises to the main loop.
+   -- TIMING: WCET <5ms (file write), O(1) space
+   -- =========================================================================
+
+   procedure Save_Power_Metrics (
+      Day_Wh     : Long_Float;
+      Month_Wh   : Long_Float;
+      Meter_Wh   : Long_Float;
+      Day_Key    : Integer;
+      Month_Key  : Integer;
+      Last_Epoch : Long_Integer)
+   is
+      use Ada.Text_IO;
+      use Ada.Strings.Fixed;
+      File : File_Type;
+   begin
+      Ensure_Directory_Exists (POWER_METRICS_FILE);
+      begin
+         Create (File, Out_File, POWER_METRICS_FILE);
+         Put_Line (File,
+            Trim (Long_Float'Image (Day_Wh), Ada.Strings.Both) & " " &
+            Trim (Long_Float'Image (Month_Wh), Ada.Strings.Both) & " " &
+            Trim (Long_Float'Image (Meter_Wh), Ada.Strings.Both) & " " &
+            Trim (Integer'Image (Day_Key), Ada.Strings.Both) & " " &
+            Trim (Integer'Image (Month_Key), Ada.Strings.Both) & " " &
+            Trim (Long_Integer'Image (Last_Epoch), Ada.Strings.Both));
+         Close (File);
+      exception
+         when E : others =>
+            if Is_Open (File) then Close (File); end if;
+            Ada.Text_IO.Put_Line
+              ("[POWER] Save_Power_Metrics failed: " &
+               Ada.Exceptions.Exception_Message (E));
+      end;
+   end Save_Power_Metrics;
 
 end SMC_Files;

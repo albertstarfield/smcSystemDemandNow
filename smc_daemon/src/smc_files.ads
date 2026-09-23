@@ -39,9 +39,17 @@ package SMC_Files is
    FULL_POWER_OVERRIDE_FLAG : constant String := "/usr/local/smcSystemDemandNow/TOGAFULLPOWEROVERRIDE";
    CALIBRATION_FILE : constant String := "calibrated1006presRPM.pinnedrpm";
    
-   PRESSURE_REPORT_FILE : constant String := "/usr/local/EnvironmentalAwareReferentialUnit/EARU_dataIO/smcFanPressurehPaDetection";
+   PRESSURE_REPORT_FILE : constant String := "/Volumes/EARU_dataIO/smcFanPressurehPaDetection";
    NOTIFICATIONS_LOG    : constant String := "/usr/local/smcSystemDemandNow/smc_notifications.log";
    PID_FILE             : constant String := "/var/run/smc_daemon.pid";
+
+   -- Persistence for the 7-file EARU power-tracking export (day/month/meter
+   -- Wh accumulators + rollover keys + last integration epoch). Without this,
+   -- a daemon restart would reset the lifetime meter (62842+ Wh) and EARU
+   -- would adopt the reset value, corrupting its cumulative counters.
+   -- Format: one line, 6 whitespace-separated tokens:
+   --   <day_wh> <month_wh> <meter_wh> <day_key yyyymmdd> <month_key 1-12> <unix_epoch>
+   POWER_METRICS_FILE : constant String := "/usr/local/smcSystemDemandNow/power_metrics.dat";
 
    -- TRUE weather API pressure: extracted from Open-Meteo JSON by EARU
    -- weather fetcher. Contains the sea-level reduced pressure (pressure_msl)
@@ -93,6 +101,84 @@ package SMC_Files is
    procedure Write_EARU_SMC (Name : String; Val : Float);
    procedure Write_EARU_Fan (Name : String; Val : Float);
    procedure Write_EARU_Turbo (Active : Integer);
+
+   -- =========================================================================
+   -- Write_Power_Tracking
+   -- =========================================================================
+   -- AXIOMS:
+   --   Axiom 1 (EARU Read Contract): EARU Read_Power_Tracking
+   --     (earu-system_bridge.adb:546-556) reads exactly these 7 files from
+   --     /Volumes/EARU_dataIO/ every 5s via Real_IO.Get (single-line float).
+   --   Axiom 2 (Source of Truth Gate): EARU adopts day/month/meter/est values
+   --     iff day/=0 OR month/=0 (earu-system_bridge.adb:1611-1621); before
+   --     this writer existed, both were 0 so EARU used its own accumulator.
+   --   Axiom 3 (Pulse Wake is a Boolean Trigger): Pulse_Wake = 0.0 means
+   --     "battery survives midnight" (earu-system_bridge.adb:839); /= 0.0
+   --     makes EARU run Solve_Pulsing_Numerically and overwrite wake/length/
+   --     survival with its own values (earu-system_bridge.adb:867-882).
+   --   Axiom 4 (Atomic Retry): 3 retries x 50ms backoff per file, matching
+   --     Write_EARU_Temp. [Murphy's Law — concurrent EARU access]
+   -- TIMING: WCET <1.4s worst case (7 files x 3 retries x 50ms + I/O),
+   --   typical <70ms (7 uncached writes); O(1) space
+   -- CITATIONS:
+   --   [earu-system_bridge.adb:535-598] Read_Power_Tracking contract
+   --   [earu-io.adb:979-986] JSON export keys these values feed
+   -- =========================================================================
+   procedure Write_Power_Tracking (
+      Day_Wh       : Long_Float;
+      Est_Wh       : Long_Float;
+      Month_Wh     : Long_Float;
+      Meter_Wh     : Long_Float;
+      Survival_W   : Long_Float;
+      Pulse_Wake   : Long_Float;
+      Pulse_Length : Long_Float);
+
+   -- =========================================================================
+   -- Load_Power_Metrics / Save_Power_Metrics
+   -- =========================================================================
+   -- AXIOMS:
+   --   Axiom 1 (Restart Survival): Accumulators must survive daemon restarts
+   --     or EARU adopts reset day/month values and the meter regresses.
+   --   Axiom 2 (Seed Priority): persist file > EARU_data.dat snapshot >
+   --     zeros. EARU_data.dat keys (earu-io.adb:979-982) carry today's
+   --     authoritative values on first-ever run.
+   --   Axiom 3 (Safe Default): any read/parse failure returns zeros with
+   --     Source=0 or seed values with Source=2; never raises.
+   --     [Murphy's Law]
+   -- TIMING: WCET <100ms (1-2 file reads + JSON scan), O(1) space
+   -- Source codes: 0 = zeros (no data anywhere), 1 = persist file,
+   --               2 = seeded from EARU_data.dat
+   -- =========================================================================
+   procedure Load_Power_Metrics (
+      Day_Wh     : out Long_Float;
+      Month_Wh   : out Long_Float;
+      Meter_Wh   : out Long_Float;
+      Day_Key    : out Integer;
+      Month_Key  : out Integer;
+      Last_Epoch : out Long_Integer;
+      Source     : out Natural);
+
+   procedure Save_Power_Metrics (
+      Day_Wh     : Long_Float;
+      Month_Wh   : Long_Float;
+      Meter_Wh   : Long_Float;
+      Day_Key    : Integer;
+      Month_Key  : Integer;
+      Last_Epoch : Long_Integer);
+
+   -- =========================================================================
+   -- Get_Battery_Full_Wh
+   -- =========================================================================
+   -- AXIOMS:
+   --   Axiom 1 (Cached Read): Full-charge capacity (Wh) parsed from
+   --     EARU_data.dat "BatteryFullChargeCapacityWh" (earu-io.adb:934)
+   --     every 10s by Update_Telemetry_Cache. Not a fresh file read.
+   --   Axiom 2 (0.0 = Unknown): Returns 0.0 until first successful parse
+   --     or when value is out of sane battery range [0, 500] Wh. Callers
+   --     MUST treat 0.0 as "cannot decide" and fall back conservatively.
+   -- TIMING: WCET <50ns (protected function access), O(1) space
+   -- =========================================================================
+   function Get_Battery_Full_Wh return Float;
 
    -- Calibration files reading and writing
    procedure Load_Fan_Calibration (Calibrated_RPM : out Float);
