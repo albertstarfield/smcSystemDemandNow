@@ -1377,14 +1377,20 @@ begin
                   Spike_Count  => Daemon_State.Get_Spike_Count)
             then
                -- Determine which threshold triggered for logging
+               -- CITATION: Threshold text derived from SMC_Thresholds constants so the
+               --   log can never drift from the values that actually triggered it.
                if Last_TCMZ_Temp >= SMC_Thresholds.TURBO_TEMP_CPU_THRESHOLD then
-                  Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) & "C >= 95C");
+                  Activate_Turbo_Mode ("TCMz Temp " & Float'Image (Last_TCMZ_Temp) &
+                                       "C >= " & Float'Image (SMC_Thresholds.TURBO_TEMP_CPU_THRESHOLD) & "C");
                elsif Last_GPU_Temp >= SMC_Thresholds.TURBO_TEMP_GPU_THRESHOLD then
-                  Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) & "C >= 93C");
+                  Activate_Turbo_Mode ("GPU Temp " & Float'Image (Last_GPU_Temp) &
+                                       "C >= " & Float'Image (SMC_Thresholds.TURBO_TEMP_GPU_THRESHOLD) & "C");
                elsif Power >= SMC_Thresholds.TURBO_POWER_THRESHOLD then
-                  Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) & "W >= 50W");
+                  Activate_Turbo_Mode ("Power Draw " & Float'Image (Power) &
+                                       "W >= " & Float'Image (SMC_Thresholds.TURBO_POWER_THRESHOLD) & "W");
                elsif Max_Battery_Temp > SMC_Thresholds.TURBO_BATT_TEMP_THRESHOLD then
-                  Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) & "C > 40C");
+                  Activate_Turbo_Mode ("BattMax " & Float'Image (Max_Battery_Temp) &
+                                       "C > " & Float'Image (SMC_Thresholds.TURBO_BATT_TEMP_THRESHOLD) & "C");
                elsif Daemon_State.Get_Spike_Count >= SMC_Thresholds.TURBO_SPIKE_COUNT_MIN then
                   Activate_Turbo_Mode ("Latency spikes detected by monitor");
                end if;

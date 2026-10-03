@@ -8,15 +8,22 @@ package body SMC_Thresholds with SPARK_Mode is
    --     threshold is crossed (OR logic). Conservative approach — err on the
    --     side of performance when any thermal/power limit is approached.
    --   Axiom 2 (Threshold Design): Thresholds are derived from Apple's T6020
-   --     thermal design power (TDP) specifications and battery safety limits.
+   --     thermal design power (TDP) specifications and battery safety limits,
+   --     then biased EARLY by the operator so turbo engages before the silicon
+   --     reaches its rated limit rather than at it.
    --
    -- THEOREMS:
    --   Theorem 1 (Monotonicity): If CPU_Temp₁ ≤ CPU_Temp₂ and all other
    --     inputs are equal, then Should_Activate_Turbo(T₁) ⟹ Should_Activate_Turbo(T₂).
    --
    -- CITATIONS:
-   --   [1] Apple T6020 Thermal Design: TDP=30W base, 50W turbo
+   --   [1] Apple T6020 Thermal Design: TDP=30W base, 50W turbo ceiling. The
+   --       40W activation threshold sits deliberately BELOW that 50W ceiling
+   --       so the burst has headroom to finish before the package hits its
+   --       sustained-power limit.
    --   [2] Battery safety: max operating temp 40°C (IEC 62133)
+   --   [3] Operator-set values (2026-10-03): CPU 93°C, GPU 86°C, Power 40W,
+   --       Battery 40°C. Supersedes the earlier 95/93/50/40 set.
    --
    -- TIMING ANALYSIS:
    --   Estimated Processing Time: O(1) — 5 comparisons

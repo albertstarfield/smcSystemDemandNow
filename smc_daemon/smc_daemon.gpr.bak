@@ -1,0 +1,21 @@
+project Smc_Daemon is
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Main use ("smc_daemon.adb");
+   for Languages use ("Ada", "C");
+
+   package Compiler is
+      for Driver ("C") use "/usr/bin/clang";
+      for Default_Switches ("Ada") use ("-gnat2012", "-gnato", "-gnatwa", "-gnata", "-g", "-mmacosx-version-min=14.0");
+      for Default_Switches ("C") use ("-g", "-O2", "-mmacosx-version-min=14.0");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-static");
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("Ada") use ("-isysroot", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk", "-framework", "IOKit", "-framework", "CoreFoundation", "-mmacosx-version-min=14.0", "-static-libgcc");
+   end Linker;
+end Smc_Daemon;
