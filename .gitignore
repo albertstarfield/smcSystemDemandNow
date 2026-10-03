@@ -60,3 +60,16 @@ gnatprove-level4-run*.txt
 # === Alire Build Cache ===
 **/alire/build/
 .alire/
+
+# === Runtime State (machine-specific, rewritten every 60s) ===
+power_metrics.dat
+
+# === Generated Coverage Artifacts ===
+*.srctrace
+gnatcov_rts.gpr
+
+# === Editor / Tooling Backups ===
+*.gpr.bak
+
+# === Agent Session Ledgers ===
+thoughts/
