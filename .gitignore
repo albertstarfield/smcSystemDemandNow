@@ -38,6 +38,8 @@ resources.txt
 DisableSafety
 TOGAFULLPOWEROVERRIDE
 PrecoolMode
+OverdriveMode
+TURBONOW
 .source_hash
 
 # === Legacy ===

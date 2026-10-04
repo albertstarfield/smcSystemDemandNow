@@ -100,6 +100,12 @@ package SMC_Files is
    procedure Update_Telemetry_Cache;
 
    -- Check if TURBONOW file exists. If so, delete it and set OverdriveMode for 10 minutes
+   -- WIRED 2026-10-04: called from smc_daemon.adb at 1Hz, immediately before
+   -- Check_Overdrive_Mode so a freshly written window latches in the same loop
+   -- iteration. Was previously implemented but never invoked (dead feature).
+   -- Drop a file at /usr/local/smcSystemDemandNow/TURBONOW to engage a
+   -- 10-minute Overdrive window; it is consumed (deleted) on success and
+   -- retained for retry if the OverdriveMode write fails.
    procedure Check_And_Handle_TurboNow;
 
    -- EARU temperature/fan/turbo state exports

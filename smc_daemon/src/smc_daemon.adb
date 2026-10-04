@@ -1102,7 +1102,21 @@ begin
 
          -- Check active Precool and Overdrive Mode flags
          SMC_Files.Check_Precool_Mode (Precool_Active, Precool_Time_Left);
-         
+
+         -- TURBONOW one-shot flag -> 10-minute Overdrive window.
+         -- WIRED 2026-10-04 (previously declared and implemented but never
+         -- called, so the feature was dead). Polled at 1Hz rather than every
+         -- 100ms loop: this is a manual flag file, so 1s latency is ample and
+         -- it keeps the stat() cost off the 100ms path.
+         --
+         -- ORDERING: this MUST run before Check_Overdrive_Mode below, so that
+         -- an OverdriveMode file written this tick is picked up in the SAME
+         -- iteration and Overdrive_Active latches immediately, instead of
+         -- taking effect up to 100ms late on the following tick.
+         if Loop_Count = 1 or else Loop_Count mod 10 = 0 then
+            SMC_Files.Check_And_Handle_TurboNow;
+         end if;
+
          declare
             Prev_Overdrive : constant Boolean := Overdrive_Active;
             File_Overdrive_Active : Boolean;

@@ -9,6 +9,44 @@ package SMC_Thresholds with SPARK_Mode is
    TURBO_TEMP_CPU_THRESHOLD  : constant Float := 93.0;  -- TCMz >= 93°C
    TURBO_TEMP_GPU_THRESHOLD  : constant Float := 86.0;  -- GPU >= 86°C
    TURBO_POWER_THRESHOLD     : constant Float := 40.0;  -- Power >= 40W
+
+   -- =========================================================================
+   -- WHY THE BATTERY TEMPERATURE IS THE DOMINANT TURBO TRIGGER
+   -- =========================================================================
+   -- OPERATOR DECISION 2026-10-04: keep this at 40C. Deliberate, and this
+   -- threshold firing during normal work is the EXPECTED behaviour.
+   --
+   -- On paper 40C looks far too low for a "turbo" trigger -- it is an ordinary
+   -- indoor battery temperature. It is kept precisely because this machine
+   -- (Bekasi, West Java) is normally used in an ambient environment of
+   -- 38-42C, where the battery effectively has NO passive heat sink: heat can
+   -- only escape by conduction into the chassis and then out through the fans.
+   --
+   -- Consequence: at these ambient temperatures, ordinary internal dissipation
+   -- alone (SoC load + charge current) is enough to push TB0T/TB1T/TB2T past
+   -- 40C with nothing actually wrong. That is normal field usage for this
+   -- machine, not a fault, and it is the EARLIEST available signal that it is
+   -- operating in a thermally hostile environment. Acting on it early is the
+   -- entire point: it buys cooling headroom before the cell reaches its
+   -- IEC 62133 ceiling and stops the SoC thermally throttling mid-workload.
+   --
+   -- MEASURED at time of writing (EARU_data.dat, Bekasi / METAR stn EARU):
+   --     "smc"."ambient_temp_k" = 313.15  ->  313.15 - 273.15 = 40.0 C ambient
+   --     "ecosystem_weather"."metar_taf"."metar" =
+   --        "METAR AUTO EARU 040128Z 00000KT 10SM SCT025 FEW 075 40/34"
+   --        -> 40C dry-bulb / 34C dew point
+   -- Ambient is therefore already sitting at the top of that 38-42C band.
+   --
+   -- EMPIRICAL: in /var/log/smcSystemDemandNow.log, 10 of the 11 turbo
+   -- activations ever logged came from this condition; CPU temp fired once,
+   -- GPU/Power/Spike never. In this climate this condition IS turbo.
+   --
+   -- DO NOT "clean this up" by raising it to 45C+ on the reasoning that 40C
+   -- sounds hot. That would silently disable turbo for the whole hot season.
+   -- CITATION: IEC 62133 maximum operating temperature 40C.
+   -- CITATION: EARU_data.dat keys "smc"."ambient_temp_k" and
+   --   "ecosystem_weather"."metar_taf"."metar".
+   -- =========================================================================
    TURBO_BATT_TEMP_THRESHOLD : constant Float := 40.0;  -- Battery > 40°C
    TURBO_SPIKE_COUNT_MIN     : constant Natural := 3;    -- Latency spikes >= 3
 

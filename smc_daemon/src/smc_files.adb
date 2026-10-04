@@ -1266,28 +1266,54 @@ package body SMC_Files is
       use Ada.Directories;
       use Ada.Text_IO;
       use Ada.Strings.Fixed;
-      File : File_Type;
+      File  : File_Type;
       Expiry : Long_Integer;
+      Written : Boolean := False;
    begin
-      if Exists (TURBONOW_FLAG) then
-         -- Delete TURBONOW file immediately
-         Delete_File (TURBONOW_FLAG);
-         
-         -- Calculate Expiry: current unix time + 600 seconds
-         Expiry := Get_Unix_Time + 600;
-         
-         -- Create or overwrite OverdriveMode file with EXPIRY
+      if not Exists (TURBONOW_FLAG) then
+         return;
+      end if;
+
+      -- Calculate Expiry: current unix time + 600 seconds
+      Expiry := Get_Unix_Time + 600;
+
+      -- ORDER MATTERS: persist the overdrive window BEFORE consuming the
+      -- TURBONOW flag. If this write fails we deliberately leave TURBONOW in
+      -- place so the request is retried on the next tick rather than silently
+      -- dropped.
+      begin
+         Create (File, Out_File, OVERDRIVE_FLAG);
+         Put_Line (File, "EXPIRY=" & Trim (Expiry'Image, Ada.Strings.Both));
+         Close (File);
+         Written := True;
+      exception
+         when E : others =>
+            if Is_Open (File) then Close (File); end if;
+            Ada.Text_IO.Put_Line
+              ("[TURBONOW] write of " & OVERDRIVE_FLAG & " failed: " &
+               Ada.Exceptions.Exception_Message (E) &
+               " -- TURBONOW flag retained, will retry next tick.");
+      end;
+
+      -- Only consume the flag once the overdrive window is actually on disk,
+      -- and only then claim success to the user.
+      if Written then
          begin
-            Create (File, Out_File, OVERDRIVE_FLAG);
-            Put_Line (File, "EXPIRY=" & Trim (Expiry'Image, Ada.Strings.Both));
-            Close (File);
+            Delete_File (TURBONOW_FLAG);
          exception
-            when others =>
-               if Is_Open (File) then Close (File); end if;
+            when E : others =>
+               -- Fail-safe degradation: overdrive IS engaged, but the flag
+               -- survives, so this branch re-triggers next tick and re-issues
+               -- a fresh EXPIRY. That extends the window instead of dropping
+               -- the user's request -- the safe direction to fail in.
+               Ada.Text_IO.Put_Line
+                 ("[TURBONOW] could not remove " & TURBONOW_FLAG & ": " &
+                  Ada.Exceptions.Exception_Message (E) &
+                  " -- overdrive engaged; flag will re-trigger and extend it.");
          end;
-         
-         -- Notify user
-         Notify_User ("TURBONOW", "Flag file detected! Engaging 10-minute Overdrive Turbo mode.");
+
+         Notify_User ("TURBONOW",
+           "Flag file detected! Engaging 10-minute Overdrive Turbo mode.");
       end if;
    end Check_And_Handle_TurboNow;
 
