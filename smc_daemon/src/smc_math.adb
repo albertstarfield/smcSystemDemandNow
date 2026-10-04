@@ -227,16 +227,30 @@ package body SMC_Math with SPARK_Mode is
    --     inertia (heat soaks slowly, dissipates gradually).
    --   Axiom 2 (Normalized Time): Elapsed/Duration maps to [0,1] where t=0
    --     is start and t=1 is end of transition.
-   --   Axiom 3 (Boundary Conditions): At t=0, Result = Start_RPM; at t=1,
-   --     Result = End_RPM. Monotonic decrease between these points.
+   --   Axiom 3 (Saturating Exit): All three exit paths return through the
+   --     local Saturate helper, so the result always lies within
+   --     RPM_Value'Range (0.0 .. 10100.0). This matters because Start_RPM
+   --     and End_RPM arrive as unconstrained Float from raw SMC fan
+   --     readings, which have been measured ABOVE RPM_Value'Last
+   --     (10891.6 RPM observed in F0Ac).
    --
    -- THEOREMS:
    --   Theorem 1 (Log Decay Factor): Factor = 1.0 - ln(1 + (e-1)*t)
    --     satisfies Factor(0) = 1.0, Factor(1) = 0.0, and Factor is strictly
    --     decreasing on [0,1].
-   --   Theorem 2 (Clamp Boundedness): Output ∈ [0.0, 10100.0] RPM.
-   --   Theorem 3 (Early Return Safety): If Elapsed ≤ 0, returns Start_RPM;
-   --     if Elapsed ≥ Duration, returns End_RPM (no division by zero).
+   --   Theorem 2 (Saturating Boundedness): Output lies within
+   --     [0.0, 10100.0] RPM on ALL exit paths, including both early returns.
+   --   Theorem 3 (Early Return Safety): If Elapsed <= 0, returns
+   --     Saturate (Start_RPM); if Elapsed >= Duration, returns
+   --     Saturate (End_RPM). No division by zero, no out-of-range conversion.
+   --
+   --   CAUTION -- OUTPUT IS NOT MONOTONIC: Factor is strictly decreasing
+   --   for fixed Start_RPM/End_RPM, but the OUTPUT is not. End_RPM is
+   --   recomputed from the live PID target on every call, so a rising PID
+   --   target during the transition raises the result. Only the Factor term
+   --   is guaranteed monotone. An earlier revision of this header asserted
+   --   a monotonic decrease of the output; that was incorrect and was
+   --   corrected 2026-10-04 during audit.
    --
    -- APPLICATIONS:
    --   - Smooth fan speed transitions during turbo mode activation/deactivation
@@ -256,7 +270,9 @@ package body SMC_Math with SPARK_Mode is
    --     C library. No heap allocation.
    --   Hardware Assumptions: IEEE 754 Float, ARM64 FPU, C libm Log()
    --   Nanosecond Anchor: N/A (pure computation, no time measurement)
-   --   Risk: None — deterministic with mathematical guarantees
+   --   Risk: bounded by construction; every exit saturates (see Axiom 3).
+   --     A bare RPM_Value conversion of a raw SMC reading would raise
+   --     Constraint_Error and unwind the whole daemon main loop.
    -- ===========================================================================
 
    ---------------------------------
@@ -275,12 +291,34 @@ package body SMC_Math with SPARK_Mode is
       T : Float;
       Factor : Float;
       Result : Float;
+
+      -- Saturating conversion into the RPM_Value subtype (0.0 .. 10100.0).
+      --
+      -- WHY THIS EXISTS: RPM_Value'Last is 10100.0, but actual fan readings fed
+      -- in as Start_RPM come straight from the SMC F0Ac/F1Ac keys and have
+      -- been observed as high as 10891.6 RPM (/var/log/smcSystemDemandNow.log).
+      -- That is OUTSIDE the subtype range, so a bare RPM_Value (V) conversion
+      -- raises Constraint_Error, which unwinds the entire main loop to the
+      -- [FATAL ERROR] handler at smc_daemon.adb. Every exit path below must
+      -- saturate instead of convert, otherwise the Post condition on
+      -- smc_math.ads is violated and the daemon dies.
+      function Saturate (V : Float) return RPM_Value is
+      begin
+         if V < RPM_Value'First then
+            return RPM_Value'First;
+         elsif V > RPM_Value'Last then
+            return RPM_Value'Last;
+         else
+            return RPM_Value (V);
+         end if;
+      end Saturate;
+
    begin
       if Elapsed >= Duration then
-         return RPM_Value (End_RPM);
+         return Saturate (End_RPM);
       end if;
       if Elapsed <= 0.0 then
-         return RPM_Value (Start_RPM);
+         return Saturate (Start_RPM);
       end if;
 
       -- Normalized time t from 0 to 1
@@ -294,15 +332,8 @@ package body SMC_Math with SPARK_Mode is
       Factor := 1.0 - Log (1.0 + (Ada.Numerics.e - 1.0) * T);
       
       Result := End_RPM + (Start_RPM - End_RPM) * Factor;
-      
-      -- Clamp result to valid RPM range
-      if Result < 0.0 then
-         return 0.0;
-      elsif Result > 10100.0 then
-         return 10100.0;
-      else
-         return RPM_Value (Result);
-      end if;
+
+      return Saturate (Result);
    end Compute_Log_Transition_RPM;
 
 end SMC_Math;

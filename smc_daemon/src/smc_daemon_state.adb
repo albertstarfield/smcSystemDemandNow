@@ -134,8 +134,32 @@ package body SMC_Daemon_State is
          return Turbo_Active;
       end Is_Turbo_Active;
 
+      -- Start_Cooldown
+      -- =======================================================================
+      -- AXIOMS:
+      --   A1 (Idempotent): If a cooldown is already running, this call is a
+      --     NO-OP. It neither restarts the clock nor replaces the start RPM.
+      --   A2 (Thread Safe): All cooldown state lives in this protected object,
+      --     so concurrent access is serialised.
+      --
+      -- WHY A1 MATTERS (audit 2026-10-04): there are TWO call sites --
+      -- smc_daemon.adb Deactivate_Turbo_Mode (turbo exit) and the
+      -- overdrive-deactivated branch. Before this guard, a second call reset
+      -- Cooldown_Start_Time mid-transition, restarting the 60s curve and
+      -- extending the decay without bound if overdrive kept cycling. With the
+      -- guard the original deadline stands, so the transition always completes.
+      --
+      --   A restarting call is still possible in principle (turbo re-engages,
+      --   which cancels the cooldown at the call site, then exits again), and
+      --   that path correctly begins a fresh curve.
+      -- =======================================================================
       procedure Start_Cooldown (Start_RPM : Float) is
       begin
+         if In_Cooldown then
+            -- Already transitioning: keep the original start time and RPM so
+            -- the curve cannot be restarted indefinitely.
+            return;
+         end if;
          In_Cooldown := True;
          Cooldown_Start_Time := Ada.Real_Time.Clock;
          Cooldown_Start_RPM := Start_RPM;

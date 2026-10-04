@@ -380,6 +380,11 @@ procedure Smc_Daemon is
    --   keys "accel" {mag,x,y,z} and "seismic_activity"."motion_type".
    --
    
+   -- Silent Mode fan ceiling (RPM). Must be enforced on every path that can
+   -- influence Target_RPM, including the turbo cooldown log-transition, which
+   -- otherwise overwrites it with a blend from the pre-silent actual speed.
+   SILENT_MODE_RPM_CEILING : constant Float := 6200.0;
+
    -- Dynamic Calibration parameters
    Calibrated_Pres_RPM    : Float := 0.0;
    Calibration_Active     : Boolean := False;
@@ -1201,7 +1206,16 @@ begin
                Endurance_Active     => (Battery_Percent <= 10) or Overdrive_Active,
                Emergency_Load       => False,
                Turbo_Active         => (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand) or Precool_Active,
-               Derivative           => Temp_Gradient / 0.1
+               -- AUDIT FIX 2026-10-04: Derivative is now saturated to the range declared by
+               --   Compute_Target_RPM's precondition (smc_math.ads:38). Previously
+               --   Temp_Gradient / 0.1 was passed raw and unbounded; any swing
+               --   beyond +/-10 C/tick violated the precondition and raised
+               --   Assertion_Error, killing the entire main loop. This happened
+               --   10 times (all "[FATAL ERROR] ... failed precondition from
+               --   smc_math.ads:38" in /var/log/smcSystemDemandNow.log) and was
+               --   being masked by launchd KeepAlive restarting the daemon.
+               Derivative   => Float'Max (-100.0,
+                             Float'Min (100.0, Temp_Gradient / 0.1))
             );
 
             -- Target speed is maximum of CPU/GPU requirement and Battery PID requirement
@@ -1210,9 +1224,15 @@ begin
                Target_RPM := Battery_Target;
             end if;
 
-            -- Silent Mode: clamp fan RPM to prevent roaring in closed rooms
-            if Silent_Mode and then Target_RPM > 6200.0 then
-               Target_RPM := 6200.0;
+            -- Silent Mode: clamp fan RPM to prevent roaring in closed rooms.
+            -- AUDIT FIX 2026-10-04: extracted to a named constant because the
+            --   ceiling must be honoured in THREE places, not one. It was
+            --   applied only here, and the cooldown transition below OVERWRITES
+            --   Target_RPM while blending from the pre-silent actual RPM (up to
+            --   10891.6). In Silent Mode that produced writes far above 6200 --
+            --   the exact opposite of this mode's stated purpose.
+            if Silent_Mode and then Target_RPM > SILENT_MODE_RPM_CEILING then
+               Target_RPM := SILENT_MODE_RPM_CEILING;
             end if;
 
             -- Handle Cooldown Transition (Natural Logarithmic)
@@ -1238,6 +1258,15 @@ begin
                         Elapsed   => Elapsed_Sec,
                         Duration  => Cooldown_Duration
                      );
+
+                     -- AUDIT FIX 2026-10-04: the log curve blends from the
+                     --   PRE-SILENT actual RPM, so it can return a value well
+                     --   above the Silent Mode ceiling and silently defeat it.
+                     --   Re-apply the ceiling after the transition so Silent
+                     --   Mode is the final authority on what gets written.
+                     if Silent_Mode and then Target_RPM > SILENT_MODE_RPM_CEILING then
+                        Target_RPM := SILENT_MODE_RPM_CEILING;
+                     end if;
                   end if;
                end;
             end if;

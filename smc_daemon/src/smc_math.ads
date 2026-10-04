@@ -1,5 +1,34 @@
 package SMC_Math with SPARK_Mode is
 
+   -- RPM_Value: the commanded fan-speed domain for this daemon.
+   --
+   -- OPEN DEFECT 2026-10-04 -- CEILING IS BELOW THE FAN'S REAL SPEED.
+   -- RPM_Value'Last is 10100.0, but the fan's free-running speed is 11,000 RPM at
+   -- 990 hPa inlet (operator datum), and the affinity-law model N = 11000*(990/P)^(2/3)
+   -- projects 10,831 RPM at sea level. So this ceiling cannot represent the fan's
+   -- actual speed.
+   -- Confirmed empirically: F0Ac was observed reading 10,891.6 RPM in
+   -- /var/log/smcSystemDemandNow.log -- ABOVE this ceiling. That is why
+   -- Compute_Log_Transition_RPM now routes every exit path through a local
+   -- Saturate helper; a bare conversion of such a reading raises Constraint_Error
+   -- and unwinds the entire daemon main loop to the [FATAL ERROR] handler.
+   --
+   -- CONSEQUENCE: the max-fan sentinel "Target_RPM >= 10100.0" used to select the
+   -- maximum-fan SMC value (smc_daemon.adb) is BELOW what the fan actually reaches
+   -- at maximum. It works as a threshold only incidentally.
+   --
+   -- Fan speed varies with inlet pressure: roughly +18% from sea level to 2,000 m
+   -- altitude, +24% by 4,200 m. Density-driven variation is a DISTURBANCE TO
+   -- REJECT, not a limit to feedforward -- control is closed on temperature, so
+   -- higher achievable speed simply reaches the thermal target sooner.
+   --
+   -- NOT YET RESOLVED. Raising RPM_Value'Last touches every fan clamp in the
+   -- project and needs an operator-chosen value; ~15,000 RPM would cover sea
+   -- level through ~4,000 m altitude with margin. An altitude-aware sentinel is a
+   -- possible follow-up so "at maximum" tracks achievable speed.
+   --
+   -- Full derivation, tables and Knudsen/Reynolds analysis:
+   --   smc_daemon/docs/FAN_RPM_PRESSURE_ANALYSIS.md
    subtype RPM_Value is Float range 0.0 .. 10100.0;
    subtype Temperature_Value is Float range -50.0 .. 250.0;
    subtype Power_Value is Float range 0.0 .. 500.0;

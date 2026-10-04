@@ -101,8 +101,28 @@ package SMC_Thresholds with SPARK_Mode is
    function Should_Engage_Overdrive (Load_Status : Integer) return Boolean
      with Post => Should_Engage_Overdrive'Result = (Load_Status = 2);
 
-   -- Clamp an RPM value to the valid fan speed range.
+   -- Clamp an arbitrary SMC fan reading into a loose sanity envelope [0, 100000].
+   --
+   -- BOUND = 100000.0 (operator decision 2026-10-04, previously 101000.0).
+   -- This is a CORRUPTION GUARD for nonsensical SMC readings, NOT a fan-speed
+   -- ceiling. It is deliberately loose and is expected never to fire on real
+   -- sensor data -- which is the correct behaviour for a sanity check.
+   --
+   -- WHY NOT A PHYSICAL BOUND: neglecting bearing friction (as the derivation
+   -- does), the affinity-law model N proportional to P^(-2/3) DIVERGES as inlet
+   -- pressure approaches 0 -- there is no finite 0 hPa speed to justify a cap
+   -- with. And 100,000 RPM is unreachable regardless: it needs ~36 hPa inlet
+   -- (~21 km altitude) and would put a 37 mm blower tip at ~194 m/s. Bearing
+   -- friction, which the model excludes, is exactly what bounds it in reality.
+   --
+   -- DO NOT pass this function's result to an RPM_Value-typed parameter without
+   -- saturating first -- that conversion raises Constraint_Error and unwinds the
+   -- daemon main loop. See Saturate in SMC_Math.Compute_Log_Transition_RPM.
+   --
+   -- Full derivation, altitude tables, Knudsen/Reynolds regime analysis, and the
+   -- retraction of an earlier incorrect 500 hPa claim:
+   --   smc_daemon/docs/FAN_RPM_PRESSURE_ANALYSIS.md
    function Clamp_RPM (Val : Float) return Float
-     with Post => Clamp_RPM'Result >= 0.0 and Clamp_RPM'Result <= 101000.0;
+     with Post => Clamp_RPM'Result >= 0.0 and Clamp_RPM'Result <= 100000.0;
 
 end SMC_Thresholds;
