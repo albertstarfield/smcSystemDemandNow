@@ -363,12 +363,22 @@ procedure Smc_Daemon is
    Last_Trained_Day    : Ada.Strings.Unbounded.Unbounded_String := Ada.Strings.Unbounded.Null_Unbounded_String;
    Last_ML_Check_Time  : Ada.Calendar.Time := Clock;
    
-   -- Spatial movement protection variables
-   Prev_X, Prev_Y, Prev_Z : Integer := 0;
-   CX, CY, CZ             : Integer := 0;
-   Prev_SMS_Valid         : Boolean := False;
-   SMS_Success            : Boolean;
-   Delta_X, Delta_Y, Delta_Z : Integer;
+   -- Spatial movement protection: REMOVED 2026-10-03.
+   -- Seismic/shock detection is owned by the EARU daemon, which publishes
+   -- "accel" and "seismic_activity.motion_type" in EARU_data.dat. The former
+   -- in-daemon accelerometer path read that same EARU_data.dat JSON through
+   -- SMC_Files.Read_SMS_Values, then compared successive samples against a
+   -- fixed limit. That comparison was unsound: the parse stage clamped each
+   -- axis to +/-327g before scaling by 100, so a single outlier sample produced
+   -- deltas of 32700-65400 against a limit of 150 and shut turbo off ~1s after
+   -- it engaged. Observed in /var/log/smcSystemDemandNow.log as repeated
+   -- "[SAFETY] CRITICAL: Movement detected ( 32700 > 150)" interleaved with
+   -- "Activating Turbo ... (Trigger: BattMax ... > 40C)". Removing the whole
+   -- chain (cache fields, parser, accessor, and this safety block) eliminates
+   -- the oscillator rather than re-tuning a limit that was being fed garbage.
+   -- CITATION: /usr/local/EnvironmentalAwareReferentialUnit/EARU_data.dat
+   --   keys "accel" {mag,x,y,z} and "seismic_activity"."motion_type".
+   --
    
    -- Dynamic Calibration parameters
    Calibrated_Pres_RPM    : Float := 0.0;
@@ -1317,46 +1327,21 @@ begin
             end;
          end if;
 
-         -- Accelerometer Delta Safety Check every 1s (10 loops)
-         if Loop_Count = 1 or else Loop_Count mod 10 = 0 then
-            SMC_Files.Read_SMS_Values (CX, CY, CZ, SMS_Success);
-            if SMS_Success and then Prev_SMS_Valid then
-               Delta_X := abs (CX - Prev_X);
-               Delta_Y := abs (CY - Prev_Y);
-               Delta_Z := abs (CZ - Prev_Z);
-
-               declare
-                  Total_Delta : constant Integer := Delta_X + Delta_Y + Delta_Z;
-                  Limit       : constant Integer := (if Overdrive_Active then 200 else 150);
-                  Safety_Disabled : constant Boolean := Ada.Directories.Exists (SMC_Files.DISABLE_SAFETY_FLAG);
-               begin
-                  if (Daemon_State.Is_Turbo_Active or Overdrive_Active) and then (Total_Delta > Limit) then
-                     if Safety_Disabled then
-                        -- Log that we are suppressing the safety shutdown
-                        if Loop_Count mod 100 = 0 then
-                           Put_Line ("[SAFETY] Movement detected (" & Integer'Image (Total_Delta) & " >" & Integer'Image (Limit) & "), but safety is DISABLED via flag.");
-                        end if;
-                     else
-                        -- MURPHY'S LAW: Log the safety action with full context
-                        Put_Line ("[SAFETY] CRITICAL: Movement detected (" & Integer'Image (Total_Delta) & " >" & Integer'Image (Limit) & "). Deactivating turbo/overdrive for safety.");
-                        Daemon_State.Set_Turbo (False);
-                        Daemon_State.Reset_Spikes;
-                        if Overdrive_Active then
-                           Overdrive_Active := False;
-                           Overdrive_Time_Left := 0;
-                           SMC_Files.Notify_User ("SAFETY", "Extreme spatial movement (>2g) detected during TURBONOW! Deactivating Turbo/Overdrive Mode.");
-                        else
-                           SMC_Files.Notify_User ("SAFETY", "Significant spatial movement detected. Deactivating Turbo Mode.");
-                        end if;
-                     end if;
-                  end if;
-               end;
-            end if;
-            Prev_X := CX;
-            Prev_Y := CY;
-            Prev_Z := CZ;
-            Prev_SMS_Valid := SMS_Success;
-         end if;
+         -- Accelerometer Delta Safety Check: REMOVED 2026-10-03.
+         -- Seismic/shock handling now lives entirely in the EARU daemon, which
+         -- owns the CoreMotion source and publishes "accel" plus
+         -- "seismic_activity"."motion_type" in EARU_data.dat. The block below
+         -- used to re-read that same EARU_data.dat JSON via
+         -- SMC_Files.Read_SMS_Values and diff successive samples against a
+         -- hard limit, which was unsound: Update_Telemetry_Cache clamped each
+         -- axis to +/-327g before scaling by 100, so one outlier sample yielded
+         -- a summed delta of 32700-65400 against a limit of 150 and dropped
+         -- turbo about a second after it engaged. Log evidence at
+         -- /var/log/smcSystemDemandNow.log lines ~132129-132549.
+         -- CONSEQUENCE: this daemon no longer self-deactivates turbo on shock.
+         -- If shock-interlock behaviour is wanted, it must be re-implemented
+         -- against EARU's published seismic signal (e.g. gating on
+         -- seismic_activity.motion_type), not against a re-derived delta.
 
          -- Temperature and Spike Activation/Deactivation Loop Rules
          if Daemon_State.Is_Turbo_Active then

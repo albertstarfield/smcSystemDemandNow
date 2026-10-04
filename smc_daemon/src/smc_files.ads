@@ -35,7 +35,8 @@ package SMC_Files is
    -- Silent Mode: for when you're in a closed room and the fan roar is really
    -- quite embarrassing. Create the SilentMode file to suppress aggressive fan curves.
    SILENT_MODE_FLAG : constant String := "/usr/local/smcSystemDemandNow/SilentMode";
-   DISABLE_SAFETY_FLAG : constant String := "/usr/local/smcSystemDemandNow/DisableSafety";
+   -- DISABLE_SAFETY_FLAG retired 2026-10-03 along with the movement-safety
+   -- block it gated. It had no other consumer.
    FULL_POWER_OVERRIDE_FLAG : constant String := "/usr/local/smcSystemDemandNow/TOGAFULLPOWEROVERRIDE";
    CALIBRATION_FILE : constant String := "calibrated1006presRPM.pinnedrpm";
    
@@ -60,8 +61,13 @@ package SMC_Files is
    WEATHER_PRESSURE_FALLBACK : constant String :=
       "/usr/local/EnvironmentalAwareReferentialUnit/sensor_weather_pressure.dat";
 
-   -- Read accelerometer values from EARU_data.dat
-   procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean);
+   -- Accelerometer/accelerometer-delta access REMOVED 2026-10-03.
+   -- Read_SMS_Values was deleted: it was a thin passthrough to
+   -- Telemetry_Cache.Get_SMS and its only consumer was the daemon's
+   -- movement-safety block, which was removed because its delta comparison was
+   -- fed outlier-clamped samples. Motion/seismic data is owned and published by
+   -- the EARU daemon in EARU_data.dat ("accel", "seismic_activity").
+   -- SEE: smc_daemon.adb spatial-movement protection note.
 
    -- Check load average status: returns 2 for Emergency (>= 100), 1 for Turbo (>= 50), 0 otherwise
    procedure Check_Load_Avg_Status (Max_Load : out Float; Status : out Integer);

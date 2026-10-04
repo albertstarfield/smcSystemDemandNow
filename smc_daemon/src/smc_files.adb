@@ -207,7 +207,6 @@ package body SMC_Files is
        procedure Update (
           New_Battery : Integer;
           New_Full_Wh : Float;
-          New_X, New_Y, New_Z : Integer;
           New_L1, New_L2, New_L3 : Float;
           New_Idle : Float;
           New_Weather_HPa : Float;
@@ -216,7 +215,6 @@ package body SMC_Files is
        );
        function Get_Battery return Integer;
        function Get_Full_Wh return Float;
-       procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean);
        procedure Check_Load (Max_Load : out Float; Status : out Integer);
        function Get_Idle return Float;
        function Get_Weather_HPa return Float;
@@ -226,8 +224,7 @@ package body SMC_Files is
        -- Full-charge capacity in Wh; 0.0 = unknown (EARU_data.dat parse has
        -- not succeeded yet) — callers must treat as "cannot decide"
        Full_Wh : Float := 0.0;
-       X, Y, Z : Integer := 0;
-       L1, L2, L3 : Float := 0.0;
+        L1, L2, L3 : Float := 0.0;
        Idle : Float := 0.0;
        Weather_HPa : Float := 1013.25;
        Altitude_M : Float := 0.0;
@@ -251,7 +248,6 @@ package body SMC_Files is
       procedure Update (
          New_Battery : Integer;
          New_Full_Wh : Float;
-         New_X, New_Y, New_Z : Integer;
          New_L1, New_L2, New_L3 : Float;
          New_Idle : Float;
          New_Weather_HPa : Float;
@@ -261,7 +257,6 @@ package body SMC_Files is
       begin
          Battery := New_Battery;
          Full_Wh := New_Full_Wh;
-         X := New_X; Y := New_Y; Z := New_Z;
          L1 := New_L1; L2 := New_L2; L3 := New_L3;
          Idle := New_Idle;
          Weather_HPa := New_Weather_HPa;
@@ -271,14 +266,6 @@ package body SMC_Files is
 
       function Get_Battery return Integer is (Battery);
       function Get_Full_Wh return Float is (Full_Wh);
-
-      procedure Get_SMS (X, Y, Z : out Integer; Success : out Boolean) is
-      begin
-         X := Telemetry_Cache.X;
-         Y := Telemetry_Cache.Y;
-         Z := Telemetry_Cache.Z;
-         Success := Telemetry_Cache.Success;
-      end Get_SMS;
 
       function Get_Weather_HPa return Float is (Weather_HPa);
       function Get_Altitude_M return Float is (Altitude_M);
@@ -390,10 +377,6 @@ package body SMC_Files is
       use Ada.Strings.Fixed;
       Idx, Temp_Idx, Comma_Idx : Natural;
 
-      -- Temps for SMS (accelerometer x/y/z, clamped to ±327g, stored as integer*100)
-      FX, FY, FZ : Float := 0.0;
-      CX, CY, CZ : Integer := 0;
-
       -- Temps for Load (1min/5min/15min averages)
       L1, L2, L3 : Float := 0.0;
 
@@ -427,7 +410,7 @@ package body SMC_Files is
          -- Fallback: use ISA standard values so daemon can still estimate pressure
          -- even when EARU_data.dat is temporarily unavailable (e.g., during file write)
           -- ISA standard: P0 = 1013.25 hPa, alt = 0m (sea level)
-          Telemetry_Cache.Update (100, 0.0, 0, 0, 0, 0.0, 0.0, 0.0,
+          Telemetry_Cache.Update (100, 0.0, 0.0, 0.0, 0.0,
                                   0.0, 1013.25, 0.0, False);
           return;
       end if;
@@ -458,35 +441,14 @@ package body SMC_Files is
           if Full_Wh > 500.0 then Full_Wh := 0.0; end if;
        end if;
 
-       -- Step 2: Parse accelerometer (SMS — Shock/Motion Sensing)
-      -- JSON pattern: "accel": { "x": 0.12, "y": -0.45, "z": 9.81 }
-      -- DERIVATION: CoreMotion provides raw acceleration in g (9.81 m/s²).
-      -- We clamp to ±327g to match the integer storage format (16-bit signed * 100).
-      -- Values outside ±327g indicate sensor failure or extreme shock events.
-      Idx := Index (Content (1 .. Length), """accel"": {");
-      if Idx > 0 then
-         Temp_Idx := Index (Content (Idx .. Length), """x"":");
-         if Temp_Idx > 0 then
-            FX := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
-         end if;
-         Temp_Idx := Index (Content (Idx .. Length), """y"":");
-         if Temp_Idx > 0 then
-            FY := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
-         end if;
-         Temp_Idx := Index (Content (Idx .. Length), """z"":");
-         if Temp_Idx > 0 then
-            FZ := Parse_Float_After (Content (1 .. Length), Idx + Temp_Idx - 1 + 4, 0.0);
-         end if;
-
-         -- Clamp to ±327g (integer storage limit: 32700 when stored as Integer * 100)
-         FX := Float'Max (-327.0, Float'Min (327.0, FX));
-         FY := Float'Max (-327.0, Float'Min (327.0, FY));
-         FZ := Float'Max (-327.0, Float'Min (327.0, FZ));
-         -- Convert to integer * 100 for compact storage (preserves 0.01g resolution)
-         CX := Integer (FX * 100.0);
-         CY := Integer (FY * 100.0);
-         CZ := Integer (FZ * 100.0);
-      end if;
+       -- Step 2: accelerometer ("accel") parsing REMOVED 2026-10-03.
+       -- The parsed axes fed Telemetry_Cache X/Y/Z, whose only reader was
+       -- Get_SMS -> Read_SMS_Values -> the daemon's movement-safety block.
+       -- That block is gone, so this parse had no consumer left. EARU stays
+       -- the authoritative source for "accel" and "seismic_activity" in
+       -- EARU_data.dat; we just stop re-deriving it here.
+       -- Dropping the parse also removes the +/-327g clamp that was yielding
+       -- 32700-magnitude samples against a safety limit of 150.
 
       -- Step 3: Parse load_avg (1min, 5min, 15min averages)
       -- JSON pattern: "load_avg": [2.45, 1.89, 1.23]
@@ -599,30 +561,11 @@ package body SMC_Files is
 
        -- Store all parsed values in the thread-safe cache
        -- The cache is a Ada protected type, so concurrent reads are safe
-       Telemetry_Cache.Update (B_Percent, Full_Wh, CX, CY, CZ, L1, L2, L3,
+       Telemetry_Cache.Update (B_Percent, Full_Wh, L1, L2, L3,
                                Idle_Sec, Weather_HPa, Altitude_M, True);
     end Update_Telemetry_Cache;
 
     -- =========================================================================
-    -- Read_SMS_Values
-    -- =========================================================================
-    -- AXIOMS:
-    --   Axiom 1 (Cached Read): Returns accelerometer values from the telemetry
-    --     cache, not a fresh sensor read. Updated every 10 seconds.
-    --   Axiom 2 (Clamped Storage): X/Y/Z are stored as Integer * 100 (0.01g
-    --     resolution), clamped to ±32700 during cache update.
-    -- TIMING: WCET <50ns (protected procedure access), O(1) space
-    -- =========================================================================
-
-    ----------------------
-    -- Read_SMS_Values  --
-    ----------------------
-
-    procedure Read_SMS_Values (X, Y, Z : out Integer; Success : out Boolean) is
-   begin
-      Telemetry_Cache.Get_SMS (X, Y, Z, Success);
-   end Read_SMS_Values;
-
     -- =========================================================================
     -- Check_Load_Avg_Status
     -- =========================================================================
