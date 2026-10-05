@@ -53,18 +53,20 @@ package SMC_Thresholds with SPARK_Mode is
    -- ========================================================================
    -- TURBO DEACTIVATION THRESHOLDS
 --
--- CALLED FROM: smc_daemon.adb:1515 (Should_Deactivate_Turbo), which is
+-- CALLED FROM: smc_daemon.adb:1562 (Should_Deactivate_Turbo), which is
 --   reached from the main loop's Deactivate_Turbo_Mode call at
---   smc_daemon.adb:1521. The previous citation "smc_daemon.adb line 1040"
+--   smc_daemon.adb:1593. The previous citation "smc_daemon.adb line 1040"
 --   was stale (stale-reference audit 2026-10-05) and has been corrected.
+--   Line numbers refreshed again 2026-10-06 when the minimum-dwell gate was
+--   added above that call.
 --
 -- AXIOM H1 (HYSTERESIS — deliberate and non-zero):
 --   Deactivation thresholds are STRICTLY LOWER than activation thresholds.
 --   Consequence: a band exists in which turbo is STILL ACTIVE but the
 --   thermal demand that pins the fan at maximum has ALREADY lapsed.
 --   That band is the gap through which fan deceleration is NOT smoothed;
---   see smc_daemon.adb:1349 (max-fan selection) for the full write-up and
---   smc_daemon.adb:1239 (cooldown scope) for what IS smoothed.
+--   see smc_daemon.adb:1375 (max-fan selection) for the full write-up and
+--   smc_daemon.adb:1250 (cooldown scope) for what IS smoothed.
 --
 --   WHY THE BAND MUST NOT BE CLOSED BY LOWERING THE ACTIVATION THRESHOLDS:
 --   Activation is a SAFETY trigger. Narrowing the band narrows safety
@@ -92,8 +94,8 @@ package SMC_Thresholds with SPARK_Mode is
 --   would hold a narrow thermal margin against the dominant trigger.
 --
 -- CITATIONS:
---   [1] smc_daemon.adb:1349 -- max-fan selection and the unsmoothed leg.
---   [2] smc_daemon.adb:1239 -- cooldown transition scope and limits.
+--   [1] smc_daemon.adb:1375 -- max-fan selection and the unsmoothed leg.
+--   [2] smc_daemon.adb:1250 -- cooldown transition scope and limits.
 --   [3] smc_math.adb:324-336 -- Compute_Log_Transition_RPM curve.
 --   [4] /var/log/smcSystemDemandNow.log -- activation tally by cause.
    -- ========================================================================
@@ -103,6 +105,46 @@ package SMC_Thresholds with SPARK_Mode is
    DEACTIVATE_TEMP_GPU_THRESHOLD : constant Float := 74.0;  -- GPU < 74°C
    DEACTIVATE_BATT_TEMP_THRESHOLD : constant Float := 38.0; -- Battery < 38°C
    DEACTIVATE_POWER_THRESHOLD    : constant Float := 28.0;  -- Power < 28W
+
+   -- =========================================================================
+   -- MINIMUM TURBO DWELL -- TIME-DOMAIN GATE ON DEACTIVATION
+   -- =========================================================================
+   -- OPERATOR DECISION 2026-10-06: once turbo engages it must run for at
+   -- least this long. Add 60 s -- deliberate.
+   --
+   -- AXIOM M1 (MINIMUM DWELL): Turbo Mode cannot exit before
+   --   TURBO_MIN_DWELL seconds have elapsed since Set_Turbo(True). Should_
+   --   Deactivate_Turbo may return True during the dwell; the exit is vetoed
+   --   regardless. The dwell expires on wall-clock time alone -- no sensor
+   --   reading can shorten it.
+   --
+   -- AXIOM M2 (SECOND GATE, NOT A REPLACEMENT): This is a TIME-domain gate
+   --   sitting ON TOP OF the thermal-domain hysteresis band at :53-107. The
+   --   band still exists and still has its documented widths; M1 does not
+   --   narrow or widen it. Deactivation after the dwell still requires all
+   --   four thermal conditions to be satisfied simultaneously.
+   --
+   -- THEOREM M3 (WHAT THIS ACTUALLY FIXES): the thermal band alone lets turbo
+   --   flap. With Max_Battery_Temp oscillating across the 2.0 C battery band
+   --   (40 C -> 38 C) at or near ambient temperature, Should_Deactivate_Turbo
+   --   and Should_Activate_Turbo can both return True on successive 100 ms
+   --   iterations, producing a ~1 Hz engage/disengage cycle with a full
+   --   notification and pmset fork on every edge. A minimum dwell bounds the
+   --   engage rate to at most one engagement per TURBO_MIN_DWELL seconds,
+   --   which is what stops the flapping. Proof of the bound: activation has
+   --   exactly one call site (smc_daemon.adb:519) and deactivation exactly one
+   --   (smc_daemon.adb:1593); M1 vetoes the only deactivation site for
+   --   TURBO_MIN_DWELL after the only activation site.
+   --
+   -- CITATIONS:
+   --   [1] smc_daemon.adb:1561 -- the deactivation gate this constant
+   --       constrains.
+   --   [2] smc_thresholds.adb:87 -- Should_Deactivate_Turbo, all four
+   --       conditions ANDed.
+   --   [3] /var/log/smcSystemDemandNow.log -- battery temp drove 10 of 11
+   --       logged activations, so the band flapping is the observed path.
+   -- =========================================================================
+   TURBO_MIN_DWELL : constant Float := 60.0;  -- seconds; minimum turbo runtime
 
    -- ========================================================================
    -- THRESHOLD CHECK FUNCTIONS

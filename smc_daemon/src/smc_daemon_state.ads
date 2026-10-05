@@ -80,6 +80,12 @@ package SMC_Daemon_State is
       procedure Set_Turbo (Active : Boolean);
       function Is_Turbo_Active return Boolean;
 
+      -- MINIMUM TURBO DWELL SUPPORT (operator decision 2026-10-06).
+      -- Get_Turbo_Elapsed returns the time since turbo engaged, or 0.0 if
+      -- turbo has never engaged. The dwell constant itself lives in
+      -- SMC_Thresholds (TURBO_MIN_DWELL); this object only measures.
+      function Get_Turbo_Elapsed return Duration;
+
       procedure Start_Cooldown (Start_RPM : Float);
       procedure Cancel_Cooldown;
       function Is_In_Cooldown return Boolean;
@@ -98,6 +104,15 @@ package SMC_Daemon_State is
       Keep_Running : Boolean := True;
       Turbo_Active : Boolean := False;
       Spike_Count  : Natural := 0;
+
+      -- MINIMUM TURBO DWELL STATE.
+      -- Turbo_Start_Valid gates the timestamp so Get_Turbo_Elapsed never
+      -- subtracts from the uninitialised Time_First sentinel (which would
+      -- be a ~126 year offset). Before the first engagement it reports 0.0,
+      -- which is correct: dwell has not been served, but turbo is not on, so
+      -- no consumer is active.
+      Turbo_Start_Time  : Ada.Real_Time.Time := Ada.Real_Time.Time_First;
+      Turbo_Start_Valid : Boolean := False;
 
       aPMX_Val     : Float := 0.0;
       mTPL_Val     : Float := 0.0;

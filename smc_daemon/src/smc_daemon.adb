@@ -421,6 +421,17 @@ procedure Smc_Daemon is
    Last_Power_Tick  : Ada.Calendar.Time := Ada.Calendar.Clock;
    Power_Tick_Count : Natural := 0;
    Full_Wh_Warned   : Boolean := False;  -- one-shot capacity warning latch
+   Turbo_Dwell_Logged : Boolean := False;  -- one-shot minimum-dwell log latch
+
+   -- MINIMUM TURBO DWELL (operator decision 2026-10-06).
+   -- Turbo_Dwell_Logged is a one-shot latch so the "conditions are cool,
+   -- holding turbo anyway" message is emitted once per engagement instead of
+   -- once per 100 ms iteration (600 lines per 60 s dwell at 10 Hz).
+   -- AXIOM: the latch is reset only on the deactivation path, immediately
+   -- before Deactivate_Turbo_Mode, so each new engagement logs exactly once.
+   -- It is deliberately NOT reset on activation -- Turbo_Dwell_Logged is
+   -- process-lifetime state, and a stale True would only suppress a log
+   -- line, never a deactivation decision.
 
     procedure Run_Power_Command (Args : GNAT.OS_Lib.Argument_List) is
       -- ============================================================================
@@ -1252,17 +1263,17 @@ begin
             --   unless Daemon_State.Is_In_Cooldown is True.
             --
             -- HOW IT IS ARMED -- the only two sites in the codebase:
-            --   1. :607  inside Deactivate_Turbo_Mode, i.e. a FULL turbo
-            --      deactivation (turbo itself transitions to False at :600).
-            --   2. :1158 the Overdrive -> off edge, itself guarded by
-            --      `if not Daemon_State.Is_Turbo_Active` at :1154.
-            --   Start_Cooldown (smc_daemon_state.adb:202-212) is idempotent, so
+            --   1. :618  inside Deactivate_Turbo_Mode, i.e. a FULL turbo
+            --      deactivation (turbo itself transitions to False at :611).
+            --   2. :1169 the Overdrive -> off edge, itself guarded by
+            --      `if not Daemon_State.Is_Turbo_Active` at :1165.
+            --   Start_Cooldown (smc_daemon_state.adb:258-268) is idempotent, so
             --   a second call while transitioning is a no-op and the 60 s
             --   deadline cannot be pushed out indefinitely.
             --
             -- HOW IT IS TERMINATED:
             --   - 60 s elapsed           -> Cancel_Cooldown (:1321)
-            --   - turbo/overdrive re-armed -> Cancel_Cooldown (:1310)
+            --   - turbo/overdrive re-armed -> Cancel_Cooldown (:1321)
             --   - process restart        -> In_Cooldown resets to False
             --
             -- AXIOM C1 (Event Gating): the curve is evaluated ONLY inside the
@@ -1279,18 +1290,18 @@ begin
             --
             --   Leg                                    Smoothed?  Site
             --   --------------------------------------  ---------  --------------
-            --   Turbo -> off (full deactivation)        YES 60 s   :607
-            --   Overdrive -> off                        YES 60 s   :1158
-            --   Thermal-demand abort (turbo STILL on)  NO 1 tick  :1406
-            --   Silent Mode toggle (10100 -> 6200)      NO 1 tick  :1234
+            --   Turbo -> off (full deactivation)        YES 60 s   :618
+            --   Overdrive -> off                        YES 60 s   :1169
+            --   Thermal-demand abort (turbo STILL on)  NO 1 tick  :1451
+            --   Silent Mode toggle (10100 -> 6200)      NO 1 tick  :1245
             --   TCMz crossing 86.0 C downward          NO 1 tick  smc_math.adb:118
             --   Derivative > 1.5 kick, both edges       NO 1 tick  smc_math.adb:105
             --   Battery_Target leg                     YES (PID)  smc_math.adb:168
             --
             -- THEOREM C3 (Why the curve is often cosmetic on the battery path):
             --   Start_Cooldown is passed Max_Ac_RPM, the max of F0Ac/F1Ac read AT
-            --   DEACTIVATION TIME (:605, :1156). On the battery-marginal path the
-            --   abrupt abort step at :1406 has ALREADY dropped the fans to PID
+            --   DEACTIVATION TIME (:605, :1167). On the battery-marginal path the
+            --   abrupt abort step at :1451 has ALREADY dropped the fans to PID
             --   speed, so by the time the curve begins the blend origin is
             --   ~3000 RPM rather than 10100 RPM -- the 60 s decay has little
             --   amplitude left to decay. The curve is present and correct; it
@@ -1344,6 +1355,21 @@ begin
             declare
                F0Tg_Hex : chars_ptr;
                F1Tg_Hex : chars_ptr;
+
+               -- MINIMUM TURBO DWELL -- FAN PINNING STATE (operator decision
+               -- 2026-10-06). True while turbo is engaged and its minimum
+               -- runtime has not yet elapsed. Read once per 100 ms iteration
+               -- to gate the max-fan write below; the constant lives in
+               -- SMC_Thresholds.TURBO_MIN_DWELL so it is tunable in one place.
+               --
+               -- COMPONENT VALUE: conjunction of two protected-function reads,
+               -- both O(1) and both already on the 10 Hz path (Is_Turbo_Active
+               -- at the elsif below). Get_Turbo_Elapsed is one clock read plus
+               -- one subtraction when valid, one comparison when not.
+               Turbo_Dwell_Pinning : constant Boolean :=
+                 Daemon_State.Is_Turbo_Active
+                 and then Daemon_State.Get_Turbo_Elapsed
+                            < Duration (SMC_Thresholds.TURBO_MIN_DWELL);
             begin
                -- ====================================================================
                -- MAX-FAN SELECTION -- INCLUDES THE UNSMOOTHED DECELERATION LEG
@@ -1355,10 +1381,10 @@ begin
                --   analysed and explicitly declined by the operator.
                --
                -- THE HOLE (THEOREM D4 -- the two turbo exits disagree):
-               --   The `elsif` is evaluated with Is_Thermal_Demand (:1194-1199),
+               --   The `elsif` is evaluated with Is_Thermal_Demand (:1205-1210),
                --   which uses the ACTIVATION thresholds.
-               --   The 60 s cooldown is armed (:607) by Should_Deactivate_Turbo
-               --   (smc_thresholds.adb:86-98), which uses the DEACTIVATION
+               --   The 60 s cooldown is armed (:618) by Should_Deactivate_Turbo
+               --   (smc_thresholds.adb:87-98), which uses the DEACTIVATION
                --   thresholds.
                --   Between the two lies an open band in which turbo is STILL
                --   True but Is_Thermal_Demand is already False. Inside that band
@@ -1369,7 +1395,7 @@ begin
                --
                -- BAND WIDTHS (activation -> deactivation). Activation constants:
                -- smc_thresholds.ads:9-11. Deactivation constants:
-               -- smc_thresholds.ads:102-105 (band-width table and rationale at :53-98).
+               -- smc_thresholds.ads:104-107 (band-width table and rationale at :53-98).
                --   CPU TCMz  93 C -> 80 C  (13 C)   GPU   86 C -> 74 C (12 C)
                --   Power     40 W -> 28 W  (12 W)   Batt  40 C -> 38 C ( 2 C)
                --
@@ -1388,7 +1414,7 @@ begin
                --     (clamp at smc_math.adb:209-215, constant smc_math.ads:41).
                --     Meanwhile Compute_Target_RPM returns 0.0 (smc_math.adb:118)
                --     because Turbo_Active is already False (TCMz sits far below
-               --     86.0 C), so the max at :1223-1225 yields exactly 3000.
+               --     86.0 C), so the max at :1234-1236 yields exactly 3000.
                --   The battery leg is smoothed by its PID integral; the turbo /
                --   max-fan leg it toggles against is not.
                --
@@ -1396,14 +1422,35 @@ begin
                --   [1] /var/log/smcSystemDemandNow.log -- the battery-temp
                --       condition drove 10 of 11 turbo activations, so this is the
                --       path actually exercised in this climate, not a corner case.
-               --   [2] smc_thresholds.ads:53-98 -- deactivation band values + rationale.
+               --   [2] smc_thresholds.ads:53-107 -- deactivation band values + rationale.
                --   [3] smc_math.ads:38-43 -- TEMP_ACTIVATE_FAN_CONTROL 86.0,
                --       MIN_MANUAL_FAN_RPM 3000.0, MAX_NORMAL_FAN_RPM 6800.0.
                -- ====================================================================
                if Overdrive_Active and then not Silent_Mode then
                   F0Tg_Hex := New_String ("0050c347");
                   F1Tg_Hex := New_String ("0050c347");
-               elsif (Target_RPM >= 10100.0 or else (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand))
+               -- MINIMUM TURBO DWELL -- FAN PINNING (operator decision 2026-10-06).
+               -- Turbo_Dwell_Pinning holds the fans at maximum for the whole
+               -- minimum dwell, even when Is_Thermal_Demand has already lapsed.
+               -- Without this term the dwell would be cosmetic: turbo would
+               -- remain engaged while the fan dropped to 3000 RPM through the
+               -- hysteresis band at :1234-1236, which is the 10100 <-> 3000
+               -- square wave described above. Operator instruction was "do not
+               -- just down -- let it do turbo for 60s", i.e. hold the FANS, not
+               -- merely the mode flag.
+               --
+               -- Interaction with the 60 s cooldown: the dwell and the
+               -- cooldown never overlap. The dwell ends at exactly the moment
+               -- the deactivation gate stops vetoing; if that gate then
+               -- proceeds, Start_Cooldown samples Max_Ac_RPM (at the
+               -- Deactivate_Turbo_Mode call site) while the fans are still at
+               -- maximum, so the log curve now begins from the real turbo RPM.
+               -- THEOREM C3 in the cooldown block assumed this could start
+               -- from PID speed instead; that path is now unreachable while
+               -- Turbo_Dwell_Pinning is in force.
+               elsif (Target_RPM >= 10100.0
+                      or else (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand)
+                      or else Turbo_Dwell_Pinning)
                      and then not Silent_Mode
                then
                   F0Tg_Hex := New_String ("0050c347");
@@ -1518,7 +1565,33 @@ begin
                   Battery_Temp => Max_Battery_Temp,
                   Power        => Power)
             then
-               Deactivate_Turbo_Mode ("TCMz, GPU, & Battery cooled down");
+               -- MINIMUM TURBO DWELL (operator decision 2026-10-06).
+               -- Turbo has engaged but has not yet served its minimum
+               -- runtime, so the thermal exit is vetoed. All four deactivation
+               -- conditions are satisfied, but exiting now would let a
+               -- temperature hovering at a threshold re-engage turbo on the
+               -- next iteration. Note this gate is TIME-domain and cannot be
+               -- shortened by any sensor reading -- including a sensor reading
+               -- that says things are fine.
+               --
+               -- Logged once per engagement (Turbo_Dwell_Logged is a latch),
+               -- not once per 100 ms iteration: at 10 Hz an unlatched log
+               -- would emit 600 lines per dwell.
+               if Daemon_State.Get_Turbo_Elapsed
+                 < Duration (SMC_Thresholds.TURBO_MIN_DWELL)
+               then
+                  if not Turbo_Dwell_Logged then
+                     Turbo_Dwell_Logged := True;
+                     Put_Line
+                       ("[DAEMON] Turbo minimum dwell active ("
+                        & Duration'Image (Daemon_State.Get_Turbo_Elapsed)
+                        & " of " & Float'Image (SMC_Thresholds.TURBO_MIN_DWELL)
+                        & "s). Conditions are cool -- holding turbo anyway.");
+                  end if;
+               else
+                  Turbo_Dwell_Logged := False;
+                  Deactivate_Turbo_Mode ("TCMz, GPU, & Battery cooled down");
+               end if;
             end if;
          else
             if SMC_Thresholds.Should_Activate_Turbo (

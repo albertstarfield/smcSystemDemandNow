@@ -124,8 +124,35 @@ package body SMC_Daemon_State is
          return Keep_Running;
       end Should_Keep_Running;
 
+      -- =======================================================================
+-- Set_Turbo / Is_Turbo_Active / Get_Turbo_Elapsed
+-- =======================================================================
+-- AXIOM N1 (RISING-EDGE CLOCK): Turbo_Start_Time is stamped ONLY on the
+--   transition False -> True. A redundant Set_Turbo(True) while turbo is
+--   already on is a no-op and does NOT restart the dwell clock. This is
+--   what makes the dwell a minimum rather than a sliding window: repeated
+--   activations while already engaged cannot push the deadline out.
+--
+-- AXIOM N2 (SINGLE FUNNEL): Set_Turbo(True) has exactly one call site in
+--   the codebase (smc_daemon.adb Activate_Turbo_Mode, Set_Turbo (True)).
+--   The dwell clock therefore cannot be bypassed by a second activation
+--   path. If a future edit adds a call site, N2 must be re-verified.
+--
+-- AXIOM N3 (NEVER SUBTRACTS Time_First): Get_Turbo_Elapsed returns 0.0
+--   while Turbo_Start_Valid is False. Subtracting Time_First would yield a
+--   ~126 year offset, which is both meaningless and, at Duration's fixed
+--   nanosecond resolution, wasteful arithmetic on every 100 ms iteration.
+--
+-- AXIOM N4 (THREAD SAFE): all three dwell fields live in this protected
+--   object, so the 10 Hz main loop and any task reading the dwell are
+--   serialised. Set_Turbo already had this property; N1 does not weaken it.
+-- =======================================================================
       procedure Set_Turbo (Active : Boolean) is
       begin
+         if Active and then not Turbo_Active then
+            Turbo_Start_Time  := Ada.Real_Time.Clock;
+            Turbo_Start_Valid := True;
+         end if;
          Turbo_Active := Active;
       end Set_Turbo;
 
@@ -133,6 +160,35 @@ package body SMC_Daemon_State is
       begin
          return Turbo_Active;
       end Is_Turbo_Active;
+
+-- Get_Turbo_Elapsed
+-- =======================================================================
+-- PURPOSE: seconds elapsed since turbo engaged, for the minimum-dwell gate.
+-- THEOREM N5: after Set_Turbo(True), this is non-decreasing and returns
+--   >= 0.0 always. Before any engagement it returns exactly 0.0 (AXIOM N3).
+--   Monotonicity holds because Ada.Real_Time.Clock is non-decreasing
+--   (Ada 2012 RM D.4), so the difference cannot decrease.
+-- CITATION: Ada 2012 RM D.4 -- Real Time, Clock is monotonic within a node.
+-- =======================================================================
+      function Get_Turbo_Elapsed return Duration is
+      begin
+         if not Turbo_Start_Valid then
+            return 0.0;
+         end if;
+         -- WHY THE EXPLICIT OPERATOR QUALIFICATION (rather than
+         -- `Clock - Turbo_Start_Time`): Ada.Real_Time.Time is a PRIVATE type
+         -- and its "-" operator is visible only through `use type`. A `use
+         -- type` clause would leak that visibility across the entire package
+         -- body, so the operator is qualified directly here.
+         --
+         -- To_Duration IS REQUIRED: Time minus Time yields Time_Span, NOT
+         -- Duration. An earlier revision of this comment asserted otherwise and
+         -- was wrong -- the compiler rejected it at this line.
+         -- CITATION: Ada 2012 RM D.4 -- Time_Span is the result type of
+         --   Time - Time; To_Duration converts Time_Span to Duration.
+         return Ada.Real_Time.To_Duration
+           (Ada.Real_Time."-" (Ada.Real_Time.Clock, Turbo_Start_Time));
+      end Get_Turbo_Elapsed;
 
       -- Start_Cooldown
       -- =======================================================================
@@ -161,24 +217,24 @@ package body SMC_Daemon_State is
 --
 -- WHICH LEGS GET SMOOTHED (the complete set — there are exactly two):
 --   L1 Turbo -> off, full deactivation.
---      Armed at smc_daemon.adb:607 inside Deactivate_Turbo_Mode, after
---      Set_Turbo(False) at :600 and Reset_Spikes at :601. Start_RPM is
---      Max_Ac_RPM (max of F0Ac/F1Ac) captured at :605.
---      Note the early return at :596-598: if turbo is already inactive this
+--      Armed at smc_daemon.adb:618 inside Deactivate_Turbo_Mode, after
+--      Set_Turbo(False) at :611 and Reset_Spikes at :612. Start_RPM is
+--      Max_Ac_RPM (max of F0Ac/F1Ac) captured at :616.
+--      Note the early return at :607-609: if turbo is already inactive this
 --      is never reached, so L1 cannot fire on an abort.
 --   L2 Overdrive -> off edge.
---      Armed at smc_daemon.adb:1158, guarded by
---      `if not Daemon_State.Is_Turbo_Active` at :1154, Start_RPM captured
---      at :1156.
+--      Armed at smc_daemon.adb:1169, guarded by
+--      `if not Daemon_State.Is_Turbo_Active` at :1165, Start_RPM captured
+--      at :1167.
 --
 -- WHICH LEGS ARE NOT SMOOTHED (turbo still active, so this is never armed):
---   N1 Thermal-demand abort. The max-fan write at smc_daemon.adb:1406 is
---      gated on Is_Thermal_Demand (:1194-1199, ACTIVATION thresholds)
+--   N1 Thermal-demand abort. The max-fan write at smc_daemon.adb:1451 is
+--      gated on Is_Thermal_Demand (:1205-1210, ACTIVATION thresholds)
 --      while cooldown is armed only by Should_Deactivate_Turbo
 --      (DEACTIVATION thresholds). Inside the hysteresis band turbo is
---      still True, so Deactivate_Turbo_Mode early-returns at :596-598 and
+--      still True, so Deactivate_Turbo_Mode early-returns at :607-609 and
 --      Start_Cooldown is NEVER called. The fan drops to the PID target in a
---      single 100ms tick. Full analysis: smc_daemon.adb:1349.
+--      single 100ms tick. Full analysis: smc_daemon.adb:1375.
 --   N2 Silent Mode toggle, N3 TCMz crossing 86.0 C downward, N4 the
 --      Derivative > 1.5 kick — all one-tick steps for the same structural
 --      reason: nothing calls Start_Cooldown on those edges.
@@ -187,17 +243,17 @@ package body SMC_Daemon_State is
 --   that make that assumption unsafe.
 --
 -- LIFETIME OF THE COOLDOWN STATE (consumer side, smc_daemon.adb):
---   Expiry:    Cooldown_Duration = 60.0s at :1318, then Cancel_Cooldown
---              at :1321 when Elapsed >= Duration.
---   Cancel:    :1310 when turbo or overdrive re-engages.
+--   Expiry:    Cooldown_Duration = 60.0s at :1329, then Cancel_Cooldown
+--              at :1332 when Elapsed >= Duration.
+--   Cancel:    :1321 when turbo or overdrive re-engages.
 --   Restart:   process restart clears In_Cooldown (initialised False in
---              smc_daemon_state.ads:105) — a crash mid-decay therefore
+--              smc_daemon_state.ads:120) — a crash mid-decay therefore
 --              abandons the curve rather than resuming it.
 --
 -- OPERATOR DECISION (2026-10-05): N1..N4 being unsmoothed is INTENTIONAL.
 --   Do NOT widen the call sites to cover them and do NOT add a general
 --   slew limiter. The 10100 <-> 3000 RPM step at the 10Hz loop rate is a
---   known, accepted consequence. See smc_thresholds.ads:53-98.
+--   known, accepted consequence. See smc_thresholds.ads:53-107.
       -- =======================================================================
       procedure Start_Cooldown (Start_RPM : Float) is
       begin
