@@ -1235,6 +1235,75 @@ begin
                Target_RPM := SILENT_MODE_RPM_CEILING;
             end if;
 
+            -- ====================================================================
+            -- COOLDOWN TRANSITION (Natural Logarithmic) -- SCOPE AND LIMITS
+            -- ====================================================================
+            -- OPERATOR DECISION (2026-10-05, reviewed and INTENTIONAL): the
+            --   asymmetry documented below is deliberate. Three candidate fixes
+            --   were analysed -- (a) gate the max-fan hex on
+            --   Should_Deactivate_Turbo, (b) add a downward slew limiter to the
+            --   fan write, (c) widen the 2 C battery hysteresis band -- and the
+            --   operator declined all three. DO NOT "repair" any of the legs
+            --   listed as unsmoothed below without a new operator decision.
+            --
+            -- WHAT THIS BLOCK IS: an EVENT-DRIVEN 60 s decay curve.
+            -- WHAT IT IS NOT: not a rate limiter, not a slew limiter, not a
+            --   general output-shaping filter. It performs no smoothing at all
+            --   unless Daemon_State.Is_In_Cooldown is True.
+            --
+            -- HOW IT IS ARMED -- the only two sites in the codebase:
+            --   1. :607  inside Deactivate_Turbo_Mode, i.e. a FULL turbo
+            --      deactivation (turbo itself transitions to False at :600).
+            --   2. :1158 the Overdrive -> off edge, itself guarded by
+            --      `if not Daemon_State.Is_Turbo_Active` at :1154.
+            --   Start_Cooldown (smc_daemon_state.adb:202-212) is idempotent, so
+            --   a second call while transitioning is a no-op and the 60 s
+            --   deadline cannot be pushed out indefinitely.
+            --
+            -- HOW IT IS TERMINATED:
+            --   - 60 s elapsed           -> Cancel_Cooldown (:1321)
+            --   - turbo/overdrive re-armed -> Cancel_Cooldown (:1310)
+            --   - process restart        -> In_Cooldown resets to False
+            --
+            -- AXIOM C1 (Event Gating): the curve is evaluated ONLY inside the
+            --   `elsif Daemon_State.Is_In_Cooldown` branch, so the set of
+            --   smoothed deceleration legs is EXACTLY the set of legs that call
+            --   Start_Cooldown -- no more, no fewer.
+            --   PROOF: the enclosing if/elsif chain is exclusive (Ada 2012 RM
+            --   6.1, declarative part elaboration is sequential), so the branch
+            --   is unreachable whenever In_Cooldown is False.
+            --
+            -- THEOREM C2 (Partial Coverage): smoothing covers 2 of the 7 legs by
+            --   which Target_RPM can fall. The remaining legs resolve within a
+            --   single 100 ms tick (loop is 10 Hz, :1011/:1016):
+            --
+            --   Leg                                    Smoothed?  Site
+            --   --------------------------------------  ---------  --------------
+            --   Turbo -> off (full deactivation)        YES 60 s   :607
+            --   Overdrive -> off                        YES 60 s   :1158
+            --   Thermal-demand abort (turbo STILL on)  NO 1 tick  :1406
+            --   Silent Mode toggle (10100 -> 6200)      NO 1 tick  :1234
+            --   TCMz crossing 86.0 C downward          NO 1 tick  smc_math.adb:118
+            --   Derivative > 1.5 kick, both edges       NO 1 tick  smc_math.adb:105
+            --   Battery_Target leg                     YES (PID)  smc_math.adb:168
+            --
+            -- THEOREM C3 (Why the curve is often cosmetic on the battery path):
+            --   Start_Cooldown is passed Max_Ac_RPM, the max of F0Ac/F1Ac read AT
+            --   DEACTIVATION TIME (:605, :1156). On the battery-marginal path the
+            --   abrupt abort step at :1406 has ALREADY dropped the fans to PID
+            --   speed, so by the time the curve begins the blend origin is
+            --   ~3000 RPM rather than 10100 RPM -- the 60 s decay has little
+            --   amplitude left to decay. The curve is present and correct; it
+            --   simply starts late on that path.
+            --
+            -- CITATIONS:
+            --   [1] Ada 2012 Reference Manual 6.1 -- declarative elaboration is
+            --       sequential, making the if/elsif chain above exclusive.
+            --   [2] /var/log/smcSystemDemandNow.log -- full-history turbo tally:
+            --       battery > 40 C accounts for 10 of 11 activations (TCMz 1,
+            --       GPU/Power/Spike 0), so the battery-marginal leg is the
+            --       dominant real-world path, not a corner case.
+            -- ====================================================================
             -- Handle Cooldown Transition (Natural Logarithmic)
             if Daemon_State.Is_Turbo_Active or else Overdrive_Active then
                if Daemon_State.Is_In_Cooldown then
@@ -1276,6 +1345,61 @@ begin
                F0Tg_Hex : chars_ptr;
                F1Tg_Hex : chars_ptr;
             begin
+               -- ====================================================================
+               -- MAX-FAN SELECTION -- INCLUDES THE UNSMOOTHED DECELERATION LEG
+               -- ====================================================================
+               -- OPERATOR DECISION (2026-10-05): the abrupt 1-tick step taken by
+               --   the `elsif` below is INTENTIONAL. Do NOT close the hysteresis
+               --   hole by gating that branch on
+               --   SMC_Thresholds.Should_Deactivate_Turbo. That change was
+               --   analysed and explicitly declined by the operator.
+               --
+               -- THE HOLE (THEOREM D4 -- the two turbo exits disagree):
+               --   The `elsif` is evaluated with Is_Thermal_Demand (:1194-1199),
+               --   which uses the ACTIVATION thresholds.
+               --   The 60 s cooldown is armed (:607) by Should_Deactivate_Turbo
+               --   (smc_thresholds.adb:86-98), which uses the DEACTIVATION
+               --   thresholds.
+               --   Between the two lies an open band in which turbo is STILL
+               --   True but Is_Thermal_Demand is already False. Inside that band
+               --   the `elsif` fails, control falls through to the `else` below,
+               --   and SMC_Utils.Float_To_Hex (Float (Target_RPM)) is written
+               --   UNFILTERED -- a full step down inside one 100 ms tick, with no
+               --   decay curve, because no Start_Cooldown was ever called.
+               --
+               -- BAND WIDTHS (activation -> deactivation). Activation constants:
+               -- smc_thresholds.ads:9-11. Deactivation constants:
+               -- smc_thresholds.ads:102-105 (band-width table and rationale at :53-98).
+               --   CPU TCMz  93 C -> 80 C  (13 C)   GPU   86 C -> 74 C (12 C)
+               --   Power     40 W -> 28 W  (12 W)   Batt  40 C -> 38 C ( 2 C)
+               --
+               -- CONSEQUENCE WORTH KNOWING (Bekasi; ambient routinely 38-42 C):
+               --   With Max_Battery_Temp inside that 2 C band the observed
+               --   pattern is a 10100 <-> 3000 RPM square wave at 10 Hz. The
+               --   arithmetic, every value verified in source:
+               --     Update_Battery_PID (smc_math.adb:168-219) with
+               --     Max_Battery_Temp = 40.0 against PID_TARGET_BATTERY_TEMP =
+               --     39.0 (smc_math.ads:45-48) gives Error = 1.0, so
+               --       P = PID_KP * 1.0                       = 200
+               --       I = PID_KI * Integral ~= 20 * 0          =  ~0
+               --       D = PID_KD * ((1.0 - 0)/0.1) = 50 * 10  = 500
+               --       Temp_Output = P + I + D                 ~= 700
+               --     which is clamped UP to MIN_MANUAL_FAN_RPM = 3000.0
+               --     (clamp at smc_math.adb:209-215, constant smc_math.ads:41).
+               --     Meanwhile Compute_Target_RPM returns 0.0 (smc_math.adb:118)
+               --     because Turbo_Active is already False (TCMz sits far below
+               --     86.0 C), so the max at :1223-1225 yields exactly 3000.
+               --   The battery leg is smoothed by its PID integral; the turbo /
+               --   max-fan leg it toggles against is not.
+               --
+               -- CITATIONS:
+               --   [1] /var/log/smcSystemDemandNow.log -- the battery-temp
+               --       condition drove 10 of 11 turbo activations, so this is the
+               --       path actually exercised in this climate, not a corner case.
+               --   [2] smc_thresholds.ads:53-98 -- deactivation band values + rationale.
+               --   [3] smc_math.ads:38-43 -- TEMP_ACTIVATE_FAN_CONTROL 86.0,
+               --       MIN_MANUAL_FAN_RPM 3000.0, MAX_NORMAL_FAN_RPM 6800.0.
+               -- ====================================================================
                if Overdrive_Active and then not Silent_Mode then
                   F0Tg_Hex := New_String ("0050c347");
                   F1Tg_Hex := New_String ("0050c347");

@@ -51,7 +51,51 @@ package SMC_Thresholds with SPARK_Mode is
    TURBO_SPIKE_COUNT_MIN     : constant Natural := 3;    -- Latency spikes >= 3
 
    -- ========================================================================
-   -- TURBO DEACTIVATION THRESHOLDS (from smc_daemon.adb line 1040)
+   -- TURBO DEACTIVATION THRESHOLDS
+--
+-- CALLED FROM: smc_daemon.adb:1515 (Should_Deactivate_Turbo), which is
+--   reached from the main loop's Deactivate_Turbo_Mode call at
+--   smc_daemon.adb:1521. The previous citation "smc_daemon.adb line 1040"
+--   was stale (stale-reference audit 2026-10-05) and has been corrected.
+--
+-- AXIOM H1 (HYSTERESIS — deliberate and non-zero):
+--   Deactivation thresholds are STRICTLY LOWER than activation thresholds.
+--   Consequence: a band exists in which turbo is STILL ACTIVE but the
+--   thermal demand that pins the fan at maximum has ALREADY lapsed.
+--   That band is the gap through which fan deceleration is NOT smoothed;
+--   see smc_daemon.adb:1349 (max-fan selection) for the full write-up and
+--   smc_daemon.adb:1239 (cooldown scope) for what IS smoothed.
+--
+--   WHY THE BAND MUST NOT BE CLOSED BY LOWERING THE ACTIVATION THRESHOLDS:
+--   Activation is a SAFETY trigger. Narrowing the band narrows safety
+--   margin; widening it widens the unsmoothed deceleration step. The band
+--   is the deliberate trade between those two, not an oversight.
+--
+-- BAND WIDTHS (activation -> deactivation):
+--   Condition | Activation        | Deactivation       | Band
+--   ----------+--------------------+--------------------+---------
+--   CPU TCMz  | :9   93.0 C        | :102 80.0 C        | 13.0 C
+--   GPU       | :10  86.0 C        | :103 74.0 C        | 12.0 C
+--   Power     | :11  40.0 W        | :105 28.0 W        | 12.0 W
+--   Battery   | :50  40.0 C        | :104 38.0 C        |  2.0 C
+--
+-- OPERATOR DECISION (2026-10-05): the 2.0 C battery band is INTENTIONAL.
+--   Do NOT widen it to match the thermal bands, and do NOT gate the max-fan
+--   write on Should_Deactivate_Turbo. Two candidate fixes were considered
+--   (gating the max-fan hex on full deactivation; adding a downward slew
+--   limiter) and both were DECLINED as behaviour changes. The known
+--   consequence — a 10100 <-> 3000 RPM step at the 10 Hz loop rate when
+--   Max_Battery_Temp sits in the band — is accepted, not a defect.
+--   Basis: Max_Battery_Temp is routinely 38-42 C in this deployment
+--   (Bekasi, West Java; ambient routinely 38-42 C), and battery temp
+--   accounted for 10 of 11 logged turbo activations. Widening the band
+--   would hold a narrow thermal margin against the dominant trigger.
+--
+-- CITATIONS:
+--   [1] smc_daemon.adb:1349 -- max-fan selection and the unsmoothed leg.
+--   [2] smc_daemon.adb:1239 -- cooldown transition scope and limits.
+--   [3] smc_math.adb:324-336 -- Compute_Log_Transition_RPM curve.
+--   [4] /var/log/smcSystemDemandNow.log -- activation tally by cause.
    -- ========================================================================
    -- All four conditions must be met simultaneously to deactivate turbo.
 

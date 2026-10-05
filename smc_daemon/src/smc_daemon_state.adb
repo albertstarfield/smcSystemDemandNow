@@ -152,6 +152,52 @@ package body SMC_Daemon_State is
       --   A restarting call is still possible in principle (turbo re-engages,
       --   which cancels the cooldown at the call site, then exits again), and
       --   that path correctly begins a fresh curve.
+--
+-- AXIOM C3 (EVENT GATED, NOT A RATE LIMITER):
+--   Entering this state buys a 60s natural-logarithmic RPM decay and
+--   nothing else. It is NOT a slew/rate limiter: no fan write is filtered
+--   by comparing consecutive targets, and no leg of the fan output path
+--   consults this state except the cooldown branch itself.
+--
+-- WHICH LEGS GET SMOOTHED (the complete set — there are exactly two):
+--   L1 Turbo -> off, full deactivation.
+--      Armed at smc_daemon.adb:607 inside Deactivate_Turbo_Mode, after
+--      Set_Turbo(False) at :600 and Reset_Spikes at :601. Start_RPM is
+--      Max_Ac_RPM (max of F0Ac/F1Ac) captured at :605.
+--      Note the early return at :596-598: if turbo is already inactive this
+--      is never reached, so L1 cannot fire on an abort.
+--   L2 Overdrive -> off edge.
+--      Armed at smc_daemon.adb:1158, guarded by
+--      `if not Daemon_State.Is_Turbo_Active` at :1154, Start_RPM captured
+--      at :1156.
+--
+-- WHICH LEGS ARE NOT SMOOTHED (turbo still active, so this is never armed):
+--   N1 Thermal-demand abort. The max-fan write at smc_daemon.adb:1406 is
+--      gated on Is_Thermal_Demand (:1194-1199, ACTIVATION thresholds)
+--      while cooldown is armed only by Should_Deactivate_Turbo
+--      (DEACTIVATION thresholds). Inside the hysteresis band turbo is
+--      still True, so Deactivate_Turbo_Mode early-returns at :596-598 and
+--      Start_Cooldown is NEVER called. The fan drops to the PID target in a
+--      single 100ms tick. Full analysis: smc_daemon.adb:1349.
+--   N2 Silent Mode toggle, N3 TCMz crossing 86.0 C downward, N4 the
+--      Derivative > 1.5 kick — all one-tick steps for the same structural
+--      reason: nothing calls Start_Cooldown on those edges.
+--   AXIOM C3 consequence: a caller that assumes "leaving a high fan state
+--   always passes through Start_Cooldown" is wrong. It is the N1..N4 legs
+--   that make that assumption unsafe.
+--
+-- LIFETIME OF THE COOLDOWN STATE (consumer side, smc_daemon.adb):
+--   Expiry:    Cooldown_Duration = 60.0s at :1318, then Cancel_Cooldown
+--              at :1321 when Elapsed >= Duration.
+--   Cancel:    :1310 when turbo or overdrive re-engages.
+--   Restart:   process restart clears In_Cooldown (initialised False in
+--              smc_daemon_state.ads:105) — a crash mid-decay therefore
+--              abandons the curve rather than resuming it.
+--
+-- OPERATOR DECISION (2026-10-05): N1..N4 being unsmoothed is INTENTIONAL.
+--   Do NOT widen the call sites to cover them and do NOT add a general
+--   slew limiter. The 10100 <-> 3000 RPM step at the 10Hz loop rate is a
+--   known, accepted consequence. See smc_thresholds.ads:53-98.
       -- =======================================================================
       procedure Start_Cooldown (Start_RPM : Float) is
       begin
