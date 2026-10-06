@@ -837,8 +837,14 @@ package body SMC_Files is
          begin
             Open (File, In_File, NOTIFICATIONS_LOG);
             while not End_Of_File (File) loop
+               -- AXIOM S1 (Line Count Only): this loop exists solely to count
+               -- lines. Get_Line must be called to advance the file position,
+               -- but the text is never inspected, so the value is discarded
+               -- deliberately. Naming the result would raise "constant not
+               -- referenced"; the unnamed call states the intent directly.
                declare
-                  Line : constant String := Get_Line (File);
+                  Ignored : constant String := Get_Line (File);
+                  pragma Unreferenced (Ignored);
                begin
                   Line_Count := Line_Count + 1;
                end;

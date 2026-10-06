@@ -2,8 +2,6 @@ with Ada.Text_IO;
 with Ada.Calendar;
 with Ada.Real_Time;
 with Ada.Directories;
-with Ada.Strings.Fixed;
-with Ada.Unchecked_Conversion;
 with Interfaces.C;
 with Interfaces.C.Strings;
 with Interfaces;
@@ -402,9 +400,26 @@ procedure Smc_Daemon is
    type Thermal_Suspender_Access is access Thermal_Suspender_T;
    type Watchdog_Access is access Watchdog_T;
 
+   -- AXIOM T1 (Task Lifetime Anchors): these three access values are NEVER read
+   -- and that is deliberate. They exist only to keep the allocated task
+   -- objects reachable for the process lifetime: without a designated
+   -- reference the allocator may reclaim a running task, and the daemon would
+   -- silently lose its latency monitor, thermal suspender and watchdog.
+   --
+   -- AXIOM T2 (Same For Signal Handles): Sig_ResINT/Sig_ResTERM below retain
+   -- the previous SIGINT/SIGTERM handlers returned by C_Signal. Handle_Signal
+   -- does not chain to them, so they are never read either -- but discarding
+   -- the return value would lose the only record of what was displaced.
+   --
+   -- pragma Unreferenced marks the intent explicitly so the compiler stops
+   -- reporting "assigned but never read" while the lifetime guarantee stays.
+   -- These are NOT dead code; deleting the variables would be a real bug.
    LM_Task : Latency_Monitor_Access;
+   pragma Unreferenced (LM_Task);
    TS_Task : Thermal_Suspender_Access;
+   pragma Unreferenced (TS_Task);
    WD_Task : Watchdog_Access;
+   pragma Unreferenced (WD_Task);
 
    Loop_Count  : Natural := 0;
    Max_Load    : Float   := 0.0;
@@ -805,8 +820,12 @@ procedure Smc_Daemon is
    end Read_And_Validate_SMC_Temp;
 
    -- Local variables for signal registration
+   -- Lifetime anchors -- see AXIOM T2 above. The previous handlers are
+   -- retained deliberately; Handle_Signal does not chain to them.
    Sig_ResINT  : Signal_Handler_T;
+   pragma Unreferenced (Sig_ResINT);
    Sig_ResTERM : Signal_Handler_T;
+   pragma Unreferenced (Sig_ResTERM);
 
 begin
    -- ============================================================================
@@ -1375,7 +1394,8 @@ begin
                end if;
             elsif Daemon_State.Is_In_Cooldown then
                declare
-                  use Ada.Real_Time;
+                  -- No local `use Ada.Real_Time`: already use-visible from the
+                  -- file-level `with Ada.Real_Time; use Ada.Real_Time;`.
                   Elapsed : constant Time_Span := Clock - Daemon_State.Get_Cooldown_Start_Time;
                   Elapsed_Sec : constant Float := Float (To_Duration (Elapsed));
                   Cooldown_Duration : constant Float :=

@@ -1,6 +1,8 @@
-with Ada.Calendar;
-with Ada.Strings.Fixed;
-with Interfaces;
+-- CITATION [with-clause placement]: Ada.Calendar, Ada.Strings.Fixed and
+-- Interfaces are referenced ONLY by the package BODY, never by this spec.
+-- A `with` in a spec makes every client of the spec depend on those units for
+-- no reason, so they are declared in the body instead. This is the compiler's
+-- own "with clause might be moved to body" advice applied.
 
 package SMC_Utils with SPARK_Mode is
 

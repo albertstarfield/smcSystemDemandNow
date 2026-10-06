@@ -223,7 +223,9 @@ package body SMC_Integrity is
       Length  : out Natural;
       Success : out Boolean
    ) is
-      use Ada.Text_IO;
+      -- No local `use Ada.Text_IO` here: it is already use-visible from the
+      -- file-level `with Ada.Text_IO; use Ada.Text_IO;` at the top of this
+      -- body, so repeating it is redundant (GNAT -gnatwr).
       File : File_Type;
       Primary_Line : Unbounded_String;
       Recovery_Line : Unbounded_String;

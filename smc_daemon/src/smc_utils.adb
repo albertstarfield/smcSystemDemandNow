@@ -1,6 +1,7 @@
-with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Conversion;  -- Float_To_Word bit reinterpretation (Float_To_Hex)
 with Ada.Calendar;
 with Ada.Strings.Fixed;
+with Interfaces;                -- Unsigned_8 / Unsigned_32 in Float_To_Hex
 
 package body SMC_Utils with SPARK_Mode => Off is
 
