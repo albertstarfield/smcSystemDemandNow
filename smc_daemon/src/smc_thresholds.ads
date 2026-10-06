@@ -147,6 +147,80 @@ package SMC_Thresholds with SPARK_Mode is
    TURBO_MIN_DWELL : constant Float := 60.0;  -- seconds; minimum turbo runtime
 
    -- ========================================================================
+   -- MINIMUM MAXIMUM-FAN HOLD -- TIME-DOMAIN GATE ON THE MAX-FAN WRITE
+   -- ========================================================================
+   --
+   -- OPERATOR DECISION (2026-10-06): 60.0 s. Chosen after the measured
+   --   oscillation below proved that TURBO_MIN_DWELL alone did not fix it.
+   --
+   -- WHY THIS EXISTS (measured, not hypothesised):
+   --   The max-fan write is gated on Is_Thermal_Demand (smc_daemon.adb,
+   --   the declare block that builds F0Tg_Hex), which is an OR across the
+   --   four ACTIVATION thresholds. Under this machine's real workload the
+   --   CPU temperature straddles its own activation threshold:
+   --
+   --     telemetry.csv  7:4:48  TCMz = 91.33 C   -> gate FALSE
+   --     telemetry.csv  7:4:58  TCMz = 94.83 C   -> gate TRUE
+   --     telemetry.csv  7:5:08  TCMz = 91.33 C   -> gate FALSE
+   --     telemetry.csv  7:5:18  TCMz = 94.58 C   -> gate TRUE
+   --
+   --   TURBO_TEMP_CPU_THRESHOLD is 93.0, so every dip below it collapses
+   --   the whole OR to False (Power was 23-34 W, also under its own 40 W
+   --   activation threshold) and the fans fall from the max hex to the PID
+   --   target at smc_math's MIN_MANUAL_FAN_RPM floor. That is a visible
+   --   10100 <-> 4000 RPM square wave at the temperature oscillation rate.
+   --
+   -- AXIOM H3 (No Short Max-Fan Pulses): once the max-fan write engages, it
+   --   stays engaged for at least MAX_FAN_MIN_HOLD seconds regardless of
+   --   instantaneous Is_Thermal_Demand.
+   --
+   -- THEOREM H4 (Bounded, Not Permanent): the hold RELEASES MAX_FAN_MIN_HOLD
+   --   seconds after the LAST sample that requested it. Because the release
+   --   is driven by the request signal going quiet rather than by a latched
+   --   flag alone, this cannot pin the fans at maximum indefinitely -- the
+   --   opposite failure mode of gating the write on Should_Deactivate_Turbo,
+   --   which in a 40 C ambient would hold maximum fan for as long as the CPU
+   --   stayed above its 80.0 C deactivation threshold.
+   --
+   -- DISTINCTION FROM TURBO_MIN_DWELL: that constant is anchored to the
+   --   turbo ENGAGEMENT event and gates turbo MODE EXIT. This constant is
+   --   anchored to the max-fan REQUEST signal and gates the FAN WRITE. They
+   --   are independent latches and can overlap without conflict.
+   --
+   -- CITATIONS:
+   --   [1] telemetry.csv -- the four TCMz samples quoted above.
+   --   [2] smc_daemon.adb -- Is_Thermal_Demand (four-way OR of activation
+   --       thresholds) and the `elsif` it gates.
+   --   [3] /var/log/smcSystemDemandNow.log -- fan hex write timeline showing
+   --       the max hex interleaved with PID targets on a ~10 s period.
+   -- ========================================================================
+   MAX_FAN_MIN_HOLD : constant Float := 60.0;  -- seconds; minimum max-fan hold
+
+   -- ========================================================================
+   -- MAXIMUM-FAN RELEASE DESCENT -- DURATION OF THE NATURAL-LOG CURVE
+   -- ========================================================================
+   --
+   -- OPERATOR DECISION (2026-10-06): 120 s, from the operator's stated
+   --   "60s-120s smoothing before going into PID target" range. The longer
+   --   end was chosen because the step being removed is 10100 -> ~3000 RPM,
+   --   the largest discontinuity in the controller.
+   --
+   -- WHY A SEPARATE CONSTANT FROM Cooldown_Duration:
+   --   The existing curve duration (60 s) belongs to turbo MODE EXIT, where
+   --   the fan is already near PID speed by the time the curve arms
+   --   (documented as THEOREM C3). This curve arms on the max-fan RELEASE
+   --   edge, where the fan is still at ~10100 RPM, so the curve has real
+   --   amplitude to spend and benefits from more time.
+   --
+   -- CITATIONS:
+   --   [1] smc_daemon.adb -- the max-fan RELEASE edge that arms this curve
+   --       and the Max_Fan_Release_Pending latch that selects it.
+   --   [2] smc_daemon.adb -- THEOREM C3, which predicted that the release
+   --       leg had no smoothing and therefore blended from ~3000 RPM.
+   -- ========================================================================
+   MAX_FAN_RELEASE_SMOOTH : constant Float := 120.0;  -- seconds; release descent
+
+   -- ========================================================================
    -- THRESHOLD CHECK FUNCTIONS
    -- ========================================================================
 

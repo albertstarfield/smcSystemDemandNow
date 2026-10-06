@@ -433,6 +433,49 @@ procedure Smc_Daemon is
    -- process-lifetime state, and a stale True would only suppress a log
    -- line, never a deactivation decision.
 
+   -- MINIMUM MAXIMUM-FAN HOLD (operator decision 2026-10-06, 60 s).
+   -- Max_Fan_Latched / Max_Fan_Enter_Time implement AXIOM H3 and THEOREM H4
+   -- from smc_thresholds.ads (MAX_FAN_MIN_HOLD). The latch is stamped on the
+   -- RISING EDGE of the max-fan request only and is never cleared by hand:
+   -- the hold releases on its own once MAX_FAN_MIN_HOLD has elapsed since the
+   -- stamp, so the next rising edge simply re-stamps it. That is what makes
+   -- THEOREM H4 true -- release is driven by the request going quiet, not by
+   -- a flag that only a human can clear.
+   --
+   -- AXIOM H5 (Local, not shared): these two objects are touched only by the
+   -- main 10 Hz loop body. They are deliberately NOT in the protected
+   -- Daemon_State object, so the realtime scheduler thread can never block
+   -- on a lock the loop holds; Turbo_Dwell_Logged follows the same
+   -- reasoning. If a second writer is ever introduced, they must move into
+   -- Daemon_State.
+   Max_Fan_Latched    : Boolean := False;
+   Max_Fan_Enter_Time : Ada.Real_Time.Time := Ada.Real_Time.Time_First;
+
+   -- MINIMUM MAXIMUM-FAN HOLD -> NATURAL-LOG DESCENT (operator decision
+   -- 2026-10-06, MAX_FAN_RELEASE_SMOOTH seconds).
+   --
+   -- THE GAP THIS CLOSES: the 60 s cooldown curve is armed only by turbo
+   -- MODE EXIT and by Overdrive->off. On the leg measured in this climate --
+   -- turbo still engaged, Is_Thermal_Demand lapsing -- no arm site fires, so
+   -- the descent from the max hex to the PID target was a single 100 ms
+   -- step. THEOREM C3 below already predicted exactly this: "the abrupt
+   -- abort step has ALREADY dropped the fans to PID speed, so by the time
+   -- the curve begins the blend origin is ~3000 RPM rather than 10100".
+   --
+   -- Max_Fan_Release_PENDING latches the arm of the release descent so the
+   -- cooldown block -- which is evaluated EARLIER in the same iteration --
+   -- can (a) suppress the turbo-active cancel that would otherwise kill the
+   -- curve on the very next tick, and (b) select the longer
+   -- MAX_FAN_RELEASE_SMOOTH duration.
+   --
+   -- It is set on RE-ENGAGEMENT, not on the falling edge. See the
+   -- "FALLING EDGE IS ONE-SHOT PER ENGAGEMENT" note at the arm site for why
+   -- an edge-detecting predecessor was wrong: the 10 Hz chatter made each
+   -- dip re-arm the curve, which bounded the descent never. A previous
+   -- Max_Fan_Was_Active variable served that wrong scheme and was removed
+   -- rather than left as dead code.
+   Max_Fan_Release_Pending : Boolean := False;
+
     procedure Run_Power_Command (Args : GNAT.OS_Lib.Argument_List) is
       -- ============================================================================
       -- FUNCTION: Run_Power_Command
@@ -1316,7 +1359,16 @@ begin
             --       dominant real-world path, not a corner case.
             -- ====================================================================
             -- Handle Cooldown Transition (Natural Logarithmic)
-            if Daemon_State.Is_Turbo_Active or else Overdrive_Active then
+            if (Daemon_State.Is_Turbo_Active or else Overdrive_Active)
+               and then not Max_Fan_Release_Pending
+            then
+               -- NOTE (2026-10-06): the `and then not
+               -- Max_Fan_Release_Pending` guard is REQUIRED, not cosmetic.
+               -- On the max-fan release leg turbo is still engaged BY
+               -- DEFINITION -- that is precisely why the leg is worth
+               -- smoothing -- so without this guard the very next tick
+               -- would cancel the curve the release edge just armed, and the
+               -- descent would be a 1-tick step again.
                if Daemon_State.Is_In_Cooldown then
                   Daemon_State.Cancel_Cooldown;
                   Put_Line ("[DAEMON] Turbo/Overdrive re-engaged. Cooldown transition CANCELLED.");
@@ -1326,7 +1378,10 @@ begin
                   use Ada.Real_Time;
                   Elapsed : constant Time_Span := Clock - Daemon_State.Get_Cooldown_Start_Time;
                   Elapsed_Sec : constant Float := Float (To_Duration (Elapsed));
-                  Cooldown_Duration : constant Float := 60.0;
+                  Cooldown_Duration : constant Float :=
+                    (if Max_Fan_Release_Pending
+                     then SMC_Thresholds.MAX_FAN_RELEASE_SMOOTH
+                     else 60.0);
                begin
                   if Elapsed_Sec >= Cooldown_Duration then
                      Daemon_State.Cancel_Cooldown;
@@ -1370,7 +1425,139 @@ begin
                  Daemon_State.Is_Turbo_Active
                  and then Daemon_State.Get_Turbo_Elapsed
                             < Duration (SMC_Thresholds.TURBO_MIN_DWELL);
+
+               -- MAXIMUM-FAN HOLD REQUEST (AXIOM H3 / THEOREM H4).
+               -- Max_Fan_Wanted is the raw request, i.e. exactly the
+               -- condition the `elsif` used to test directly. It is factored
+               -- out here so the hold can be stamped BEFORE the branch is
+               -- chosen; otherwise the latch could never observe the rising
+               -- edge that it is supposed to react to.
+               -- COMPONENT VALUE: O(1), no clock read, no state access
+               -- beyond the Is_Turbo_Active read already on this path.
+               Max_Fan_Wanted : constant Boolean :=
+                 Target_RPM >= 10100.0
+                 or else (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand)
+                 or else Turbo_Dwell_Pinning;
+
+               -- Max_Fan_Holding is assigned in the statement part below
+               -- (not here) because stamping the rising edge must happen
+               -- first. Deliberately a variable, not a constant.
+               Max_Fan_Holding : Boolean := False;
             begin
+               -- RELEASE THE LATCH ON EXPIRY (AXIOM H3 / THEOREM H4).
+               -- BUG FOUND AND FIXED 2026-10-06: the first version of this
+               -- block set Max_Fan_Latched := True and never cleared it, so
+               -- Max_Fan_Holding was True for exactly the first 60 s of the
+               -- process lifetime and the hold could never re-arm. Under a
+               -- sustained load the oscillation returned after 60 s and the
+               -- fix looked like it had done nothing. Clearing on expiry is
+               -- what makes the hold repeat every time the request returns.
+               if Max_Fan_Latched
+                 and then Ada.Real_Time.To_Duration
+                               (Ada.Real_Time."-"
+                                  (Ada.Real_Time.Clock, Max_Fan_Enter_Time))
+                             >= Duration (SMC_Thresholds.MAX_FAN_MIN_HOLD)
+               then
+                  Max_Fan_Latched := False;
+               end if;
+
+               -- STAMP THE RISING EDGE (AXIOM H3).
+               -- Re-stamping only when the latch is clear is what makes this
+               -- a minimum HOLD rather than a sliding window: a request that
+               -- stays True for 10 minutes does not push the release out.
+               if Max_Fan_Wanted and then not Max_Fan_Latched then
+                  Max_Fan_Latched := True;
+                  Max_Fan_Enter_Time := Ada.Real_Time.Clock;
+               end if;
+
+               -- Release test (THEOREM H4): True only while the latch is set
+               -- AND less than MAX_FAN_MIN_HOLD has elapsed since the stamp.
+               -- Ada.Real_Time."-" yields a Time_Span, hence the explicit
+               -- To_Duration before comparing against Duration.
+               -- [Citation: Ada 2012 RM D.4 -- Time_Span and To_Duration]
+               Max_Fan_Holding :=
+                 Max_Fan_Latched
+                 and then Ada.Real_Time.To_Duration
+                              (Ada.Real_Time."-"
+                                 (Ada.Real_Time.Clock, Max_Fan_Enter_Time))
+                            < Duration (SMC_Thresholds.MAX_FAN_MIN_HOLD);
+
+               -- ARM THE DESCENT CURVE ON THE FALLING EDGE.
+               -- Max_Fan_Active is the value the `elsif` below will use, so
+               -- the edge is detected on the real decision, not on a proxy.
+               declare
+                  Max_Fan_Active : constant Boolean :=
+                    Max_Fan_Wanted or else Max_Fan_Holding;
+                  Act_RPM_Now : constant Float :=
+                    (if Float (F0Ac_Val) > Float (F1Ac_Val)
+                     then Float (F0Ac_Val) else Float (F1Ac_Val));
+               begin
+                  -- ARM THE DESCENT: ONE-SHOT PER ENGAGEMENT.
+                  --
+                  -- CONDITION: wanted AND latch-clear AND no curve pending.
+                  --
+                  -- BUG FOUND AND FIXED 2026-10-06 (second and third defects in
+                  -- this block, after the never-cleared-latch one above):
+                  --
+                  -- (a) The first version detected a genuine FALLING edge via a
+                  --     Max_Fan_Was_Active predecessor refreshed every tick.
+                  --     That is WRONG: Max_Fan_Wanted chatters at 10 Hz, so the
+                  --     decision drops out, returns one tick later, and drops
+                  --     again -- every dip re-entered the branch. Its comment
+                  --     then claimed Start_Cooldown's idempotency bounded it,
+                  --     but that claim was FALSE. AXIOM A1
+                  --     (smc_daemon_state.adb) only holds while a curve is
+                  --     ALREADY running; once the 120 s expired, the next dip
+                  --     armed a FRESH 120 s. Under the sustained oscillation
+                  --     this bug addresses, the fan would have descended 120 s,
+                  --     re-armed for another 120 s, and so on FOREVER --
+                  --     strictly worse than the 10000/4000 flicker it was
+                  --     meant to cure.
+                  --
+                  -- (b) The replacement `Max_Fan_Wanted and then not
+                  --     Max_Fan_Latched` was ALSO wrong, for the same reason by
+                  --     a different route: while a request persists, the 60 s
+                  --     hold expires, the latch clears, and the very next tick
+                  --     both re-stamps the latch AND re-enters this branch --
+                  --     so the curve re-armed every 60 s instead of every dip.
+                  --
+                  -- THE THIRD TERM is what makes it once-per-engagement.
+                  -- Max_Fan_Release_Pending is the only state that is False
+                  -- both before the first engagement and after a curve has
+                  -- been delivered, and it is cleared by the `elsif
+                  -- Max_Fan_Active` arm below. Combined with the hold, that
+                  -- gives the required sequence:
+                  --
+                  --   tick 0        wanted=True, latch=False
+                  --                -> arm, pending=True
+                  --   tick 1..600   holding keeps Max_Fan_Active True
+                  --                -> elsif clears pending, no re-arm
+                  --   request drops wanted=False -> fan leaves max hex
+                  --   curve runs    pending stays False (elsif not taken)
+                  --                -> max fan hex NOT re-selected, so no
+                  --                   re-stamp and no re-arm while decaying
+                  --   a new request wanted=True, latch=False
+                  --                -> arm again (a genuine NEW engagement)
+                  --
+                  -- CONSEQUENCE: exactly one full MAX_FAN_RELEASE_SMOOTH per
+                  -- engagement, never a chain, and the fan always reaches PID
+                  -- speed at least once per engagement.
+                  if Max_Fan_Wanted and then not Max_Fan_Latched
+                     and then not Max_Fan_Release_Pending
+                  then
+                     -- Start_Cooldown is idempotent (smc_daemon_state.adb
+                     -- AXIOM A1): if the two mode-exit paths already armed a
+                     -- curve this tick, its deadline stands.
+                     Daemon_State.Start_Cooldown (Act_RPM_Now);
+                     Max_Fan_Release_Pending := True;
+                     Put_Line ("[DAEMON] Max-fan released; starting natural log"
+                               & " descent (" &
+                               Integer'Image (Integer (SMC_Thresholds.MAX_FAN_RELEASE_SMOOTH))
+                               & "s) from " & Float'Image (Act_RPM_Now) & " RPM.");
+                  elsif Max_Fan_Active then
+                     Max_Fan_Release_Pending := False;
+                  end if;
+               end;
                -- ====================================================================
                -- MAX-FAN SELECTION -- INCLUDES THE UNSMOOTHED DECELERATION LEG
                -- ====================================================================
@@ -1448,9 +1635,25 @@ begin
                -- THEOREM C3 in the cooldown block assumed this could start
                -- from PID speed instead; that path is now unreachable while
                -- Turbo_Dwell_Pinning is in force.
-               elsif (Target_RPM >= 10100.0
-                      or else (Daemon_State.Is_Turbo_Active and then Is_Thermal_Demand)
-                      or else Turbo_Dwell_Pinning)
+               --
+               -- MINIMUM MAXIMUM-FAN HOLD (operator decision 2026-10-06,
+               -- 60 s). This is the SECOND independent time-domain gate on
+               -- this branch, and it exists because the 2026-10-05 decision
+               -- above was superseded by measurement: Turbo_Dwell_Pinning
+               -- only holds the fans while TURBO is engaged, but under a
+               -- heavy sustained load turbo stays engaged for hours while
+               -- the CPU temperature dips across TURBO_TEMP_CPU_THRESHOLD
+               -- (93.0) every few seconds. Measured, telemetry.csv:
+               -- 91.33 -> 94.83 -> 91.33 -> 94.58 C. Each dip collapsed
+               -- Is_Thermal_Demand to False and dropped the fans to the PID
+               -- floor -- the reported 10100 <-> 4000 RPM square wave.
+               --
+               -- Max_Fan_Holding closes that path WITHOUT the permanent-pin
+               -- risk of gating on Should_Deactivate_Turbo: it is keyed to
+               -- the request signal, so it releases 60 s after the last
+               -- sample that asked for maximum fan (THEOREM H4).
+               elsif (Max_Fan_Wanted
+                      or else Max_Fan_Holding)
                      and then not Silent_Mode
                then
                   F0Tg_Hex := New_String ("0050c347");
