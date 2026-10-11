@@ -464,6 +464,16 @@ procedure Smc_Daemon is
    -- reasoning. If a second writer is ever introduced, they must move into
    -- Daemon_State.
    Max_Fan_Latched    : Boolean := False;
+   -- AXIOM R3 (Fan At Full Duty, Package-Level): Max_Fan_Holding and
+   -- Max_Fan_Wanted are locals of the declare block further down, so the
+   -- 10-second export block below cannot see them. This flag mirrors that
+   -- same condition at package scope: True when the max-fan hex is actually
+   -- being written, i.e. the fan is held at full PWM and free-running, which
+   -- is the precondition that makes the RPM carry pressure information at
+   -- all. Assigned every 100 ms tick from the same computation that selects
+   -- the hex, never latched, so it decays the instant full duty ends.
+   -- See the pressure-refresh AXIOM R1/R2 in the export block.
+   Max_Fan_At_Full_Duty : Boolean := False;
    Max_Fan_Enter_Time : Ada.Real_Time.Time := Ada.Real_Time.Time_First;
 
    -- MINIMUM MAXIMUM-FAN HOLD -> NATURAL-LOG DESCENT (operator decision
@@ -1678,7 +1688,17 @@ begin
                then
                   F0Tg_Hex := New_String ("0050c347");
                   F1Tg_Hex := New_String ("0050c347");
+                  -- AXIOM R4 (Flag Mirrors The Write, Not The Intent):
+                  -- Max_Fan_At_Full_Duty is set here, in the branch that ACTUALLY
+                  -- writes the max hex, so it can only be True while the fan is
+                  -- driven at full duty. Setting it from the request instead
+                  -- would let a Silent-Mode-cancelled request claim a full duty
+                  -- that never happened, and the 10-second pressure refresh
+                  -- would then estimate from a PID-commanded RPM -- exactly the
+                  -- corruption AXIOM R1 exists to prevent.
+                  Max_Fan_At_Full_Duty := True;
                else
+                  Max_Fan_At_Full_Duty := False;
                   declare
                       Hex_Str : constant String := SMC_Utils.Float_To_Hex (Float (Target_RPM));
                   begin
@@ -1895,9 +1915,14 @@ begin
                          Weather_Ref : constant Float := SMC_Files.Get_Weather_Pressure_HPa;
                       begin
                          Est_HPa := Weather_Ref * (Calibrated_Pres_RPM / Avg_RPM);
-                         -- Clamp to sane atmospheric range [870, 1084] hPa
-                         if Est_HPa < 870.0 then Est_HPa := 870.0; end if;
-                         if Est_HPa > 1084.0 then Est_HPa := 1084.0; end if;
+                         -- NOTE: no [870, 1084] clamp here. Clamping an
+                         -- out-of-band estimate back into an Earth-surface
+                         -- number manufactures a plausible lie, and it
+                         -- destroyed genuine low-pressure readings (vacuum
+                         -- chamber, altitude) by forcing them up to 870.
+                         -- Range validity is applied once, below, and
+                         -- expressed as 0.0 = UNKNOWN. See
+                         -- smc_thresholds.ads AXIOM P1 / THEOREM P2.
                       end;
                       SMC_Files.Write_Pressure_Report (
                          Ref_RPM   => Calibrated_Pres_RPM,
@@ -1962,6 +1987,80 @@ begin
             SMC_Files.Write_EARU_Fan ("F0Tg", Float (F0Tg_Val));
             SMC_Files.Write_EARU_Fan ("F1Tg", Float (F1Tg_Val));
             SMC_Files.Write_EARU_Turbo (if Daemon_State.Is_Turbo_Active then 1 else 0);
+
+            -- === PRESSURE ESTIMATE REFRESH (0.1 Hz) =========================
+            -- WHY THIS EXISTS (operator bug report 2026-10-11):
+            --   `smcFanPressurehPaDetection` went stale for 3h40m while the
+            --   daemon ran, so EARU published pressure_hpa = 0.0 permanently.
+            --   Cause: Write_Pressure_Report had exactly ONE call site inside
+            --   the `if Calibration_Active then` one-shot 10-second window
+            --   armed by Activate_Turbo_Mode (smc_daemon.adb:613). Turbo
+            --   engagement is rare on this machine, so the file was written
+            --   once and then frozen. Every OTHER sensor already lives in this
+            --   10-second block; pressure was the lone straggler.
+            --
+            -- THE FIX: refresh here, decoupled from the calibration window,
+            --   using the pinned reference speed that Load_Fan_Calibration
+            --   restored at startup. The calibration-window write above is
+            --   kept because it also logs and seeds the CSV dataset.
+            --
+            -- AXIOM R1 (Valid Only While Max-Fan Hold Is Active): the estimate
+            --   is a pressure reading ONLY because the fan is held at full
+            --   PWM (100% duty, free-running) -- see the derivation at the
+            --   calibration block. Under PID control the commanded RPM
+            --   cancels the pressure signal, so we must NOT estimate from an
+            --   RPM the controller chose. Gated on Max_Fan_Holding /
+            --   Max_Fan_Wanted, which is exactly the max-hex condition.
+            --
+            -- AXIOM R2 (No Clamping, 0.0 = Unknown): an out-of-envelope
+            --   estimate is reported as 0.0 so EARU's reader sees an
+            --   unmistakable unknown rather than a plausible lie. This also
+            --   preserves genuine low-pressure / vacuum readings instead of
+            --   crushing them to 870 hPa. See smc_thresholds.ads AXIOM P1.
+            if Calibrated_Pres_RPM > 0.0 and then Max_Fan_At_Full_Duty then
+               declare
+                  Act_RPM_Now : constant Float :=
+                    (if Float (F0Ac_Val) > Float (F1Ac_Val)
+                     then Float (F0Ac_Val) else Float (F1Ac_Val));
+                  Est_Now : Float := 0.0;
+                  Ref_Now : constant Float := SMC_Files.Get_Weather_Pressure_HPa;
+               begin
+                  if Act_RPM_Now > 0.0 and then Ref_Now > 0.0 then
+                     Est_Now := Ref_Now * (Calibrated_Pres_RPM / Act_RPM_Now);
+                     if Est_Now < SMC_Thresholds.PRESSURE_VALID_MIN
+                        or else Est_Now > SMC_Thresholds.PRESSURE_VALID_MAX
+                     then
+                        Put_Line
+                          ("[PRESSURE] Estimate " & Float'Image (Est_Now) &
+                           " hPa outside envelope [" &
+                           Float'Image (SMC_Thresholds.PRESSURE_VALID_MIN) & "," &
+                           Float'Image (SMC_Thresholds.PRESSURE_VALID_MAX) &
+                           "]; reporting UNKNOWN (0.0). " &
+                           "weather ref=" & Float'Image (Ref_Now) &
+                           " refRPM=" & Float'Image (Calibrated_Pres_RPM) &
+                           " curRPM=" & Float'Image (Act_RPM_Now));
+                        Est_Now := 0.0;  -- explicit, never a silent fallthrough
+                     end if;
+                  else
+                     -- Neither a zero RPM nor a zero weather reference is a
+                     -- valid reading; do not divide by them either.
+                     Est_Now := 0.0;
+                  end if;
+                  if Est_Now > 0.0 then
+                     SMC_Files.Write_Pressure_Report (
+                        Ref_RPM   => Calibrated_Pres_RPM,
+                        Cur_RPM   => Act_RPM_Now,
+                        Diff      => Act_RPM_Now - Calibrated_Pres_RPM,
+                        Est_HPa   => Est_Now,
+                        Timestamp => Long_Integer (Clock - Time_Of (1970, 1, 1, 0.0))
+                     );
+                  end if;
+               exception
+                  when E : others =>
+                     Put_Line ("[PRESSURE] periodic refresh failed: " &
+                               Ada.Exceptions.Exception_Message (E));
+               end;
+            end if;
 
             -- === EARU 7-file power tracking export (0.1 Hz) ===
             -- Mirrors earu Accumulate_Power (earu-system_bridge.adb:614-717)

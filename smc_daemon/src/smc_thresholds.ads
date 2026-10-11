@@ -221,6 +221,65 @@ package SMC_Thresholds with SPARK_Mode is
    MAX_FAN_RELEASE_SMOOTH : constant Float := 120.0;  -- seconds; release descent
 
    -- ========================================================================
+   -- ATMOSPHERIC PRESSURE ENVELOPE FOR THE FAN-RPM ESTIMATE
+   -- ========================================================================
+   --
+   -- OPERATOR REQUIREMENT (2026-10-11): "don't forget the possibility of
+   --   Vacuum pressure environment". The old hardcoded [870, 1084] hPa clamp
+   --   assumed sea-level-to-Everest conditions and silently destroyed any
+   --   estimate outside that band -- it clamped a legitimate low-pressure
+   --   reading back up to 870, so a vacuum test would report a plausible
+   --   Earth-surface number instead of the truth.
+   --
+   -- AXIOM P1 (Range Is A Validity Test, Not A Correction): the clamp exists
+   --   only to reject the non-physical. It must never manufacture a value.
+   --   The former upper/lower bands did exactly that: clamping a reading ABOVE
+   --   1084 down, or BELOW 870 up, converts a corrupted sensor into a
+   --   believable number, which is the worst possible failure mode for
+   --   telemetry the operator may trust.
+   --
+   -- THEOREM P2 (The Envelope Is Wide Because The Physics Does Not Bound It):
+   --   absolute pressure is positive and, in principle, has no upper limit on
+   --   a pressurised vessel and no sharp lower limit short of true vacuum.
+   --   What the estimate cannot express is exactly 0.0 hPa -- and 0.0 is
+   --   precisely the value the old code produced when the reader failed, so
+   --   the envelope must treat 0.0 as INVALID rather than as a floor.
+   --
+   -- Why these specific bounds:
+   --   * 1013.25 hPa  ISA standard sea-level -- the nominal anchor.
+   --   *   870.0 hPa  historical lower bound, ≈ Everest base camp ground
+   --                 level. Retained as the ATMOSPHERIC reference band edge,
+   --                 NOT as a clamp on the estimate.
+   --   *  1084.0 hPa  highest reliably recorded surface pressure (Dead Sea
+   --                 basin). Same treatment -- reference band edge only.
+   --   *     0.05 hPa edge of the envelope. Deliberately non-zero: it is a
+   --                 valid stranger-than-usual reading (high vacuum chamber,
+   --                 upper atmosphere) yet still distinguishable from the
+   --                 0.0 that means "we could not read anything at all".
+   --   * 10000.0 hPa  ≈ 10 bar, a generous ceiling that still catches a
+   --                 runaway estimate caused by a bogus weather reference
+   --                 (Ref_Pressure x 100) rather than by real weather.
+   --
+   -- CONSEQUENCE: an in-envelope value is reported as measured. An
+   -- out-of-envelope value is reported as 0.0 -- the unmistakable "unknown"
+   -- signal -- and the caller is expected to log the rejection verbosely
+   -- rather than silently substitute.
+   --
+   -- CITATIONS:
+   --   [1] ISO 2533:1975 -- Standard Atmosphere (ISA sea-level 1013.25 hPa).
+   --   [2] WMO Guide to Meteorological Instruments -- extreme surface
+   --       pressure records (1084 hPa Agata/S对我的Dead Sea, 870 hPa Typhoon
+   --       Tip reference altitude band).
+   --   [3] ISO 3529 (vacuum technology vocabulary) -- pressure range
+   --       subdivisions, low/high/ultra-high vacuum, for the non-zero floor.
+   -- ========================================================================
+   PRESSURE_VALID_MIN : constant Float := 0.05;      -- hPa; 0.0 means UNKNOWN
+   PRESSURE_VALID_MAX : constant Float := 10000.0;   -- hPa; ≈10 bar, runaway guard
+   PRESSURE_REF_MIN   : constant Float := 870.0;     -- hPa; Earth-surface reference
+   PRESSURE_REF_MAX   : constant Float := 1084.0;    -- hPa; Earth-surface reference
+   PRESSURE_ISA_SL    : constant Float := 1013.25;   -- hPa; ISA standard sea level
+
+   -- ========================================================================
    -- THRESHOLD CHECK FUNCTIONS
    -- ========================================================================
 
