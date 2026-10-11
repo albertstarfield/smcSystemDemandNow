@@ -1868,6 +1868,29 @@ begin
                       -- Ref_Pressure: from weather API via EARU_data.dat telemetry cache.
                       -- Ref_RPM: calibrated fan speed at calibration time (saved to file).
                       -- Current_RPM: average fan speed during 10-second calibration window.
+--
+                      -- CRITICAL PREMISE (operator clarification 2026-10-11): the fan
+                      -- signal is PWM, not speed. During the calibration window the
+                      -- controller holds the fan at FULL DUTY (100% PWM, the
+                      -- Overdrive/`ffffffff` ceiling, written as the max-fan sentinel
+                      -- at the `if Overdrive_Active and then not Silent_Mode` branch
+                      -- above) — it does NOT hold a fixed RPM. The blower is simply
+                      -- given maximum power and allowed to free-run, so whatever RPM
+                      -- it settles at is set by the air it is moving, not by a command.
+--
+                      -- That is what makes this a pressure sensor at all: at fixed
+                      -- PWM, a denser atmosphere loads the blade more (higher
+                      -- volumetric flow, higher back-pressure) and the shaft reaches
+                      -- a different equilibrium speed, so the OBSERVED RPM VARIATION
+                      -- encodes the pressure delta. If the loop were closed on a
+                      -- target RPM the diameter-by-command feedback would erase the
+                      -- signal entirely and the estimate would collapse to a constant.
+--
+                      -- CONSEQUENCE: the calibration is only valid while max-fan/PWM
+                      -- hold is active. Estimating pressure from PID-controlled RPM,
+                      -- or from any leg where a target speed is enforced, produces a
+                      -- meaningless Est_HPa. Do not reuse this formula on the normal
+                      -- fan path.
                       declare
                          Weather_Ref : constant Float := SMC_Files.Get_Weather_Pressure_HPa;
                       begin
