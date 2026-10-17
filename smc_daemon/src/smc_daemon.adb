@@ -1837,13 +1837,36 @@ begin
                end if;
             end if;
          else
-            if SMC_Thresholds.Should_Activate_Turbo (
-                  CPU_Temp     => Last_TCMZ_Temp,
-                  GPU_Temp     => Last_GPU_Temp,
-                  Power        => Power,
-                  Battery_Temp => Max_Battery_Temp,
-                  Spike_Count  => Daemon_State.Get_Spike_Count)
-            then
+            declare
+               LA1, LA2, LA3 : Float;
+               CPU_Use : constant Float := SMC_Files.Get_Cpu_Usage;
+               Load_Trigger : Boolean;
+               Cpu_Trigger  : Boolean;
+            begin
+               SMC_Files.Get_Load_Averages (LA1, LA2, LA3);
+               -- Operator requirement (2026-10-17): turbo also engages when
+               -- load avg is 20.0,20.0,20.0 (all three >= 20) OR when all
+               -- CPUs are at full 100%. Single scalar cpu_usage is the only
+               -- utilization metric available; >= 95.0 is treated as "all
+               -- cores saturated" (the EARU-reported value lags by one tick
+               -- and never reads exactly 100.0 even at full load).
+               Load_Trigger := LA1 >= 20.0 and then LA2 >= 20.0 and then LA3 >= 20.0;
+               Cpu_Trigger  := CPU_Use >= 95.0;
+               if Load_Trigger or else Cpu_Trigger then
+                  Put_Line ("[DAEMON] Turbo engaged by load/CPU: load_avg=" &
+                            Float'Image (LA1) & "," & Float'Image (LA2) & "," &
+                            Float'Image (LA3) & " cpu_usage=" & Float'Image (CPU_Use) & "%");
+                  Activate_Turbo_Mode ("Load avg " & Float'Image (LA1) & "/" &
+                                       Float'Image (LA2) & "/" & Float'Image (LA3) &
+                                       " >= 20 or CPU usage " & Float'Image (CPU_Use) &
+                                       "% >= 95");
+               elsif SMC_Thresholds.Should_Activate_Turbo (
+                     CPU_Temp     => Last_TCMZ_Temp,
+                     GPU_Temp     => Last_GPU_Temp,
+                     Power        => Power,
+                     Battery_Temp => Max_Battery_Temp,
+                     Spike_Count  => Daemon_State.Get_Spike_Count)
+               then
                -- Determine which threshold triggered for logging
                -- CITATION: Threshold text derived from SMC_Thresholds constants so the
                --   log can never drift from the values that actually triggered it.
@@ -1863,6 +1886,7 @@ begin
                   Activate_Turbo_Mode ("Latency spikes detected by monitor");
                end if;
             end if;
+            end;  -- declare (load/CPU turbo trigger)
          end if;
 
          -- Handle dynamic Fan Pressure Calibration during Turbo

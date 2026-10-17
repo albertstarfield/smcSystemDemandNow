@@ -211,6 +211,7 @@ package body SMC_Files is
           New_Idle : Float;
           New_Weather_HPa : Float;
           New_Altitude_M : Float;
+          New_Cpu_Usage : Float;
           New_Success : Boolean
        );
        function Get_Battery return Integer;
@@ -219,6 +220,8 @@ package body SMC_Files is
        function Get_Idle return Float;
        function Get_Weather_HPa return Float;
        function Get_Altitude_M return Float;
+       function Get_Cpu_Usage return Float;
+       procedure Get_Load_Averages (Out_L1, Out_L2, Out_L3 : out Float);
     private
        Battery : Integer := 100;
        -- Full-charge capacity in Wh; 0.0 = unknown (EARU_data.dat parse has
@@ -228,6 +231,7 @@ package body SMC_Files is
        Idle : Float := 0.0;
        Weather_HPa : Float := 1013.25;
        Altitude_M : Float := 0.0;
+       Cpu_Usage : Float := 0.0;
        Success : Boolean := False;
     end Telemetry_Cache;
 
@@ -252,6 +256,7 @@ package body SMC_Files is
          New_Idle : Float;
          New_Weather_HPa : Float;
          New_Altitude_M : Float;
+         New_Cpu_Usage : Float;
          New_Success : Boolean
       ) is
       begin
@@ -261,6 +266,7 @@ package body SMC_Files is
          Idle := New_Idle;
          Weather_HPa := New_Weather_HPa;
          Altitude_M := New_Altitude_M;
+         Cpu_Usage := New_Cpu_Usage;
          Success := New_Success;
       end Update;
 
@@ -269,6 +275,13 @@ package body SMC_Files is
 
       function Get_Weather_HPa return Float is (Weather_HPa);
       function Get_Altitude_M return Float is (Altitude_M);
+      function Get_Cpu_Usage return Float is (Cpu_Usage);
+      procedure Get_Load_Averages (Out_L1, Out_L2, Out_L3 : out Float) is
+      begin
+         Out_L1 := L1;
+         Out_L2 := L2;
+         Out_L3 := L3;
+      end Get_Load_Averages;
 
       procedure Check_Load (Max_Load : out Float; Status : out Integer) is
          ML : Float;
@@ -380,6 +393,9 @@ package body SMC_Files is
       -- Temps for Load (1min/5min/15min averages)
       L1, L2, L3 : Float := 0.0;
 
+      -- Temp for overall CPU usage (percent 0-100)
+      Cpu_Usage : Float := 0.0;
+
       -- Temps for Battery (percentage 0-100)
       B_Percent : Integer := 100;
 
@@ -411,7 +427,7 @@ package body SMC_Files is
          -- even when EARU_data.dat is temporarily unavailable (e.g., during file write)
           -- ISA standard: P0 = 1013.25 hPa, alt = 0m (sea level)
           Telemetry_Cache.Update (100, 0.0, 0.0, 0.0, 0.0,
-                                  0.0, 1013.25, 0.0, False);
+                                  0.0, 1013.25, 0.0, 0.0, False);
           return;
       end if;
 
@@ -473,6 +489,14 @@ package body SMC_Files is
          if L2 < 0.0 or L2 > 2000.0 then L2 := 0.0; end if;
          if L3 < 0.0 or L3 > 2000.0 then L3 := 0.0; end if;
       end if;
+
+      -- Step 3b: Parse overall CPU usage (percent, 0-100)
+      -- JSON pattern: "cpu_usage": 29.16
+      -- DERIVATION: Single scalar reported by EARU (overall utilization, not
+      -- per-core). Used as a turbo trigger when ALL cores are saturated
+      -- (>= 95.0%), since per-core data is not available from this source.
+      Cpu_Usage := Parse_Float_After (Content (1 .. Length), Index (Content (1 .. Length), """cpu_usage"": "), 0.0);
+      if Cpu_Usage < 0.0 or Cpu_Usage > 100.0 then Cpu_Usage := 0.0; end if;
 
       -- Step 4: Parse HID Idle time (seconds since last human input)
       -- JSON pattern: "nonHumanInputHIDIdle": 45.2
@@ -562,7 +586,7 @@ package body SMC_Files is
        -- Store all parsed values in the thread-safe cache
        -- The cache is a Ada protected type, so concurrent reads are safe
        Telemetry_Cache.Update (B_Percent, Full_Wh, L1, L2, L3,
-                               Idle_Sec, Weather_HPa, Altitude_M, True);
+                               Idle_Sec, Weather_HPa, Altitude_M, Cpu_Usage, True);
     end Update_Telemetry_Cache;
 
     -- =========================================================================
@@ -1427,6 +1451,16 @@ package body SMC_Files is
    begin
       return Telemetry_Cache.Get_Altitude_M;
    end Get_Weather_Altitude_M;
+
+   function Get_Cpu_Usage return Float is
+   begin
+      return Telemetry_Cache.Get_Cpu_Usage;
+   end Get_Cpu_Usage;
+
+   procedure Get_Load_Averages (L1, L2, L3 : out Float) is
+   begin
+      Telemetry_Cache.Get_Load_Averages (L1, L2, L3);
+   end Get_Load_Averages;
 
    ----------------------------
    -- Write_Pressure_Dataset --

@@ -200,6 +200,8 @@ package SMC_Files is
    -- Weather reference: reads pressure_hpa and altitude from EARU_data.dat location section
    function Get_Weather_Pressure_HPa return Float;
    function Get_Weather_Altitude_M return Float;
+   function Get_Cpu_Usage return Float;
+   procedure Get_Load_Averages (L1, L2, L3 : out Float);
 
    -- Pressure calibration dataset CSV (fan_RPM, weather_hPa, altitude, timestamp)
    procedure Write_Pressure_Dataset (Cur_RPM, Weather_HPa, Altitude_M : Float; Timestamp : Long_Integer);
