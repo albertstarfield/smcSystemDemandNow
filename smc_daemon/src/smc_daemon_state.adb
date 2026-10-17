@@ -4,7 +4,12 @@ with GNAT.OS_Lib;
 with SMC_Realtime;
 with SMC_Files;
 
-package body SMC_Daemon_State is
+-- SPARK STATUS: SPARK_Mode => Off (mirrors the spec).
+--   RATIONALE: task types + protected object + Ada.Real_Time + Ada.Calendar.
+--   SAFETY-NET CONTRACT: protected entries are the only mutation path; the
+--   main loop never touches shared state outside them. Get_* accessors are
+--   pure reads of protected fields.
+package body SMC_Daemon_State with SPARK_Mode => Off is
 
    ----------------------
    -- Watchdog_Monitor --

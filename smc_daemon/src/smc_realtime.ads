@@ -1,7 +1,13 @@
 with Interfaces;
 with Interfaces.C;
 
-package SMC_Realtime is
+-- SPARK STATUS: SPARK_Mode => Off.
+--   RATIONALE: every subprogram here is `pragma Import (C, ...)` against
+--   smc_helper.c (macOS audio workgroup / realtime thread configuration).
+--   Imported C calls are outside the SPARK subset. SAFETY-NET: Init is called
+--   once at startup; a failure leaves the daemon on the default (non-realtime)
+--   scheduling class, which degrades latency but never crashes.
+package SMC_Realtime with SPARK_Mode => Off is
 
    type Join_Token_T is array (1 .. 40) of Interfaces.Unsigned_8;
    pragma Convention (C, Join_Token_T);

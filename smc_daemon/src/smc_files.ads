@@ -24,7 +24,15 @@
 --
 -- =============================================================================
 
-package SMC_Files is
+-- SPARK STATUS: SPARK_Mode => Off.
+--   RATIONALE: this package owns all file I/O (EARU_data.dat parsing, sensor
+--   file writes, calibration persistence, CSV telemetry), a protected cache
+--   object, and string parsing via Ada.Strings.Fixed. None of that is in the
+--   SPARK subset. Keeping the package off lets the pure-computation packages
+--   (SMC_Math, SMC_Thresholds) stay on while every I/O entry point below is
+--   wrapped in exception handlers that log (path + attempt + message) and
+--   never raise -- the safety-net fallback contract.
+package SMC_Files with SPARK_Mode => Off is
 
    -- Paths matching C daemon
    TELEMETRY_CSV  : constant String := "/usr/local/smcSystemDemandNow/telemetry.csv";

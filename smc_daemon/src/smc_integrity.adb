@@ -8,7 +8,13 @@ with Interfaces;
 with Interfaces.C;
 with Interfaces.C.Strings;
 
-package body SMC_Integrity is
+-- SPARK STATUS: SPARK_Mode => Off (mirrors the spec).
+--   RATIONALE: file I/O + GNAT.SHA256 + Ada.Directories + Ada.Text_IO.
+--   SAFETY-NET CONTRACT: every procedure catches `when E : others`, logs
+--   "[INTEGRITY] ERROR: ..." with the file path and exception message, closes
+--   any open handle, and returns Success=False. No caller may assume a heal
+--   succeeded without checking Success.
+package body SMC_Integrity with SPARK_Mode => Off is
 
    -- =========================================================================
    -- TECHNICAL NOTE: Telemetry Integrity and Stability Fixes (2026-05-28)

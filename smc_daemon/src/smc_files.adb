@@ -6,7 +6,14 @@ with Ada.Strings.Fixed;
 with Ada.Numerics.Elementary_Functions;
 with SMC_Integrity;
 
-package body SMC_Files is
+-- SPARK STATUS: SPARK_Mode => Off (mirrors the spec).
+--   RATIONALE: file I/O + protected cache + Ada.Strings.Fixed + Ada.Directories.
+--   SAFETY-NET CONTRACT: every public procedure below catches `when E : others`,
+--   logs "[...] failed: " & Exception_Message (E) with the file path and
+--   operation, closes any open handle, and returns without raising. No caller
+--   in the main loop is permitted to assume success; all callers check return
+--   values or tolerate a zero/empty result.
+package body SMC_Files with SPARK_Mode => Off is
 
    -- =========================================================================
    -- Ensure_Directory_Exists

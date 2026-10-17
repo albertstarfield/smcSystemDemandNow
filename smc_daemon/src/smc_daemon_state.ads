@@ -1,6 +1,14 @@
 with Ada.Real_Time;
 
-package SMC_Daemon_State is
+-- SPARK STATUS: SPARK_Mode => Off.
+--   RATIONALE: this package declares TASK types (Latency_Monitor_T,
+--   Thermal_Suspender_T, Watchdog_T) and a protected state object, uses
+--   Ada.Real_Time.Clock and Ada.Calendar, and owns the main loop's mutable
+--   shared state. Task types are outside the SPARK subset, and the package
+--   is the synchronization boundary for the whole daemon. Keeping it off is
+--   correct; every access is via the protected object's atomic entries so
+--   races cannot occur regardless of SPARK status.
+package SMC_Daemon_State with SPARK_Mode => Off is
 
    -- ========================================================================
    -- WATCHDOG CONFIGURATION

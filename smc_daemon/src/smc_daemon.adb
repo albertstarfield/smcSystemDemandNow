@@ -17,7 +17,18 @@ with SMC_Realtime;
 with SMC_Utils;
 with SMC_Thresholds;
 
-procedure Smc_Daemon is
+-- SPARK STATUS: SPARK_Mode => Off.
+--   RATIONALE: the main daemon procedure owns file I/O, task spawning
+--   (Latency_Monitor_T / Thermal_Suspender_T / Watchdog_T), C signal
+--   registration, IOKit SMC access via SMC_IO, realtime scheduling, and the
+--   10 Hz control loop. None of that is in the SPARK subset. The pure
+--   decision logic it calls (SMC_Math, SMC_Thresholds) stays on; this
+--   procedure is the integration boundary.
+--   SAFETY-NET CONTRACT: every external call checks its return code and logs
+--   on failure; every file operation is wrapped in `when E : others`; the
+--   loop never aborts on a single sensor failure; launchd KeepAlive restarts
+--   the process on a hard crash.
+procedure Smc_Daemon with SPARK_Mode => Off is
    use Ada.Text_IO;
    use Ada.Calendar;
    use Ada.Real_Time;

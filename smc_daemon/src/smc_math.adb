@@ -284,7 +284,13 @@ package body SMC_Math with SPARK_Mode is
       End_RPM   : Float;
       Elapsed   : Float;
       Duration  : Float
-   ) return RPM_Value 
+   ) return RPM_Value
+     -- SPARK STATUS: SPARK_Mode => Off for this subprogram only.
+     --   RATIONALE: uses Ada.Numerics.Elementary_Functions.Log, which is
+     --   outside the SPARK subset. The rest of SMC_Math is on.
+     --   SAFETY-NET: Start_RPM comes from observed F0Ac (≤10891.6), End_RPM
+     --   is clamped to RPM_Value'Last by Saturate on every exit path, so the
+     --   result can never exceed the subtype bound regardless of Log's value.
      with SPARK_Mode => Off
    is
       use Ada.Numerics.Elementary_Functions;

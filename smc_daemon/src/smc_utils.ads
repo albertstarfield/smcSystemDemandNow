@@ -4,6 +4,14 @@
 -- no reason, so they are declared in the body instead. This is the compiler's
 -- own "with clause might be moved to body" advice applied.
 
+-- SPARK STATUS: spec is SPARK_Mode => On, body is SPARK_Mode => Off.
+--   RATIONALE: the spec is pure computation (Validate_Temperature,
+--   Get_Time_Str, Get_Day_Str, Compute_Gradient, Float_To_Hex) and is
+--   SPARK-eligible. The body is off because Float_To_Hex uses
+--   Ada.Unchecked_Conversion to reinterpret a Float's bit pattern as an
+--   Unsigned_32, which is outside the SPARK subset. SAFETY-NET: Float_To_Hex
+--   is only used to format an SMC key string; a wrong result produces a
+--   visible bad fan-speed hex in the log, never a crash.
 package SMC_Utils with SPARK_Mode is
 
    -- Valid temperature range for SMC sensor readings (degrees Celsius)
